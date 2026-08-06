@@ -74,6 +74,7 @@ function GroupDetailsForm({
 }) {
   const router = useRouter();
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isMatchingGroup, setIsMatchingGroup] = useState(false);
   const {
     register,
     handleSubmit,
@@ -101,6 +102,7 @@ function GroupDetailsForm({
       p_account_type: values.accountType,
       p_rotation_method: values.rotationMethod,
       p_approval_threshold: values.approvalThreshold,
+      p_is_matching_group: isMatchingGroup,
     });
 
     if (error) {
@@ -158,6 +160,24 @@ function GroupDetailsForm({
           error={errors.targetSize?.message}
           {...register("targetSize")}
         />
+        <label className="flex items-start gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={isMatchingGroup}
+            onChange={(e) => setIsMatchingGroup(e.target.checked)}
+            className="mt-0.5"
+          />
+          <span>
+            <span className="font-medium text-foreground">
+              Open this group to strangers (matching)
+            </span>
+            <span className="block text-xs text-foreground/60">
+              Other users can find and reserve a spot with a refundable
+              deposit, held by Uzuza until the group fills. Leave unchecked
+              to only let people you invite by link join.
+            </span>
+          </span>
+        </label>
         {submitError && <p className="text-xs text-red-500">{submitError}</p>}
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Creating..." : "Create group"}

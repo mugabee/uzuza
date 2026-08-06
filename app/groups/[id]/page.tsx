@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { GroupLedger } from "@/components/GroupLedger";
+import { FormingGroupView } from "@/components/FormingGroupView";
 
 export default async function GroupPage({
   params,
@@ -16,7 +17,7 @@ export default async function GroupPage({
   const { data: group } = await supabase
     .from("groups")
     .select(
-      "id, name, group_type, contribution_amount, frequency, target_size, momo_number, created_by",
+      "id, name, group_type, contribution_amount, frequency, target_size, momo_number, created_by, status, is_matching_group",
     )
     .eq("id", id)
     .single();
@@ -42,6 +43,31 @@ export default async function GroupPage({
   }));
 
   const currentMembership = membersWithNames.find((m) => m.user_id === user.id);
+
+  if (group.status === "forming") {
+    if (!currentMembership) redirect(`/groups/${id}/reserve`);
+
+    const { data: reservations } = await supabase
+      .from("reservations")
+      .select("id, user_id, fee_amount, status, transaction_id, screenshot_path")
+      .eq("group_id", id);
+
+    const reservationsWithNames = (reservations ?? []).map((r) => ({
+      ...r,
+      profile: profiles?.find((p) => p.id === r.user_id) ?? null,
+    }));
+
+    return (
+      <main className="flex flex-1 flex-col items-center px-6 py-16">
+        <FormingGroupView
+          group={group}
+          isAdmin={currentMembership.role === "admin"}
+          members={membersWithNames}
+          reservations={reservationsWithNames}
+        />
+      </main>
+    );
+  }
 
   const { data: latestCycle } = await supabase
     .from("cycles")
