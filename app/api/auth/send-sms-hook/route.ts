@@ -19,10 +19,14 @@ export async function POST(req: Request) {
   } catch {
     return new Response(JSON.stringify({ error: "invalid signature" }), {
       status: 401,
+      headers: { "Content-Type": "application/json" },
     });
   }
 
   await sendOtpSms(verified.user.phone, verified.sms.otp);
 
-  return new Response(null, { status: 200 });
+  return new Response("{}", {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  });
 }
