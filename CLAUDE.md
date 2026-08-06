@@ -318,14 +318,14 @@ Real values for these go in `.env.local` (see `.env.local.example` for the curre
 
 **Status:** Phase 0 done — GitHub, Supabase, Vercel, Africa's Talking, and all three MTN MoMo products (Collections, Disbursements, Remittances) are live and credential-verified (see `.env.local.example` for the shape; real values in the gitignored `.env.local`).
 
-Phase 1 (Foundation) is built: phone/email OTP login (`app/(auth)/login/`), profile creation (`app/(onboarding)/profile/`), group creation with type selection (`app/groups/new/`, `app/groups/[id]/`), backed by the `profiles`/`groups`/`group_members` schema and RLS policies in `supabase/migrations/20260806120000_phase1_foundation.sql`. Email OTP verified working end-to-end in the browser. Phone OTP code is complete but **not yet verified live** — it depends on a Supabase Dashboard config step that can't be done via API:
+Phase 1 (Foundation) is done and fully verified live: phone/email OTP login (`app/(auth)/login/`), profile creation (`app/(onboarding)/profile/`), group creation with type selection (`app/groups/new/`, `app/groups/[id]/`). Both phone (via a Send SMS Hook routing through Africa's Talking, since Supabase doesn't support it as a built-in SMS provider) and email OTP confirmed working end-to-end against the real deployed backend.
 
-1. Authentication → Sign In / Providers → enable **Phone**.
-2. Authentication → Hooks → **Send SMS Hook** → point at `https://uzuza-v7cu.vercel.app/api/auth/send-sms-hook` (must be a public HTTPS URL Supabase can reach — won't work against localhost, so the hook route needs to be deployed first).
-3. Copy the `SEND_SMS_HOOK_SECRET` Supabase generates into `.env.local` and Vercel's env vars.
-4. Authentication → Sign In / Providers → enable **Email** (OTP/magic-code mode).
+Phase 2 (Contributions & Ledger) is also done and verified: `app/groups/[id]/page.tsx` is the real ledger (join-by-link, cycle start with random-draw recipient, per-member unique payment references, proof submission with screenshot + transaction ID, admin confirm/reject, auto-completion when every contribution is confirmed). Schema in `supabase/migrations/20260806160000_phase2_contributions.sql` onward (`cycles`, `contributions`, private `contribution-proofs` Storage bucket). Payment itself stays manual (member pays via their own MoMo app, submits proof) per the architecture table above — the MoMo Collections API is used only for a standalone sandbox verification (`scripts/momo-collections-check.mjs`), not to trigger payments from the UI. Full backend flow (two members, cycle, proof, confirmation, completion) verified via `scripts/e2e-phase2-check.mjs` against the live database.
 
-Until that's done, phone login will fail at the "send code" step (Supabase has nowhere to route the SMS).
+**Dev tooling notes:**
+- `scripts/run-migrations.mjs` applies `supabase/migrations/*.sql` via the IPv4 connection pooler (direct `db.<ref>.supabase.co` is IPv6-only and won't resolve in most dev environments), tracked in a `_migrations` table so it's safe to re-run.
+- `scripts/e2e-check.mjs` and `scripts/e2e-phase2-check.mjs` are repeatable regression checks against the real deployed backend — they require `sms_test_otp` to be temporarily set in Supabase's auth config (Authentication → Sign In / Providers → Phone → Test Phone Numbers and OTPs; also settable via the Management API), and clean up their own test data on success.
+- Vercel/Supabase Management API tokens (account-level, not project secrets) live in the gitignored `.env.tools.local`, separate from the app's own `.env.local` — used for things dashboard-only config can't do via project keys alone (fixing the project's framework preset, syncing env vars, reading/writing auth config).
 
 ---
 
