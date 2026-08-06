@@ -17,8 +17,9 @@ type Contribution = {
   id: string;
   unique_reference: string;
   amount: number;
-  status: "pending" | "submitted" | "confirmed" | "rejected";
+  status: "pending" | "submitted" | "confirmed" | "rejected" | "missed";
   rejected_reason: string | null;
+  missed_fine_amount?: number | null;
 };
 
 export function ContributeCard({
@@ -150,6 +151,15 @@ export function ContributeCard({
       {contribution.status === "submitted" && (
         <p className="mt-4 text-sm text-foreground/70">
           Waiting for admin confirmation.
+        </p>
+      )}
+
+      {contribution.status === "missed" && (
+        <p className="mt-4 rounded-lg bg-red-50 p-2 text-sm text-red-600">
+          Marked as missed
+          {contribution.missed_fine_amount != null &&
+            ` — a fine of ${Number(contribution.missed_fine_amount).toLocaleString()} RWF applies`}
+          . Contact an admin.
         </p>
       )}
     </Card>

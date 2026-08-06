@@ -95,6 +95,24 @@ export const rejectContributionSchema = z.object({
 });
 export type RejectContributionInput = z.infer<typeof rejectContributionSchema>;
 
+export const proposeSettingsChangeSchema = z.object({
+  contributionAmount: z.coerce.number().positive().optional(),
+  targetSize: z.coerce.number().int().min(2).optional(),
+  approvalThreshold: z.enum(["1", "2-of-3", "all"]).optional(),
+  momoNumber: phoneSchema.optional(),
+});
+export type ProposeSettingsChangeInput = z.infer<typeof proposeSettingsChangeSchema>;
+
+export const reasonSchema = z.object({
+  reason: z.string().trim().min(3, "Say a bit more").max(300),
+});
+export type ReasonInput = z.infer<typeof reasonSchema>;
+
+export const missedPaymentSchema = z.object({
+  fineAmount: z.coerce.number().min(0, "Enter 0 or more"),
+});
+export type MissedPaymentInput = z.infer<typeof missedPaymentSchema>;
+
 export const createPledgeSchema = z.object({
   amount: z.coerce.number().positive("Enter an amount greater than 0"),
   visibility: z.enum(["public", "name_only", "private"]),

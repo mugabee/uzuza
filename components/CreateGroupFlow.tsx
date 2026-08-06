@@ -79,6 +79,7 @@ function GroupDetailsForm({
   const router = useRouter();
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isMatchingGroup, setIsMatchingGroup] = useState(false);
+  const [safetyFundType, setSafetyFundType] = useState<"off" | "buffer" | "freeze">("off");
   const {
     register,
     handleSubmit,
@@ -116,6 +117,13 @@ function GroupDetailsForm({
     if (error) {
       setSubmitError(error.message);
       return;
+    }
+
+    if (groupType === "rotating" && safetyFundType !== "off") {
+      await supabase.rpc("set_safety_fund_type", {
+        p_group_id: data,
+        p_safety_fund_type: safetyFundType,
+      });
     }
 
     router.push(`/groups/${data}`);
@@ -182,6 +190,22 @@ function GroupDetailsForm({
           error={errors.targetSize?.message}
           {...register("targetSize")}
         />
+        {groupType === "rotating" && (
+          <label className="flex flex-col gap-1.5 text-sm">
+            <span className="font-medium text-foreground">Safety fund</span>
+            <select
+              className="rounded-lg border border-black/10 px-4 py-2.5 outline-none focus:border-primary"
+              value={safetyFundType}
+              onChange={(e) => setSafetyFundType(e.target.value as typeof safetyFundType)}
+            >
+              <option value="off">Off</option>
+              <option value="buffer">
+                Rolling buffer (7.5% surcharge each round)
+              </option>
+              <option value="freeze">Full first-cycle freeze</option>
+            </select>
+          </label>
+        )}
         {groupType === "rotating" && (
           <label className="flex items-start gap-2 text-sm">
             <input

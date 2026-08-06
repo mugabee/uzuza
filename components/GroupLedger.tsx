@@ -11,6 +11,10 @@ import { AdminConfirmRow } from "@/components/AdminConfirmRow";
 import { PayoutPanel } from "@/components/PayoutPanel";
 import { MomoNumberEditor } from "@/components/MomoNumberEditor";
 import { AccountTypeEditor } from "@/components/AccountTypeEditor";
+import { ProposalsPanel } from "@/components/ProposalsPanel";
+import { MediationButton } from "@/components/MediationButton";
+import { PauseExitControls } from "@/components/PauseExitControls";
+import { MissedPaymentButton } from "@/components/MissedPaymentButton";
 
 type Profile = { id: string; full_name: string | null; phone: string | null } | null;
 
@@ -21,11 +25,20 @@ type Contribution = {
   member_id: string;
   unique_reference: string;
   amount: number;
-  status: "pending" | "submitted" | "confirmed" | "rejected";
+  status: "pending" | "submitted" | "confirmed" | "rejected" | "missed";
   transaction_id: string | null;
   screenshot_path: string | null;
   rejected_reason: string | null;
+  missed_fine_amount?: number | null;
   profile: Profile;
+};
+
+type Proposal = {
+  id: string;
+  change_type: "settings" | "role_change";
+  payload: Record<string, string | number>;
+  status: "pending" | "applied" | "rejected";
+  created_at: string;
 };
 
 type Group = {
@@ -70,6 +83,7 @@ export function GroupLedger({
   payoutApprovalCount,
   currentUserHasApprovedPayout,
   recipientName,
+  proposals,
 }: {
   group: Group;
   currentUserId: string;
@@ -83,6 +97,7 @@ export function GroupLedger({
   payoutApprovalCount: number;
   currentUserHasApprovedPayout: boolean;
   recipientName: string;
+  proposals: Proposal[];
 }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
@@ -109,6 +124,39 @@ export function GroupLedger({
     const supabase = createClient();
     const { error: rpcError } = await supabase.rpc("start_cycle", {
       p_group_id: group.id,
+    });
+    setBusy(false);
+    if (rpcError) {
+      setError(rpcError.message);
+      return;
+    }
+    router.refresh();
+  }
+
+  async function handleConfirmAll() {
+    setBusy(true);
+    setError(null);
+    const supabase = createClient();
+    const submitted = contributions.filter((c) => c.status === "submitted");
+    for (const c of submitted) {
+      await supabase.rpc("confirm_contribution", {
+        p_contribution_id: c.id,
+        p_approve: true,
+        p_reason: null,
+      });
+    }
+    setBusy(false);
+    router.refresh();
+  }
+
+  async function handlePromote(userId: string) {
+    setBusy(true);
+    setError(null);
+    const supabase = createClient();
+    const { error: rpcError } = await supabase.rpc("propose_group_change", {
+      p_group_id: group.id,
+      p_change_type: "role_change",
+      p_payload: { target_user_id: userId, new_role: "admin" },
     });
     setBusy(false);
     if (rpcError) {
@@ -231,11 +279,25 @@ export function GroupLedger({
                     <span className="ml-1 text-xs text-accent">(receiving)</span>
                   )}
                 </span>
-                <StatusBadge status={c.status} />
+                <div className="flex items-center gap-2">
+                  <StatusBadge status={c.status} />
+                  {isAdmin && c.status === "pending" && (
+                    <MissedPaymentButton
+                      contributionId={c.id}
+                      onReported={() => router.refresh()}
+                    />
+                  )}
+                </div>
               </li>
             ))}
           </ul>
         </Card>
+      )}
+
+      {isAdmin && contributions.some((c) => c.status === "submitted") && (
+        <Button variant="secondary" onClick={handleConfirmAll} disabled={busy}>
+          {busy ? "Confirming..." : "Confirm all"}
+        </Button>
       )}
 
       {isAdmin &&
@@ -248,6 +310,40 @@ export function GroupLedger({
               onDecided={() => router.refresh()}
             />
           ))}
+
+      <Card>
+        <h2 className="font-display text-lg font-semibold text-primary">
+          Members
+        </h2>
+        <ul className="mt-3 flex flex-col gap-2">
+          {members.map((m) => (
+            <li key={m.user_id} className="flex items-center justify-between text-sm">
+              <span>{m.profile?.full_name ?? "Member"}</span>
+              <span className="flex items-center gap-2">
+                <span className="text-xs capitalize text-foreground/50">{m.role}</span>
+                {isAdmin && m.role === "member" && (
+                  <button
+                    type="button"
+                    onClick={() => handlePromote(m.user_id)}
+                    disabled={busy}
+                    className="text-xs text-primary underline-offset-2 hover:underline"
+                  >
+                    Propose admin
+                  </button>
+                )}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </Card>
+
+      {isAdmin && <ProposalsPanel groupId={group.id} proposals={proposals} />}
+
+      <PauseExitControls groupId={group.id} />
+
+      <Card>
+        <MediationButton groupId={group.id} />
+      </Card>
 
       {completedCycle && (
         <PayoutPanel
@@ -270,6 +366,7 @@ function StatusBadge({ status }: { status: Contribution["status"] }) {
     submitted: "bg-accent/15 text-accent",
     confirmed: "bg-primary/15 text-primary",
     rejected: "bg-red-100 text-red-600",
+    missed: "bg-red-100 text-red-600",
   };
   return (
     <span
