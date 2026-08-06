@@ -41,3 +41,35 @@ export const createGroupSchema = z.object({
   approvalThreshold: z.enum(["1", "2-of-3", "all"]),
 });
 export type CreateGroupInput = z.infer<typeof createGroupSchema>;
+
+export const momoNumberSchema = phoneSchema;
+
+export const contributionProofSchema = z.object({
+  transactionId: z
+    .string()
+    .trim()
+    .min(4, "Enter the MoMo transaction ID / confirmation text")
+    .max(100),
+  screenshot: z
+    // FileList is a browser-only global — z.custom defers the reference to
+    // validation time instead of module-eval time, so this file can still
+    // be imported from server components/pages.
+    .custom<FileList>(
+      (val) => typeof FileList !== "undefined" && val instanceof FileList,
+      { message: "Attach a screenshot of the payment" },
+    )
+    .refine((list) => list.length === 1, "Attach a screenshot of the payment")
+    .transform((list) => list[0])
+    .refine((f) => f.size <= 5 * 1024 * 1024, "Screenshot must be under 5MB")
+    .refine(
+      (f) => ["image/png", "image/jpeg", "image/webp"].includes(f.type),
+      "Screenshot must be a PNG, JPEG, or WEBP image",
+    ),
+});
+export type ContributionProofFormInput = z.input<typeof contributionProofSchema>;
+export type ContributionProofInput = z.output<typeof contributionProofSchema>;
+
+export const rejectContributionSchema = z.object({
+  reason: z.string().trim().min(3, "Say why this is being rejected").max(300),
+});
+export type RejectContributionInput = z.infer<typeof rejectContributionSchema>;
