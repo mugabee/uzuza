@@ -10,6 +10,7 @@ import { ContributeCard } from "@/components/ContributeCard";
 import { AdminConfirmRow } from "@/components/AdminConfirmRow";
 import { PayoutPanel } from "@/components/PayoutPanel";
 import { MomoNumberEditor } from "@/components/MomoNumberEditor";
+import { AccountTypeEditor } from "@/components/AccountTypeEditor";
 
 type Profile = { id: string; full_name: string | null; phone: string | null } | null;
 
@@ -36,7 +37,10 @@ type Group = {
   target_size: number;
   momo_number: string | null;
   created_by: string;
+  account_type: "group_owned" | "uzuza_held";
 };
+
+const UZUZA_CUSTODY_NUMBER = process.env.NEXT_PUBLIC_UZUZA_CUSTODY_MOMO_NUMBER;
 
 type Cycle = {
   id: string;
@@ -165,6 +169,12 @@ export function GroupLedger({
         {isAdmin && (
           <MomoNumberEditor groupId={group.id} currentNumber={group.momo_number} />
         )}
+        {isAdmin && (
+          <AccountTypeEditor
+            groupId={group.id}
+            currentAccountType={group.account_type}
+          />
+        )}
 
         {error && <p className="mt-3 text-xs text-red-500">{error}</p>}
 
@@ -195,7 +205,11 @@ export function GroupLedger({
       {activeCycle && myContribution && (
         <ContributeCard
           contribution={myContribution}
-          groupMomoNumber={group.momo_number}
+          groupMomoNumber={
+            group.account_type === "uzuza_held"
+              ? (UZUZA_CUSTODY_NUMBER ?? "Uzuza custody number (being finalized)")
+              : group.momo_number
+          }
           onSubmitted={() => router.refresh()}
         />
       )}

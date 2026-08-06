@@ -18,7 +18,7 @@ export default async function GroupPage({
   const { data: group } = await supabase
     .from("groups")
     .select(
-      "id, name, group_type, contribution_amount, frequency, target_size, momo_number, created_by, status, is_matching_group",
+      "id, name, group_type, contribution_amount, frequency, target_size, momo_number, created_by, status, is_matching_group, account_type",
     )
     .eq("id", id)
     .single();
