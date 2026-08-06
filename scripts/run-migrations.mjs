@@ -26,10 +26,25 @@ const client = new Client({ connectionString, ssl: { rejectUnauthorized: false }
 await client.connect();
 
 try {
+  await client.query(`
+    create table if not exists public._migrations (
+      filename text primary key,
+      applied_at timestamptz not null default now()
+    );
+  `);
+
+  const { rows } = await client.query("select filename from public._migrations");
+  const applied = new Set(rows.map((r) => r.filename));
+
   for (const file of files) {
+    if (applied.has(file)) {
+      console.log(`Skipping ${file} (already applied).`);
+      continue;
+    }
     console.log(`Applying ${file}...`);
     const sql = readFileSync(join(migrationsDir, file), "utf8");
     await client.query(sql);
+    await client.query("insert into public._migrations (filename) values ($1)", [file]);
     console.log(`  done.`);
   }
 } finally {
