@@ -44,7 +44,10 @@ export type CreateGroupInput = z.infer<typeof createGroupSchema>;
 
 export const momoNumberSchema = phoneSchema;
 
-export const contributionProofSchema = z.object({
+// Shared by both the member-side contribution proof form and the
+// admin-side payout completion form — same "transaction ID + screenshot"
+// proof-of-transfer requirement either direction, per CLAUDE.md Section 4.
+export const transferProofSchema = z.object({
   transactionId: z
     .string()
     .trim()
@@ -66,8 +69,16 @@ export const contributionProofSchema = z.object({
       "Screenshot must be a PNG, JPEG, or WEBP image",
     ),
 });
-export type ContributionProofFormInput = z.input<typeof contributionProofSchema>;
-export type ContributionProofInput = z.output<typeof contributionProofSchema>;
+export type TransferProofFormInput = z.input<typeof transferProofSchema>;
+export type TransferProofInput = z.output<typeof transferProofSchema>;
+
+export const contributionProofSchema = transferProofSchema;
+export type ContributionProofFormInput = TransferProofFormInput;
+export type ContributionProofInput = TransferProofInput;
+
+export const payoutProofSchema = transferProofSchema;
+export type PayoutProofFormInput = TransferProofFormInput;
+export type PayoutProofInput = TransferProofInput;
 
 export const rejectContributionSchema = z.object({
   reason: z.string().trim().min(3, "Say why this is being rejected").max(300),

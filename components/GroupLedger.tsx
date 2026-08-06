@@ -9,6 +9,7 @@ import { Field } from "@/components/Field";
 import { Card } from "@/components/Card";
 import { ContributeCard } from "@/components/ContributeCard";
 import { AdminConfirmRow } from "@/components/AdminConfirmRow";
+import { PayoutPanel } from "@/components/PayoutPanel";
 
 type Profile = { id: string; full_name: string | null; phone: string | null } | null;
 
@@ -45,6 +46,13 @@ type Cycle = {
   started_at: string;
 } | null;
 
+type PayoutRequest = {
+  id: string;
+  amount: number;
+  status: "pending" | "approved" | "completed";
+  recipient_user_id: string;
+} | null;
+
 export function GroupLedger({
   group,
   currentUserId,
@@ -53,6 +61,11 @@ export function GroupLedger({
   members,
   activeCycle,
   contributions,
+  completedCycle,
+  payoutRequest,
+  payoutApprovalCount,
+  currentUserHasApprovedPayout,
+  recipientName,
 }: {
   group: Group;
   currentUserId: string;
@@ -61,6 +74,11 @@ export function GroupLedger({
   members: Member[];
   activeCycle: Cycle;
   contributions: Contribution[];
+  completedCycle: Cycle;
+  payoutRequest: PayoutRequest;
+  payoutApprovalCount: number;
+  currentUserHasApprovedPayout: boolean;
+  recipientName: string;
 }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
@@ -147,9 +165,9 @@ export function GroupLedger({
           </Button>
         )}
 
-        {activeCycle?.status === "completed" && (
+        {completedCycle && (
           <p className="mt-4 rounded-lg bg-primary/10 p-3 text-sm font-medium text-primary">
-            Cycle {activeCycle.cycle_number} complete — every contribution
+            Cycle {completedCycle.cycle_number} complete — every contribution
             confirmed.
           </p>
         )}
@@ -197,6 +215,17 @@ export function GroupLedger({
               onDecided={() => router.refresh()}
             />
           ))}
+
+      {completedCycle && (
+        <PayoutPanel
+          cycleId={completedCycle.id}
+          isAdmin={isAdmin}
+          payoutRequest={payoutRequest}
+          approvalCount={payoutApprovalCount}
+          hasApproved={currentUserHasApprovedPayout}
+          recipientName={recipientName}
+        />
+      )}
     </div>
   );
 }

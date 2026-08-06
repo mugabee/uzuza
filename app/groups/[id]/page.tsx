@@ -43,26 +43,51 @@ export default async function GroupPage({
 
   const currentMembership = membersWithNames.find((m) => m.user_id === user.id);
 
-  const { data: activeCycle } = await supabase
+  const { data: latestCycle } = await supabase
     .from("cycles")
     .select("id, cycle_number, status, recipient_user_id, started_at")
     .eq("group_id", id)
-    .eq("status", "active")
+    .order("cycle_number", { ascending: false })
+    .limit(1)
     .maybeSingle();
 
-  const { data: contributions } = activeCycle
+  const activeCycle =
+    latestCycle?.status === "active" ? latestCycle : null;
+  const completedCycle =
+    latestCycle?.status === "completed" ? latestCycle : null;
+
+  const { data: contributions } = latestCycle
     ? await supabase
         .from("contributions")
         .select(
           "id, member_id, unique_reference, amount, status, transaction_id, screenshot_path, rejected_reason",
         )
-        .eq("cycle_id", activeCycle.id)
+        .eq("cycle_id", latestCycle.id)
     : { data: [] };
 
   const contributionsWithNames = (contributions ?? []).map((c) => ({
     ...c,
     profile: profiles?.find((p) => p.id === c.member_id) ?? null,
   }));
+
+  const { data: payoutRequest } = completedCycle
+    ? await supabase
+        .from("payout_requests")
+        .select("id, amount, status, recipient_user_id")
+        .eq("cycle_id", completedCycle.id)
+        .maybeSingle()
+    : { data: null };
+
+  const { data: payoutApprovals } = payoutRequest
+    ? await supabase
+        .from("payout_approvals")
+        .select("approved_by")
+        .eq("payout_request_id", payoutRequest.id)
+    : { data: [] };
+
+  const recipientProfile = completedCycle
+    ? (profiles?.find((p) => p.id === completedCycle.recipient_user_id) ?? null)
+    : null;
 
   return (
     <main className="flex flex-1 flex-col items-center px-6 py-16">
@@ -72,8 +97,15 @@ export default async function GroupPage({
         isMember={!!currentMembership}
         isAdmin={currentMembership?.role === "admin"}
         members={membersWithNames}
-        activeCycle={activeCycle ?? null}
+        activeCycle={activeCycle}
         contributions={contributionsWithNames}
+        completedCycle={completedCycle}
+        payoutRequest={payoutRequest ?? null}
+        payoutApprovalCount={payoutApprovals?.length ?? 0}
+        currentUserHasApprovedPayout={
+          !!payoutApprovals?.some((a) => a.approved_by === user.id)
+        }
+        recipientName={recipientProfile?.full_name ?? "the recipient"}
       />
     </main>
   );
