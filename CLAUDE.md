@@ -316,7 +316,16 @@ Real values for these go in `.env.local` (see `.env.local.example` for the curre
 
 **Realistic total: 18-22 weeks**, not the original 10-14 week estimate — scope has grown substantially through design review.
 
-**Status:** Phase 0 environment setup is mostly done — GitHub repo is live at `github.com/mugabee/uzuza`, Supabase project is created and wired up (`lib/supabase/client.ts`, `server.ts`, `admin.ts`, `proxy.ts` — verified live against the real project), Next.js scaffold builds and runs clean. Starting hosting on Vercel with migration to the owner's cPanel plan planned later (see Section 5). Still needed: Vercel project connection, Africa's Talking sandbox, MoMo sandbox (external, human action — see Section 8).
+**Status:** Phase 0 done — GitHub, Supabase, Vercel, Africa's Talking, and all three MTN MoMo products (Collections, Disbursements, Remittances) are live and credential-verified (see `.env.local.example` for the shape; real values in the gitignored `.env.local`).
+
+Phase 1 (Foundation) is built: phone/email OTP login (`app/(auth)/login/`), profile creation (`app/(onboarding)/profile/`), group creation with type selection (`app/groups/new/`, `app/groups/[id]/`), backed by the `profiles`/`groups`/`group_members` schema and RLS policies in `supabase/migrations/20260806120000_phase1_foundation.sql`. Email OTP verified working end-to-end in the browser. Phone OTP code is complete but **not yet verified live** — it depends on a Supabase Dashboard config step that can't be done via API:
+
+1. Authentication → Sign In / Providers → enable **Phone**.
+2. Authentication → Hooks → **Send SMS Hook** → point at `https://uzuza-v7cu.vercel.app/api/auth/send-sms-hook` (must be a public HTTPS URL Supabase can reach — won't work against localhost, so the hook route needs to be deployed first).
+3. Copy the `SEND_SMS_HOOK_SECRET` Supabase generates into `.env.local` and Vercel's env vars.
+4. Authentication → Sign In / Providers → enable **Email** (OTP/magic-code mode).
+
+Until that's done, phone login will fail at the "send code" step (Supabase has nowhere to route the SMS).
 
 ---
 
