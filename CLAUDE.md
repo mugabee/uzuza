@@ -309,7 +309,7 @@ Real values for these go in `.env.local` (see `.env.local.example` for the curre
 
 **Realistic total: 18-22 weeks**, not the original 10-14 week estimate — scope has grown substantially through design review.
 
-**Status:** Phase 0 environment setup is in progress — Next.js/Tailwind/Supabase-ready scaffold exists (see repo root), starting on Vercel with migration to the owner's cPanel plan planned later (see Section 5), Supabase/Vercel projects and API sandbox accounts still need to be created (external, human action — see Section 8).
+**Status:** Phase 0 environment setup is mostly done — GitHub repo is live at `github.com/mugabee/uzuza`, Supabase project is created and wired up (`lib/supabase/client.ts`, `server.ts`, `admin.ts`, `proxy.ts` — verified live against the real project), Next.js scaffold builds and runs clean. Starting hosting on Vercel with migration to the owner's cPanel plan planned later (see Section 5). Still needed: Vercel project connection, Africa's Talking sandbox, MoMo sandbox (external, human action — see Section 8).
 
 ---
 
