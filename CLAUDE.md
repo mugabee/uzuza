@@ -208,12 +208,21 @@ A user can hold different roles in different groups (Member in one, Admin in ano
 | Mobile Money | Unique references + Admin confirmation (MTN MoMo / Airtel Money) |
 | Notifications | Supabase + SMS gateway (Africa's Talking); Firebase later if needed |
 | Chat | In-app (pre-activation, custom-built, text-only) → WhatsApp Group Link (post-activation, external) |
-| Hosting | Vercel (frontend) + Supabase cloud |
+| Hosting | Existing cPanel shared hosting (Node.js App / Passenger) + Supabase cloud |
 | Internal Console | Separate authenticated app/route, not part of consumer PWA |
 
 **Actual scaffolded version:** the repo was bootstrapped with `create-next-app@latest`, which resolved to **Next.js 16**, not the Next 14 originally specified. Treat 16 as the real baseline — it's an App Router release so nothing above changes structurally, but don't assume Next-14-era API docs/patterns apply. React is 19.2.
 
-**Why this stack:** fast development velocity (especially with AI coding assistants), strong mobile browser experience, Supabase bundles auth/db/realtime with minimal backend code, low initial cost.
+**Hosting decision:** originally planned as Vercel; changed to the owner's existing cPanel shared hosting plan, which supports Node.js apps via cPanel's Node.js Selector (Phusion Passenger). This changes several things from the Vercel-default assumptions baked into the plan above:
+
+- **Build/run mode:** must build with `output: "standalone"` in `next.config.ts` and run the generated `server.js` under Passenger — cPanel's Node.js Selector expects a single Node entrypoint, not Vercel's serverless function model. Confirm the cPanel Node.js version offered (should be 18.18+ for Next 16) before relying on newer JS syntax.
+- **Deploys are manual**, not git-push-to-deploy: build locally or in CI, then upload (`git pull` on the server, rsync, or cPanel's Git Version Control feature if available) and restart the Passenger app. No automatic per-branch preview URLs — if preview environments matter, they'll need to be set up by hand (e.g. a second Node app instance on a subdomain) rather than assumed for free.
+- **Scheduled/background jobs** (notably the Phase 7 custody automated sweep-out job, and any reminder/notification cron) run as **cPanel Cron Jobs** hitting a script or authenticated API route, instead of Vercel Cron. This is arguably more reliable than Vercel's cron limits on lower tiers — no change needed to the "automated, not human-triggered" requirement in Section 3.5.
+- **Env vars** are set through the cPanel Node.js App interface (or a `.env` file the app loads at startup), not a Vercel dashboard — same rule applies: real secrets never get committed, only `.env.local.example` is tracked.
+- **No built-in image optimization/edge network** the way Vercel provides — Next's `<Image>` component's default loader needs `unoptimized: true` or a custom loader unless the host is confirmed to support the Next image optimization API in this runtime mode.
+- Supabase remains unchanged — it's a separate managed service regardless of where the Next.js frontend/API layer runs.
+
+**Why this stack otherwise:** fast development velocity (especially with AI coding assistants), strong mobile browser experience, Supabase bundles auth/db/realtime with minimal backend code, low initial cost — the hosting swap doesn't change any of that, since Supabase and hosting are independent choices.
 
 ---
 
@@ -270,7 +279,7 @@ All financial and approval actions are logged for auditability — this applies 
 | Service | Purpose | Free tier | Approval needed |
 |---|---|---|---|
 | Supabase | Backend/DB/Auth/Realtime | 500MB DB, 50K MAU, 5GB egress, 2 projects; pauses after 7 days inactivity | No — instant |
-| Vercel | Frontend hosting | Generous free tier for Next.js at MVP scale | No — instant |
+| cPanel hosting | Frontend + API hosting (Node.js App/Passenger) | Already owned/paid for | No — owner already has the plan |
 | Africa's Talking | SMS OTP (and later USSD) | Free sandbox, free Sender ID registration, no minimum spend | No for sandbox |
 | MTN MoMo Developer Portal | Collections + Disbursements | Free sandbox | No for sandbox; Go-Live needs MTN review |
 | Airtel Money API | Alternate mobile money rail | Varies | Yes — separate partnership |
@@ -278,7 +287,7 @@ All financial and approval actions are logged for auditability — this applies 
 | NIDA (Rwanda National ID) | Light ID verification for matched groups | Unknown — no public self-serve API found | **Yes — formal partnership process, start earliest of all items** |
 | Legal/regulatory consult (BNR) | Custody licensing threshold | Varies | N/A — engage a lawyer directly |
 
-**Sequencing:** everything free-and-instant (Supabase, Vercel, Africa's Talking sandbox, MoMo sandbox) can start immediately. NIDA and the legal consult have the longest lead times and should start in Phase 0, running in parallel with all technical work — do not let them become launch blockers discovered late.
+**Sequencing:** everything free-and-instant (Supabase, cPanel Node.js app setup, Africa's Talking sandbox, MoMo sandbox) can start immediately. NIDA and the legal consult have the longest lead times and should start in Phase 0, running in parallel with all technical work — do not let them become launch blockers discovered late.
 
 Real values for these go in `.env.local` (see `.env.local.example` for the current key list) — never commit real values.
 
@@ -288,7 +297,7 @@ Real values for these go in `.env.local` (see `.env.local.example` for the curre
 
 | Phase | Weeks | Focus |
 |---|---|---|
-| 0 | 1-3 days | Environment setup — repo, Supabase, Vercel, Claude Code, design tokens |
+| 0 | 1-3 days | Environment setup — repo, Supabase, cPanel Node.js app, Claude Code, design tokens |
 | 1 | 1-3 | Foundation — auth (phone/email), group creation, group-type selection |
 | 2 | 3-5 | Contributions & ledger, MoMo Collections sandbox |
 | 3 | 5-7 | Payouts & multi-approval, MoMo Disbursements sandbox |
@@ -303,7 +312,7 @@ Real values for these go in `.env.local` (see `.env.local.example` for the curre
 
 **Realistic total: 18-22 weeks**, not the original 10-14 week estimate — scope has grown substantially through design review.
 
-**Status:** Phase 0 environment setup is in progress — Next.js/Tailwind/Supabase-ready scaffold exists (see repo root), Supabase/Vercel projects and API sandbox accounts still need to be created (external, human action — see Section 8).
+**Status:** Phase 0 environment setup is in progress — Next.js/Tailwind/Supabase-ready scaffold exists (see repo root), hosting is the owner's existing cPanel plan (Node.js App/Passenger — see Section 5), Supabase project and API sandbox accounts still need to be created (external, human action — see Section 8).
 
 ---
 
