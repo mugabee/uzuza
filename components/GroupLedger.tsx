@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { momoNumberSchema } from "@/lib/validation";
@@ -155,20 +156,37 @@ export function GroupLedger({
           Invite link: {typeof window !== "undefined" ? window.location.href : ""}
         </p>
 
+        <Link
+          href={`/groups/${group.id}/constitution`}
+          className="mt-2 inline-block text-sm font-medium text-primary underline-offset-2 hover:underline"
+        >
+          View group constitution
+        </Link>
+
         {isAdmin && <MomoNumberEditor group={group} />}
 
         {error && <p className="mt-3 text-xs text-red-500">{error}</p>}
 
         {isAdmin && !activeCycle && (
           <Button className="mt-4 w-full" onClick={handleStartCycle} disabled={busy}>
-            {busy ? "Starting..." : "Start Cycle"}
+            {busy
+              ? "Starting..."
+              : completedCycle
+                ? "Start Next Cycle"
+                : "Start Cycle"}
           </Button>
         )}
 
         {completedCycle && (
           <p className="mt-4 rounded-lg bg-primary/10 p-3 text-sm font-medium text-primary">
             Cycle {completedCycle.cycle_number} complete — every contribution
-            confirmed.
+            confirmed.{" "}
+            <Link
+              href={`/groups/${group.id}/cycles/${completedCycle.id}/summary`}
+              className="underline underline-offset-2"
+            >
+              View summary
+            </Link>
           </p>
         )}
       </Card>
