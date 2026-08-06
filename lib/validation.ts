@@ -39,8 +39,14 @@ export const createGroupSchema = z.object({
   accountType: z.enum(["group_owned", "uzuza_held"]),
   rotationMethod: z.enum(["random", "fixed"]),
   approvalThreshold: z.enum(["1", "2-of-3", "all"]),
+  pledgeGoal: z.coerce
+    .number()
+    .positive("Enter an amount greater than 0")
+    .optional()
+    .or(z.literal("").transform(() => undefined)),
 });
-export type CreateGroupInput = z.infer<typeof createGroupSchema>;
+export type CreateGroupFormInput = z.input<typeof createGroupSchema>;
+export type CreateGroupInput = z.output<typeof createGroupSchema>;
 
 export const momoNumberSchema = phoneSchema;
 
@@ -80,7 +86,17 @@ export const payoutProofSchema = transferProofSchema;
 export type PayoutProofFormInput = TransferProofFormInput;
 export type PayoutProofInput = TransferProofInput;
 
+export const pledgeProofSchema = transferProofSchema;
+export type PledgeProofFormInput = TransferProofFormInput;
+export type PledgeProofInput = TransferProofInput;
+
 export const rejectContributionSchema = z.object({
   reason: z.string().trim().min(3, "Say why this is being rejected").max(300),
 });
 export type RejectContributionInput = z.infer<typeof rejectContributionSchema>;
+
+export const createPledgeSchema = z.object({
+  amount: z.coerce.number().positive("Enter an amount greater than 0"),
+  visibility: z.enum(["public", "name_only", "private"]),
+});
+export type CreatePledgeInput = z.infer<typeof createPledgeSchema>;

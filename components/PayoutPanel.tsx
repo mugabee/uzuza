@@ -21,20 +21,26 @@ type PayoutRequest = {
   recipient_user_id: string;
 } | null;
 
+type PayoutTarget =
+  | { type: "cycle"; cycleId: string }
+  | { type: "event"; groupId: string };
+
 export function PayoutPanel({
-  cycleId,
+  target,
   isAdmin,
   payoutRequest,
   approvalCount,
   hasApproved,
   recipientName,
+  readyMessage = "All contributions confirmed.",
 }: {
-  cycleId: string;
+  target: PayoutTarget;
   isAdmin: boolean;
   payoutRequest: PayoutRequest;
   approvalCount: number;
   hasApproved: boolean;
   recipientName: string;
+  readyMessage?: string;
 }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
@@ -52,9 +58,10 @@ export function PayoutPanel({
     setBusy(true);
     setError(null);
     const supabase = createClient();
-    const { error: rpcError } = await supabase.rpc("request_payout", {
-      p_cycle_id: cycleId,
-    });
+    const { error: rpcError } =
+      target.type === "cycle"
+        ? await supabase.rpc("request_payout", { p_cycle_id: target.cycleId })
+        : await supabase.rpc("request_event_payout", { p_group_id: target.groupId });
     setBusy(false);
     if (rpcError) {
       setError(rpcError.message);
@@ -110,7 +117,7 @@ export function PayoutPanel({
       return (
         <Card>
           <p className="text-sm text-foreground/70">
-            Cycle complete — waiting for an admin to request the payout to{" "}
+            {readyMessage} Waiting for an admin to request the payout to{" "}
             {recipientName}.
           </p>
         </Card>
@@ -122,7 +129,7 @@ export function PayoutPanel({
           Payout
         </h2>
         <p className="mt-1 text-sm text-foreground/70">
-          All contributions confirmed. Request the payout to {recipientName}.
+          {readyMessage} Request the payout to {recipientName}.
         </p>
         {error && <p className="mt-2 text-xs text-red-500">{error}</p>}
         <Button className="mt-3 w-full" onClick={handleRequest} disabled={busy}>

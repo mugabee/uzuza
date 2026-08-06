@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { GroupLedger } from "@/components/GroupLedger";
 import { FormingGroupView } from "@/components/FormingGroupView";
+import { EventPledgeBoard } from "@/components/EventPledgeBoard";
 
 export default async function GroupPage({
   params,
@@ -43,6 +44,47 @@ export default async function GroupPage({
   }));
 
   const currentMembership = membersWithNames.find((m) => m.user_id === user.id);
+
+  if (group.group_type === "event") {
+    const { data: pledges } = await supabase.rpc("get_pledge_board", {
+      p_group_id: id,
+    });
+    const { data: total } = await supabase.rpc("get_pledge_total", {
+      p_group_id: id,
+    });
+
+    const { data: payoutRequest } = await supabase
+      .from("payout_requests")
+      .select("id, amount, status, recipient_user_id")
+      .eq("event_group_id", id)
+      .maybeSingle();
+
+    const { data: payoutApprovals } = payoutRequest
+      ? await supabase
+          .from("payout_approvals")
+          .select("approved_by")
+          .eq("payout_request_id", payoutRequest.id)
+      : { data: [] };
+
+    const organizerProfile = profiles?.find((p) => p.id === group.created_by);
+
+    return (
+      <main className="flex flex-1 flex-col items-center px-6 py-16">
+        <EventPledgeBoard
+          group={group}
+          isAdmin={currentMembership?.role === "admin"}
+          pledges={pledges ?? []}
+          total={Number(total ?? 0)}
+          payoutRequest={payoutRequest ?? null}
+          payoutApprovalCount={payoutApprovals?.length ?? 0}
+          currentUserHasApprovedPayout={
+            !!payoutApprovals?.some((a) => a.approved_by === user.id)
+          }
+          organizerName={organizerProfile?.full_name ?? "the organizer"}
+        />
+      </main>
+    );
+  }
 
   if (group.status === "forming") {
     if (!currentMembership) redirect(`/groups/${id}/reserve`);

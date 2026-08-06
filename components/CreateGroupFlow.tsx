@@ -5,7 +5,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { createGroupSchema, type CreateGroupInput } from "@/lib/validation";
+import {
+  createGroupSchema,
+  type CreateGroupFormInput,
+  type CreateGroupInput,
+} from "@/lib/validation";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
 import { Card } from "@/components/Card";
@@ -79,7 +83,7 @@ function GroupDetailsForm({
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<CreateGroupInput>({
+  } = useForm<CreateGroupFormInput, unknown, CreateGroupInput>({
     resolver: zodResolver(createGroupSchema),
     defaultValues: {
       groupType,
@@ -97,12 +101,16 @@ function GroupDetailsForm({
       p_name: values.name,
       p_group_type: values.groupType,
       p_contribution_amount: values.contributionAmount,
-      p_frequency: values.frequency,
+      // Frequency/rotation aren't meaningful for a one-time event
+      // collection — submit harmless defaults for the NOT NULL columns
+      // rather than showing irrelevant fields.
+      p_frequency: groupType === "event" ? "monthly" : values.frequency,
       p_target_size: values.targetSize,
       p_account_type: values.accountType,
-      p_rotation_method: values.rotationMethod,
+      p_rotation_method: groupType === "event" ? "random" : values.rotationMethod,
       p_approval_threshold: values.approvalThreshold,
       p_is_matching_group: isMatchingGroup,
+      p_pledge_goal: groupType === "event" ? values.pledgeGoal : undefined,
     });
 
     if (error) {
@@ -137,47 +145,63 @@ function GroupDetailsForm({
           {...register("name")}
         />
         <Field
-          label="Contribution amount (RWF)"
+          label={
+            groupType === "event"
+              ? "Suggested pledge amount (RWF)"
+              : "Contribution amount (RWF)"
+          }
           type="number"
           placeholder="25000"
           error={errors.contributionAmount?.message}
           {...register("contributionAmount")}
         />
-        <label className="flex flex-col gap-1.5 text-sm">
-          <span className="font-medium text-foreground">Frequency</span>
-          <select
-            className="rounded-lg border border-black/10 px-4 py-2.5 outline-none focus:border-primary"
-            {...register("frequency")}
-          >
-            <option value="monthly">Monthly</option>
-            <option value="weekly">Weekly</option>
-          </select>
-        </label>
+        {groupType === "event" ? (
+          <Field
+            label="Fundraising goal (optional)"
+            type="number"
+            placeholder="500000"
+            error={errors.pledgeGoal?.message}
+            {...register("pledgeGoal")}
+          />
+        ) : (
+          <label className="flex flex-col gap-1.5 text-sm">
+            <span className="font-medium text-foreground">Frequency</span>
+            <select
+              className="rounded-lg border border-black/10 px-4 py-2.5 outline-none focus:border-primary"
+              {...register("frequency")}
+            >
+              <option value="monthly">Monthly</option>
+              <option value="weekly">Weekly</option>
+            </select>
+          </label>
+        )}
         <Field
-          label="Target group size"
+          label={groupType === "event" ? "Expected contributors" : "Target group size"}
           type="number"
           placeholder="10"
           error={errors.targetSize?.message}
           {...register("targetSize")}
         />
-        <label className="flex items-start gap-2 text-sm">
-          <input
-            type="checkbox"
-            checked={isMatchingGroup}
-            onChange={(e) => setIsMatchingGroup(e.target.checked)}
-            className="mt-0.5"
-          />
-          <span>
-            <span className="font-medium text-foreground">
-              Open this group to strangers (matching)
+        {groupType === "rotating" && (
+          <label className="flex items-start gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={isMatchingGroup}
+              onChange={(e) => setIsMatchingGroup(e.target.checked)}
+              className="mt-0.5"
+            />
+            <span>
+              <span className="font-medium text-foreground">
+                Open this group to strangers (matching)
+              </span>
+              <span className="block text-xs text-foreground/60">
+                Other users can find and reserve a spot with a refundable
+                deposit, held by Uzuza until the group fills. Leave unchecked
+                to only let people you invite by link join.
+              </span>
             </span>
-            <span className="block text-xs text-foreground/60">
-              Other users can find and reserve a spot with a refundable
-              deposit, held by Uzuza until the group fills. Leave unchecked
-              to only let people you invite by link join.
-            </span>
-          </span>
-        </label>
+          </label>
+        )}
         {submitError && <p className="text-xs text-red-500">{submitError}</p>}
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Creating..." : "Create group"}

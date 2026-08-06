@@ -4,13 +4,12 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { momoNumberSchema } from "@/lib/validation";
 import { Button } from "@/components/Button";
-import { Field } from "@/components/Field";
 import { Card } from "@/components/Card";
 import { ContributeCard } from "@/components/ContributeCard";
 import { AdminConfirmRow } from "@/components/AdminConfirmRow";
 import { PayoutPanel } from "@/components/PayoutPanel";
+import { MomoNumberEditor } from "@/components/MomoNumberEditor";
 
 type Profile = { id: string; full_name: string | null; phone: string | null } | null;
 
@@ -163,7 +162,9 @@ export function GroupLedger({
           View group constitution
         </Link>
 
-        {isAdmin && <MomoNumberEditor group={group} />}
+        {isAdmin && (
+          <MomoNumberEditor groupId={group.id} currentNumber={group.momo_number} />
+        )}
 
         {error && <p className="mt-3 text-xs text-red-500">{error}</p>}
 
@@ -236,12 +237,13 @@ export function GroupLedger({
 
       {completedCycle && (
         <PayoutPanel
-          cycleId={completedCycle.id}
+          target={{ type: "cycle", cycleId: completedCycle.id }}
           isAdmin={isAdmin}
           payoutRequest={payoutRequest}
           approvalCount={payoutApprovalCount}
           hasApproved={currentUserHasApprovedPayout}
           recipientName={recipientName}
+          readyMessage="Cycle complete — every contribution confirmed."
         />
       )}
     </div>
@@ -264,51 +266,3 @@ function StatusBadge({ status }: { status: Contribution["status"] }) {
   );
 }
 
-function MomoNumberEditor({ group }: { group: Group }) {
-  const router = useRouter();
-  const [value, setValue] = useState(group.momo_number ?? "");
-  const [error, setError] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
-
-  async function handleSave() {
-    setError(null);
-    const result = momoNumberSchema.safeParse(value);
-    if (!result.success) {
-      setError(result.error.issues[0].message);
-      return;
-    }
-    setSaving(true);
-    const supabase = createClient();
-    const { error: rpcError } = await supabase.rpc("set_group_momo_number", {
-      p_group_id: group.id,
-      p_momo_number: result.data,
-    });
-    setSaving(false);
-    if (rpcError) {
-      setError(rpcError.message);
-      return;
-    }
-    router.refresh();
-  }
-
-  return (
-    <div className="mt-4 flex items-end gap-2">
-      <Field
-        label="Group MoMo number"
-        placeholder="+250788123456"
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        error={error ?? undefined}
-        className="flex-1"
-      />
-      <Button
-        variant="secondary"
-        onClick={handleSave}
-        disabled={saving}
-        className="mb-[1px]"
-      >
-        {saving ? "Saving..." : "Save"}
-      </Button>
-    </div>
-  );
-}
