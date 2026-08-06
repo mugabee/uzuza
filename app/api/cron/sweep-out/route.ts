@@ -16,9 +16,14 @@ export async function GET(req: Request) {
 
   const supabase = createAdminClient();
 
+  // payout_requests has two FKs to groups (group_id and event_group_id),
+  // so the embed must name the constraint explicitly — the generic
+  // "groups!inner(...)" syntax is ambiguous between them.
   const { data: payouts, error } = await supabase
     .from("payout_requests")
-    .select("id, group_id, recipient_user_id, amount, groups!inner(account_type)")
+    .select(
+      "id, group_id, recipient_user_id, amount, groups!payout_requests_group_id_fkey!inner(account_type)",
+    )
     .eq("status", "approved")
     .is("swept_at", null)
     .eq("groups.account_type", "uzuza_held");
