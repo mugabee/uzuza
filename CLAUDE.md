@@ -221,6 +221,13 @@ A user can hold different roles in different groups (Member in one, Admin in ano
 
 **Why this stack otherwise:** fast development velocity (especially with AI coding assistants), strong mobile browser experience, Supabase bundles auth/db/realtime with minimal backend code, low initial cost.
 
+**Mobile app strategy:** the owner's actual goal is a **Play Store / App Store listing**, not just an installable PWA. Decision: keep building the Next.js PWA exactly as planned — do not start a separate React Native/Flutter codebase. Later (realistically around Phase 10/11, hardening/soft launch), wrap the same web app with **Capacitor** to produce real `.aab`/`.ipa` store builds. This is a thin native shell around the existing frontend, not a rewrite:
+
+- Backend (Supabase, MoMo integration, business rules) transfers unchanged regardless of what renders the UI.
+- Frontend/UI code transfers unchanged — Capacitor points its native shell at the same React/Next.js app (live URL or bundled build).
+- Extra work needed only at wrap time: Google Play Developer account ($25 one-time), Apple Developer account ($99/year), store review, icons/splash/permissions config. None of this blocks or changes Phase 0-9 web development.
+- If a future feature needs something a webview genuinely can't do (biometric login, deep push customization, background processing), that's a small native plugin added to the Capacitor shell, not a rewrite.
+
 ---
 
 ## 6. Data Model Notes
