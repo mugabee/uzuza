@@ -1,8 +1,7 @@
-@AGENTS.md
-
 # Uzuza — Complete Project Reference
+Consolidated Single Source of Truth | All Decisions Through Design Review
 
-Consolidated single source of truth for the Uzuza build. This merges the original product charter, every risk identified in design review, the full feature set, and every decision made across review into one file, so no prior session's context is required to pick this up. Where anything here conflicts with `Uzuza_Master_Project_Plan.md` or `docs/Uzuza_Complete_Project_Reference.md` (the archived source this was consolidated from), **this file wins** — it reflects the most current decision set.
+**How to use this file:** Place this at the root of your repository as `CLAUDE.md` (or reference it from your `CLAUDE.md`). It merges the original product charter, every risk identified, every feature added, and every decision made across design review into one document — so Claude Code (or any developer) has full context without needing to read six separate files.
 
 ---
 
@@ -17,8 +16,6 @@ Consolidated single source of truth for the Uzuza build. This merges the origina
 **Primary market:** Rwanda, starting in Kigali.
 
 **Brand tokens:** Primary color deep green `#1a5f4a`. Gold accent `#c9962c` (used for anything tied to money held/reserved). Warm paper background `#f7f4ee`. Display font Manrope, body font Inter. Calm, clear, respectful, community-oriented tone. Mobile-first, large readable text, high-contrast status indicators.
-
-*(Not yet verified against the original prototypes — `uzuza_prototype.html`, `uzuza_full_prototype.html`, `uzuza_internal_console_prototype.html` are still missing from this repo. Treat as a starting point, not pixel-verified truth, until they're recovered — see Section 12.)*
 
 ---
 
@@ -123,7 +120,7 @@ Fills the gap where the WhatsApp link only attaches after a group activates, but
 - System nudge suggesting an experienced member take the anchor-admin role
 - **Freeze, don't delete**, after handoff to WhatsApp — read-only archive, may be relevant evidence for later mediation
 
-Once active, the group hands off entirely to its WhatsApp link for ongoing daily chat — the in-app thread never continues after activation.
+Once active, the group hands off entirely to its WhatsApp link (PMD section 7.7) for ongoing daily chat — the in-app thread never continues after activation.
 
 ### 3.7 Admin Tools & Exit Handling
 
@@ -159,7 +156,7 @@ Once active, the group hands off entirely to its WhatsApp link for ongoing daily
 
 ### 3.9 Internal Operations Console
 
-A genuinely separate, desktop-oriented, authenticated internal tool — never reachable from consumer app routes. Fills a gap: the original product charter names "support/operations staff" as a user but never designed anything for them.
+A genuinely separate, desktop-oriented, authenticated internal tool — never reachable from consumer app routes. Fills a gap: PMD section 6.2 names "support/operations staff" as a user but never designed anything for them.
 
 **Required panels:**
 - Platform metrics bar: active groups/members, total held in custody vs. cap, open mediations, pending ID reviews
@@ -177,23 +174,22 @@ Must be scoped and staffed (even part-time) before custody or matching features 
 | Prospective Member | Browse matching, reserve spots, create groups, join forming groups |
 | Member | View ledger, contribute, view personal summary, access chat, request to leave/pause |
 | Admin/Treasurer | All Member permissions + confirm payments, create payout requests, approve/reject payouts, propose group changes (subject to multi-approval), manage WhatsApp link |
-| **Witness/Observer (formal 4th role)** | **View-only** access to the ledger — explicitly **no approval rights** over payouts or funds. For respected local figures (church leader, family elder, trusted outsider) added to increase trust without giving control. |
+| **Witness/Observer (new, formal 4th role)** | **View-only** access to the ledger — explicitly **no approval rights** over payouts or funds. For respected local figures (church leader, family elder, trusted outsider) added to increase trust without giving control. |
 | System | Generate references, enforce approval thresholds, send notifications, calculate statuses, maintain audit trail |
 
 A user can hold different roles in different groups (Member in one, Admin in another).
 
 ---
 
-## 4. Business Rules (Critical Logic — must never be violated)
+## 4. Business Rules (Critical Logic)
 
 - **Payment confirmation**: Admin must explicitly mark a contribution Paid after verifying the MoMo transaction, using unique reference as primary matching key, **plus transaction ID/confirmation text**, not screenshot alone.
-- **Multi-approval threshold**: set at group creation (1 admin / 2-of-3 / all); payout cannot be marked Approved until met. No single-admin payout execution.
-- **Proof of transfer**: screenshot + transaction ID required before any contribution or payout is marked Completed.
-- **Leaving after receiving the pot**: default two-cycle minimum commitment; early exit after receiving requires remaining contributions + group-defined penalty, backed by the safety fund / reserve deposit mechanism (Sections 3.4, 3.7) rather than an unenforceable IOU.
+- **Multi-approval threshold**: set at group creation (1 admin / 2-of-3 / all); payout cannot be marked Approved until met.
+- **Leaving after receiving the pot**: default two-cycle minimum commitment; early exit after receiving requires remaining contributions + group-defined penalty, now backed by the safety fund / reserve deposit mechanism (Sections 3.4, 3.7) rather than an unenforceable IOU.
 - **Missed payments**: progressive handling per Section 3.7's escalation sequence.
 - **Rotation**: random draw is the v1 default mechanism.
 - **Reservation fee**: 5% of contribution amount, capped at 50,000 RWF, refundable in full if group fails to form, converts to first contribution if it forms.
-- **Custody**: reservation deposits during formation are always Uzuza-held (structural, not a choice); ongoing contributions follow the group's explicit account-type choice. Custody is capped platform-wide, consented to explicitly, and swept out automatically — never a manual/human-triggered release.
+- **Custody**: reservation deposits during formation are always Uzuza-held (structural); ongoing contributions follow the group's explicit account-type choice.
 - **Group changes**: always a multi-approval proposal, never a unilateral admin edit.
 
 ---
@@ -202,7 +198,7 @@ A user can hold different roles in different groups (Member in one, Admin in ano
 
 | Layer | Choice |
 |---|---|
-| Frontend | Next.js (App Router) + TypeScript + Tailwind CSS |
+| Frontend | Next.js 14 (App Router) + TypeScript + Tailwind CSS |
 | Delivery | Progressive Web App (installable, mobile-first) |
 | Backend/DB/Auth | Supabase (PostgreSQL + Auth + Realtime + Storage) |
 | Mobile Money | Unique references + Admin confirmation (MTN MoMo / Airtel Money) |
@@ -211,32 +207,30 @@ A user can hold different roles in different groups (Member in one, Admin in ano
 | Hosting | Vercel (frontend) + Supabase cloud |
 | Internal Console | Separate authenticated app/route, not part of consumer PWA |
 
-**Actual scaffolded version:** the repo was bootstrapped with `create-next-app@latest`, which resolved to **Next.js 16**, not the Next 14 originally specified. Treat 16 as the real baseline — it's an App Router release so nothing above changes structurally, but don't assume Next-14-era API docs/patterns apply. React is 19.2.
-
 **Why this stack:** fast development velocity (especially with AI coding assistants), strong mobile browser experience, Supabase bundles auth/db/realtime with minimal backend code, low initial cost.
 
 ---
 
 ## 6. Data Model Notes
 
-Core entities:
+Core entities from the original PMD, expanded by design review:
 
-- `profiles` (users) — includes optional NIDA verification status/reference, reputation summary
-- `groups` — includes `group_type` (rotating / event / seasonal / emergency / school-fees / purchasing), `account_type` (group-owned / uzuza-held), `safety_fund_type` (off / buffer / freeze), `rotation_method` (random / fixed / bidding — v1 ships random + fixed)
-- `group_members` (roles: prospective / member / admin / witness)
+- `profiles` (users) — now includes optional NIDA verification status/reference, reputation summary
+- `groups` — now includes `group_type` (rotating / event / seasonal / emergency / school-fees / purchasing), `account_type` (group-owned / uzuza-held), `safety_fund_type` (off / buffer / freeze), `rotation_method` (random / fixed / bidding — v1 ships random + fixed)
+- `group_members` (with roles — now four: prospective/member/admin/witness)
 - `cycles`
 - `contributions` (with `unique_reference`, `status`, `transaction_id`, `screenshot_url`)
-- `payout_requests`, `payout_approvals` (also `group_change_proposals` using the same approval pattern, with a timeout field)
-- `leaving_requests` (also `pause_requests`)
-- `reserve_deposits` — tracks each member's own held deposit, separate from rotation contributions
-- `reservations` — matching-stage spot reservations, fee amount, refund status
-- `event_pledges` — for Event Contribution group type: pledge amount, paid/pending, visibility tier
-- `chat_messages` — pre-activation only, flagged/reported status, frozen status post-handoff
-- `mediation_cases` — internal ops queue, priority tier, assigned staff
-- `unmatched_payments` — internal ops reconciliation queue
-- `custody_ledger` — per-group reconciliation records for Uzuza-held funds, sweep-out timestamps
+- `payout_requests`, `payout_approvals` (now also `group_change_proposals` using the same approval pattern, with a timeout field)
+- `leaving_requests` (now also `pause_requests`)
+- `reserve_deposits` (new — tracks each member's own held deposit, separate from rotation contributions)
+- `reservations` (new — matching-stage spot reservations, fee amount, refund status)
+- `event_pledges` (new — for Event Contribution group type: pledge amount, paid/pending, visibility tier)
+- `chat_messages` (new — pre-activation only, flagged/reported status, frozen status post-handoff)
+- `mediation_cases` (new — internal ops queue, priority tier, assigned staff)
+- `unmatched_payments` (new — internal ops reconciliation queue)
+- `custody_ledger` (new — per-group reconciliation records for Uzuza-held funds, sweep-out timestamps)
 
-All financial and approval actions are logged for auditability — this applies to every entity above, not just the core ones.
+All financial and approval actions are logged for auditability — this applies to every new entity above, not just the original ones.
 
 ---
 
@@ -280,8 +274,6 @@ All financial and approval actions are logged for auditability — this applies 
 
 **Sequencing:** everything free-and-instant (Supabase, Vercel, Africa's Talking sandbox, MoMo sandbox) can start immediately. NIDA and the legal consult have the longest lead times and should start in Phase 0, running in parallel with all technical work — do not let them become launch blockers discovered late.
 
-Real values for these go in `.env.local` (see `.env.local.example` for the current key list) — never commit real values.
-
 ---
 
 ## 9. Build Phases
@@ -302,8 +294,6 @@ Real values for these go in `.env.local` (see `.env.local.example` for the curre
 | 11 | 19-22 | Soft launch — 5-15 real groups, close support, iterate |
 
 **Realistic total: 18-22 weeks**, not the original 10-14 week estimate — scope has grown substantially through design review.
-
-**Status:** Phase 0 environment setup is in progress — Next.js/Tailwind/Supabase-ready scaffold exists (see repo root), Supabase/Vercel projects and API sandbox accounts still need to be created (external, human action — see Section 8).
 
 ---
 
@@ -326,24 +316,15 @@ Real values for these go in `.env.local` (see `.env.local.example` for the curre
 
 ---
 
-## 12. Reference Prototypes — Still Missing
+## 12. Reference Prototypes
 
-Three HTML prototypes are referenced throughout this document as the exact visual/component reference (colors, type, spacing, component patterns) but are **not present in this repo**:
+Three HTML prototypes exist showing the full visual design — bring these into the repo alongside this file:
 - `uzuza_prototype.html` — first 6 core screens
 - `uzuza_full_prototype.html` — 19 screens covering onboarding, ibimina flow, matching, event pledges, admin proposals, in-app chat
 - `uzuza_internal_console_prototype.html` — internal ops dashboard
 
-Until recovered, any UI work matches brand tokens (Section 1) as a best-effort approximation, not a verified match. See `docs/README.md` for full recovery status.
+Use these as the exact visual/component reference when building the frontend — colors, type, spacing, and component patterns should match what's shown there.
 
 ---
 
-## 13. Working With Claude Code — Practical Guidance
-
-- **One build phase per session where possible** — matches the natural review/testing checkpoints in Section 9, and keeps each session focused rather than sprawling across unrelated systems (e.g., don't mix custody logic and UI polish in the same session).
-- **Write tests alongside financial logic** — particularly for Phases 2, 3, and 7 (contributions, payouts, custody), since these are the highest-stakes code paths in the whole app.
-- **Use feature branches per phase**, reviewed before merging to main — especially once custody logic exists, since a reconciliation bug has real financial consequences, not just a broken UI.
-- **Periodically audit against Section 7's risk register directly** — e.g., "Review the payout approval code against Section 7 — confirm proof-of-transfer is enforced before a payout can be marked Completed."
-
----
-
-*This file consolidates the original Project Management Document, Risk Analysis & Best Practices, Features & Tooling Reference, Build Guide, and Master Project Plan. The pre-consolidation source (`Uzuza_Complete_Project_Reference.md`) is archived at `docs/Uzuza_Complete_Project_Reference.md`; `Uzuza_Master_Project_Plan.md` at the repo root is the earlier, less complete planning doc this superseded. Where either conflicts with this file, this file wins.*
+*This file consolidates: the original Project Management Document (v1.1), Risk Analysis & Best Practices (v1.0), Features & Tooling Reference (v1.0), Build Guide, and Master Project Plan. Where any of those documents conflict with this one, this file reflects the most current and complete decision set as of consolidation.*
