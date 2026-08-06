@@ -1,4 +1,8 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Uzuza
+
+Digital platform for Rwandan ibimina (rotating savings groups) and event pledge collection. See [`Uzuza_Master_Project_Plan.md`](./Uzuza_Master_Project_Plan.md) for the full build plan and [`CLAUDE.md`](./CLAUDE.md) for project conventions and business rules.
+
+This app was bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
 
