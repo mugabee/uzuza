@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
+import { SavingsJourneyCard } from "@/components/SavingsJourneyCard";
 
 export default async function Home() {
   const supabase = await createClient();
@@ -17,20 +18,33 @@ export default async function Home() {
     .select("group_id, role")
     .eq("user_id", user.id);
 
+  const { data: journeyRows } = await supabase.rpc("get_lifetime_savings_summary");
+  const journey = journeyRows?.[0];
+
   if (!memberships || memberships.length === 0) {
     return (
       <main className="flex flex-1 flex-col items-center justify-center px-6 py-16">
-        <Card className="max-w-sm text-center">
-          <h1 className="font-display text-2xl font-semibold text-primary">
-            No groups yet
-          </h1>
-          <p className="mt-2 text-sm text-foreground/70">
-            Create your first savings or event group to get started.
-          </p>
-          <Link href="/groups/new">
-            <Button className="mt-6 w-full">Create a group</Button>
-          </Link>
-        </Card>
+        <div className="flex w-full max-w-sm flex-col gap-5">
+          {journey && Number(journey.total_saved) > 0 && (
+            <SavingsJourneyCard
+              totalSaved={Number(journey.total_saved)}
+              cyclesCompleted={journey.cycles_completed}
+              currentStreak={journey.current_streak}
+              groupsCount={journey.groups_count}
+            />
+          )}
+          <Card className="text-center">
+            <h1 className="font-display text-2xl font-semibold text-primary">
+              No groups yet
+            </h1>
+            <p className="mt-2 text-sm text-foreground/70">
+              Create your first savings or event group to get started.
+            </p>
+            <Link href="/groups/new">
+              <Button className="mt-6 w-full">Create a group</Button>
+            </Link>
+          </Card>
+        </div>
       </main>
     );
   }
@@ -86,6 +100,15 @@ export default async function Home() {
             )}
           </div>
         </Card>
+
+        {journey && Number(journey.total_saved) > 0 && (
+          <SavingsJourneyCard
+            totalSaved={Number(journey.total_saved)}
+            cyclesCompleted={journey.cycles_completed}
+            currentStreak={journey.current_streak}
+            groupsCount={journey.groups_count}
+          />
+        )}
 
         {(groups ?? []).map((group) => {
           const activeCycle = activeCycles?.find((c) => c.group_id === group.id);

@@ -17,3 +17,19 @@
   --font-sans: var(--font-inter);
   --font-display: var(--font-manrope);
 }
+
+html[data-text-size="large"] {
+  font-size: 118%;
+}
+
+html[data-contrast="high"] {
+  --paper: #ffffff;
+  --foreground: #000000;
+  --primary: #0a3f30;
+  --primary-foreground: #ffffff;
+  --accent: #7a5200;
+}
+
+html[data-contrast="high"] .ring-1.ring-black\/5 {
+  --tw-ring-color: rgb(0 0 0 / 0.3);
+}

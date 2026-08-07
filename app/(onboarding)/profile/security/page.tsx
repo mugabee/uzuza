@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { MfaEnrollment } from "@/components/MfaEnrollment";
+import { DisplaySettings } from "@/components/DisplaySettings";
 
 export default async function ProfileSecurityPage() {
   const supabase = await createClient();
@@ -17,6 +18,7 @@ export default async function ProfileSecurityPage() {
           Account Security
         </h1>
         <MfaEnrollment />
+        <DisplaySettings />
       </div>
     </main>
   );

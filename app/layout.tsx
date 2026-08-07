@@ -30,6 +30,20 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${manrope.variable} ${inter.variable} h-full antialiased`}
     >
+      <head>
+        {/* Applies saved display preferences before paint, so there's no
+            flash of the default text size/contrast on load. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{
+              var s=localStorage.getItem('uzuza_text_size');
+              var c=localStorage.getItem('uzuza_contrast');
+              if(s==='large')document.documentElement.setAttribute('data-text-size','large');
+              if(c==='high')document.documentElement.setAttribute('data-contrast','high');
+            }catch(e){}})();`,
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col bg-paper text-foreground font-sans">
         {children}
         <AppNav signedIn={!!user} />
