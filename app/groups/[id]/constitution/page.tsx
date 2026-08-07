@@ -126,14 +126,26 @@ export default async function ConstitutionPage({
           </div>
 
           <div>
+            <h2 className="font-semibold text-foreground">Missed payments</h2>
+            <p>
+              A missed payment gets a fine, set by an admin at the time it's
+              reported. If the member has already received their payout for
+              this cycle and the group's safety fund can cover it, the fine
+              is drawn from that fund instead of chasing the member
+              directly.
+            </p>
+          </div>
+
+          <div>
             <h2 className="font-semibold text-foreground">
-              Not yet in place
+              Pausing or leaving
             </h2>
-            <p className="text-foreground/60">
-              Fine structure for missed payments, exit/pause policies, and
-              safety-fund coverage are not built into the platform yet and
-              will be added in a future update. Until then, these are
-              handled by agreement outside the app.
+            <p>
+              A member facing temporary hardship can request to skip one
+              round rather than leave outright. Leaving the group goes
+              through an admin decision and produces a plain agreement both
+              sides can see, covering any fine owed and any safety-fund
+              draw involved.
             </p>
           </div>
         </div>

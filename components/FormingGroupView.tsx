@@ -36,12 +36,16 @@ export function FormingGroupView({
   members,
   reservations,
   currentUserId,
+  hasAcknowledgedConstitution,
+  acknowledgedCount,
 }: {
   group: Group;
   isAdmin: boolean;
   members: Member[];
   reservations: Reservation[];
   currentUserId: string;
+  hasAcknowledgedConstitution: boolean;
+  acknowledgedCount: number;
 }) {
   const myReservation = reservations.find((r) => r.user_id === currentUserId);
 
@@ -63,6 +67,21 @@ export function FormingGroupView({
           className="mt-4 inline-block text-sm font-medium text-primary underline-offset-2 hover:underline"
         >
           Chat with the group →
+        </Link>
+      </Card>
+
+      <Card className={hasAcknowledgedConstitution ? "" : "ring-1 ring-accent/40"}>
+        <h2 className="font-display text-lg font-semibold text-primary">
+          Group constitution
+        </h2>
+        <p className="mt-1 text-sm text-foreground/70">
+          {acknowledgedCount}/{members.length} members have acknowledged the
+          rules. The group can't activate until everyone has.
+        </p>
+        <Link href={`/groups/${group.id}/constitution`}>
+          <Button variant={hasAcknowledgedConstitution ? "secondary" : "primary"} className="mt-3 w-full">
+            {hasAcknowledgedConstitution ? "Review constitution" : "Read and acknowledge"}
+          </Button>
         </Link>
       </Card>
 

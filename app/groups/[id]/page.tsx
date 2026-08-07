@@ -99,6 +99,12 @@ export default async function GroupPage({
       profile: profiles?.find((p) => p.id === r.user_id) ?? null,
     }));
 
+    const { data: acknowledgments } = await supabase
+      .from("constitution_acknowledgments")
+      .select("user_id")
+      .eq("group_id", id);
+    const acknowledgedUserIds = new Set((acknowledgments ?? []).map((a) => a.user_id));
+
     return (
       <main className="flex flex-1 flex-col items-center px-6 py-16">
         <FormingGroupView
@@ -107,6 +113,8 @@ export default async function GroupPage({
           members={membersWithNames}
           reservations={reservationsWithNames}
           currentUserId={user.id}
+          hasAcknowledgedConstitution={acknowledgedUserIds.has(user.id)}
+          acknowledgedCount={acknowledgedUserIds.size}
         />
       </main>
     );
