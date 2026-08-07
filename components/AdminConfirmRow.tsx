@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { rejectContributionSchema } from "@/lib/validation";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
+import { useLanguage } from "@/lib/i18n";
 
 type Contribution = {
   id: string;
@@ -27,6 +28,7 @@ export function AdminConfirmRow({
   const [screenshotUrl, setScreenshotUrl] = useState<string | null>(null);
   const [rejecting, setRejecting] = useState(false);
   const [reason, setReason] = useState("");
+  const { t } = useLanguage();
 
   async function handleViewScreenshot() {
     if (!contribution.screenshot_path) return;
@@ -71,7 +73,7 @@ export function AdminConfirmRow({
     <Card>
       <div className="flex items-center justify-between">
         <span className="font-medium">
-          {contribution.profile?.full_name ?? "Member"}
+          {contribution.profile?.full_name ?? t("member")}
         </span>
         <span className="font-mono text-xs text-foreground/50">
           {contribution.unique_reference}
@@ -88,7 +90,7 @@ export function AdminConfirmRow({
           onClick={handleViewScreenshot}
           className="mt-2 text-sm font-medium text-primary underline-offset-2 hover:underline"
         >
-          View screenshot
+          {t("viewScreenshot")}
         </button>
       )}
       {screenshotUrl && (
@@ -105,14 +107,14 @@ export function AdminConfirmRow({
       {!rejecting ? (
         <div className="mt-4 flex gap-2">
           <Button onClick={() => decide(true)} disabled={busy}>
-            Approve
+            {t("approve")}
           </Button>
           <Button
             variant="secondary"
             onClick={() => setRejecting(true)}
             disabled={busy}
           >
-            Reject
+            {t("reject")}
           </Button>
         </div>
       ) : (
@@ -120,20 +122,20 @@ export function AdminConfirmRow({
           <textarea
             value={reason}
             onChange={(e) => setReason(e.target.value)}
-            placeholder="Why is this being rejected?"
+            placeholder={t("whyRejecting")}
             className="rounded-lg border border-black/10 px-3 py-2 text-sm outline-none focus:border-primary"
             rows={2}
           />
           <div className="flex gap-2">
             <Button onClick={handleRejectSubmit} disabled={busy}>
-              Confirm reject
+              {t("confirmReject")}
             </Button>
             <Button
               variant="secondary"
               onClick={() => setRejecting(false)}
               disabled={busy}
             >
-              Cancel
+              {t("cancel")}
             </Button>
           </div>
         </div>

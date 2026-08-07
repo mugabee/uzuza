@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
 import { Card } from "@/components/Card";
+import { useLanguage } from "@/lib/i18n";
 
 type Contribution = {
   id: string;
@@ -32,6 +33,7 @@ export function ContributeCard({
   onSubmitted: () => void;
 }) {
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const { t } = useLanguage();
   const {
     register,
     handleSubmit,
@@ -71,12 +73,12 @@ export function ContributeCard({
   return (
     <Card>
       <h2 className="font-display text-lg font-semibold text-primary">
-        Your contribution
+        {t("yourContribution")}
       </h2>
 
       {contribution.status === "confirmed" && (
         <p className="mt-2 text-sm font-medium text-primary">
-          Confirmed — thank you.
+          {t("confirmedThankYou")}
         </p>
       )}
 
@@ -84,33 +86,31 @@ export function ContributeCard({
         <>
           <dl className="mt-3 flex flex-col gap-1.5 text-sm">
             <div className="flex justify-between">
-              <dt className="text-foreground/60">Amount</dt>
+              <dt className="text-foreground/60">{t("amount")}</dt>
               <dd className="font-medium">
                 {Number(contribution.amount).toLocaleString()} RWF
               </dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-foreground/60">Pay to</dt>
-              <dd className="font-medium">{groupMomoNumber ?? "Not set yet"}</dd>
+              <dt className="text-foreground/60">{t("payTo")}</dt>
+              <dd className="font-medium">{groupMomoNumber ?? t("notSetYet")}</dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-foreground/60">Reference</dt>
+              <dt className="text-foreground/60">{t("reference")}</dt>
               <dd className="font-mono font-medium">
                 {contribution.unique_reference}
               </dd>
             </div>
           </dl>
           <p className="mt-2 text-xs text-foreground/50">
-            Send this exact amount via MoMo, including the reference above if
-            your transfer supports a note. Then submit proof below.
+            {t("sendInstructions")}
           </p>
         </>
       )}
 
       {contribution.status === "pending" && contribution.rejected_reason && (
         <p className="mt-3 rounded-lg bg-red-50 p-2 text-xs text-red-600">
-          Previous submission rejected: {contribution.rejected_reason}. Please
-          resubmit.
+          {t("previousRejected")}: {contribution.rejected_reason}. {t("pleaseResubmit")}
         </p>
       )}
 
@@ -120,14 +120,14 @@ export function ContributeCard({
           className="mt-4 flex flex-col gap-3"
         >
           <Field
-            label="MoMo transaction ID / confirmation text"
+            label={t("transactionIdLabel")}
             placeholder="e.g. MP240613.1234.A56789"
             error={errors.transactionId?.message}
             {...register("transactionId")}
           />
           <label className="flex flex-col gap-1.5 text-sm">
             <span className="font-medium text-foreground">
-              Screenshot of payment
+              {t("screenshotLabel")}
             </span>
             <input
               type="file"
@@ -143,23 +143,23 @@ export function ContributeCard({
           </label>
           {submitError && <p className="text-xs text-red-500">{submitError}</p>}
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Submitting..." : "Submit proof"}
+            {isSubmitting ? t("submitting") : t("submitProof")}
           </Button>
         </form>
       )}
 
       {contribution.status === "submitted" && (
         <p className="mt-4 text-sm text-foreground/70">
-          Waiting for admin confirmation.
+          {t("waitingConfirmation")}
         </p>
       )}
 
       {contribution.status === "missed" && (
         <p className="mt-4 rounded-lg bg-red-50 p-2 text-sm text-red-600">
-          Marked as missed
+          {t("markedMissed")}
           {contribution.missed_fine_amount != null &&
-            ` — a fine of ${Number(contribution.missed_fine_amount).toLocaleString()} RWF applies`}
-          . Contact an admin.
+            ` — ${t("fineApplies")} ${Number(contribution.missed_fine_amount).toLocaleString()} ${t("rwfApplies")}`}
+          . {t("contactAdmin")}
         </p>
       )}
     </Card>

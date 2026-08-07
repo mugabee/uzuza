@@ -3,10 +3,12 @@
 import { useEffect, useState } from "react";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
+import { useLanguage } from "@/lib/i18n";
 
 export function DisplaySettings() {
   const [largeText, setLargeText] = useState(false);
   const [highContrast, setHighContrast] = useState(false);
+  const { language, setLanguage } = useLanguage();
 
   useEffect(() => {
     setLargeText(localStorage.getItem("uzuza_text_size") === "large");
@@ -53,6 +55,30 @@ export function DisplaySettings() {
           <Button variant={highContrast ? "primary" : "secondary"} onClick={toggleHighContrast}>
             {highContrast ? "On" : "Off"}
           </Button>
+        </div>
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-foreground">Language</p>
+            <p className="text-xs text-foreground/50">
+              Kinyarwanda covers the contribute, approve, and ledger screens so far.
+            </p>
+          </div>
+          <div className="flex gap-1 rounded-full bg-black/5 p-1 text-xs font-medium">
+            <button
+              type="button"
+              onClick={() => setLanguage("en")}
+              className={`rounded-full px-3 py-1.5 ${language === "en" ? "bg-white text-primary shadow-sm" : "text-foreground/60"}`}
+            >
+              English
+            </button>
+            <button
+              type="button"
+              onClick={() => setLanguage("rw")}
+              className={`rounded-full px-3 py-1.5 ${language === "rw" ? "bg-white text-primary shadow-sm" : "text-foreground/60"}`}
+            >
+              Kinyarwanda
+            </button>
+          </div>
         </div>
       </div>
     </Card>

@@ -12,6 +12,7 @@ import { PayoutPanel } from "@/components/PayoutPanel";
 import { MediationButton } from "@/components/MediationButton";
 import { MissedPaymentButton } from "@/components/MissedPaymentButton";
 import { CycleCelebration } from "@/components/CycleCelebration";
+import { useLanguage } from "@/lib/i18n";
 
 type Profile = { id: string; full_name: string | null; phone: string | null } | null;
 
@@ -89,6 +90,7 @@ export function GroupLedger({
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { t } = useLanguage();
 
   async function handleJoin() {
     setBusy(true);
@@ -151,7 +153,7 @@ export function GroupLedger({
         </p>
         {error && <p className="mt-3 text-xs text-red-500">{error}</p>}
         <Button className="mt-6 w-full" onClick={handleJoin} disabled={busy}>
-          {busy ? "Joining..." : "Join this group"}
+          {busy ? t("joining") : t("joinThisGroup")}
         </Button>
       </Card>
     );
@@ -193,10 +195,10 @@ export function GroupLedger({
         {isAdmin && !activeCycle && (
           <Button className="mt-4 w-full" onClick={handleStartCycle} disabled={busy}>
             {busy
-              ? "Starting..."
+              ? t("starting")
               : completedCycle
-                ? "Start Next Cycle"
-                : "Start Cycle"}
+                ? t("startNextCycle")
+                : t("startCycle")}
           </Button>
         )}
 
