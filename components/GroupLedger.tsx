@@ -9,11 +9,7 @@ import { Card } from "@/components/Card";
 import { ContributeCard } from "@/components/ContributeCard";
 import { AdminConfirmRow } from "@/components/AdminConfirmRow";
 import { PayoutPanel } from "@/components/PayoutPanel";
-import { MomoNumberEditor } from "@/components/MomoNumberEditor";
-import { AccountTypeEditor } from "@/components/AccountTypeEditor";
-import { ProposalsPanel } from "@/components/ProposalsPanel";
 import { MediationButton } from "@/components/MediationButton";
-import { PauseExitControls } from "@/components/PauseExitControls";
 import { MissedPaymentButton } from "@/components/MissedPaymentButton";
 
 type Profile = { id: string; full_name: string | null; phone: string | null } | null;
@@ -31,14 +27,6 @@ type Contribution = {
   rejected_reason: string | null;
   missed_fine_amount?: number | null;
   profile: Profile;
-};
-
-type Proposal = {
-  id: string;
-  change_type: "settings" | "role_change";
-  payload: Record<string, string | number>;
-  status: "pending" | "applied" | "rejected";
-  created_at: string;
 };
 
 type Group = {
@@ -83,7 +71,6 @@ export function GroupLedger({
   payoutApprovalCount,
   currentUserHasApprovedPayout,
   recipientName,
-  proposals,
 }: {
   group: Group;
   currentUserId: string;
@@ -97,7 +84,6 @@ export function GroupLedger({
   payoutApprovalCount: number;
   currentUserHasApprovedPayout: boolean;
   recipientName: string;
-  proposals: Proposal[];
 }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
@@ -149,23 +135,6 @@ export function GroupLedger({
     router.refresh();
   }
 
-  async function handlePromote(userId: string) {
-    setBusy(true);
-    setError(null);
-    const supabase = createClient();
-    const { error: rpcError } = await supabase.rpc("propose_group_change", {
-      p_group_id: group.id,
-      p_change_type: "role_change",
-      p_payload: { target_user_id: userId, new_role: "admin" },
-    });
-    setBusy(false);
-    if (rpcError) {
-      setError(rpcError.message);
-      return;
-    }
-    router.refresh();
-  }
-
   if (!isMember) {
     return (
       <Card className="max-w-sm">
@@ -192,9 +161,17 @@ export function GroupLedger({
   return (
     <div className="flex w-full max-w-md flex-col gap-5">
       <Card>
-        <span className="inline-block rounded-full bg-accent/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-accent">
-          {group.group_type === "rotating" ? "Rotating Savings" : "Event Contribution"}
-        </span>
+        <div className="flex items-start justify-between gap-3">
+          <span className="inline-block rounded-full bg-accent/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-accent">
+            {group.group_type === "rotating" ? "Rotating Savings" : "Event Contribution"}
+          </span>
+          <Link
+            href={`/groups/${group.id}/settings`}
+            className="text-sm font-medium text-primary underline-offset-2 hover:underline"
+          >
+            Settings
+          </Link>
+        </div>
         <h1 className="mt-3 font-display text-2xl font-semibold text-primary">
           {group.name}
         </h1>
@@ -203,26 +180,12 @@ export function GroupLedger({
           {group.frequency}, {members.length}/{group.target_size} members
         </p>
 
-        <p className="mt-4 break-all text-xs text-foreground/50">
-          Invite link: {typeof window !== "undefined" ? window.location.href : ""}
-        </p>
-
         <Link
           href={`/groups/${group.id}/constitution`}
           className="mt-2 inline-block text-sm font-medium text-primary underline-offset-2 hover:underline"
         >
           View group constitution
         </Link>
-
-        {isAdmin && (
-          <MomoNumberEditor groupId={group.id} currentNumber={group.momo_number} />
-        )}
-        {isAdmin && (
-          <AccountTypeEditor
-            groupId={group.id}
-            currentAccountType={group.account_type}
-          />
-        )}
 
         {error && <p className="mt-3 text-xs text-red-500">{error}</p>}
 
@@ -312,34 +275,26 @@ export function GroupLedger({
           ))}
 
       <Card>
-        <h2 className="font-display text-lg font-semibold text-primary">
-          Members
-        </h2>
+        <div className="flex items-center justify-between">
+          <h2 className="font-display text-lg font-semibold text-primary">
+            Members
+          </h2>
+          <Link
+            href={`/groups/${group.id}/settings`}
+            className="text-xs text-primary underline-offset-2 hover:underline"
+          >
+            Manage
+          </Link>
+        </div>
         <ul className="mt-3 flex flex-col gap-2">
           {members.map((m) => (
             <li key={m.user_id} className="flex items-center justify-between text-sm">
               <span>{m.profile?.full_name ?? "Member"}</span>
-              <span className="flex items-center gap-2">
-                <span className="text-xs capitalize text-foreground/50">{m.role}</span>
-                {isAdmin && m.role === "member" && (
-                  <button
-                    type="button"
-                    onClick={() => handlePromote(m.user_id)}
-                    disabled={busy}
-                    className="text-xs text-primary underline-offset-2 hover:underline"
-                  >
-                    Propose admin
-                  </button>
-                )}
-              </span>
+              <span className="text-xs capitalize text-foreground/50">{m.role}</span>
             </li>
           ))}
         </ul>
       </Card>
-
-      {isAdmin && <ProposalsPanel groupId={group.id} proposals={proposals} />}
-
-      <PauseExitControls groupId={group.id} />
 
       <Card>
         <MediationButton groupId={group.id} />

@@ -28,9 +28,14 @@ const TABS = [
     icon: <path d="M12 5v14M5 12h14" />,
   },
   {
-    href: "/profile/security",
-    label: "Security",
-    icon: <path d="M12 3 4.5 6v6c0 4.5 3.2 7.7 7.5 9 4.3-1.3 7.5-4.5 7.5-9V6L12 3Z" />,
+    href: "/profile",
+    label: "Profile",
+    icon: (
+      <>
+        <circle cx="12" cy="8" r="3.5" />
+        <path d="M5 20c0-4 3-6.5 7-6.5s7 2.5 7 6.5" />
+      </>
+    ),
   },
 ];
 

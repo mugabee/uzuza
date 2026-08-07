@@ -157,12 +157,6 @@ export default async function GroupPage({
     ? (profiles?.find((p) => p.id === completedCycle.recipient_user_id) ?? null)
     : null;
 
-  const { data: proposals } = await supabase
-    .from("group_change_proposals")
-    .select("id, change_type, payload, status, created_at")
-    .eq("group_id", id)
-    .order("created_at", { ascending: false });
-
   return (
     <main className="flex flex-1 flex-col items-center px-6 py-16">
       <GroupLedger
@@ -180,7 +174,6 @@ export default async function GroupPage({
           !!payoutApprovals?.some((a) => a.approved_by === user.id)
         }
         recipientName={recipientProfile?.full_name ?? "the recipient"}
-        proposals={proposals ?? []}
       />
     </main>
   );

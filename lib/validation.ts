@@ -96,10 +96,11 @@ export const rejectContributionSchema = z.object({
 export type RejectContributionInput = z.infer<typeof rejectContributionSchema>;
 
 export const proposeSettingsChangeSchema = z.object({
+  name: z.string().trim().max(80).optional(),
   contributionAmount: z.coerce.number().positive().optional(),
   targetSize: z.coerce.number().int().min(2).optional(),
   approvalThreshold: z.enum(["1", "2-of-3", "all"]).optional(),
-  momoNumber: phoneSchema.optional(),
+  momoNumber: phoneSchema.optional().or(z.literal("")),
 });
 export type ProposeSettingsChangeInput = z.infer<typeof proposeSettingsChangeSchema>;
 

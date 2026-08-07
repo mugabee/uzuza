@@ -44,6 +44,7 @@ export function ProposalsPanel({
   async function onPropose(values: ProposeSettingsChangeInput) {
     setError(null);
     const payload: Record<string, string | number> = {};
+    if (values.name) payload.name = values.name;
     if (values.contributionAmount) payload.contribution_amount = values.contributionAmount;
     if (values.targetSize) payload.target_size = values.targetSize;
     if (values.approvalThreshold) payload.approval_threshold = values.approvalThreshold;
@@ -128,6 +129,7 @@ export function ProposalsPanel({
         </button>
       ) : (
         <form onSubmit={handleSubmit(onPropose)} className="mt-3 flex flex-col gap-2">
+          <Field label="New group name (optional)" {...register("name")} />
           <Field
             label="New contribution amount (optional)"
             type="number"
