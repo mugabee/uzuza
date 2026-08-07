@@ -32,6 +32,9 @@ export default async function InternalLayout({
         <Link href="/internal/id-review" className="text-foreground/70 hover:text-primary">
           ID Review
         </Link>
+        <Link href="/internal/audit" className="text-foreground/70 hover:text-primary">
+          Audit Log
+        </Link>
       </nav>
       <main className="flex-1 px-8 py-8">{children}</main>
     </div>
