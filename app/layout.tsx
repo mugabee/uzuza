@@ -31,8 +31,8 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       className={`${manrope.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-paper text-foreground font-sans">
-        <AppNav signedIn={!!user} />
         {children}
+        <AppNav signedIn={!!user} />
       </body>
     </html>
   );
