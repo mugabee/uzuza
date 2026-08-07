@@ -3,9 +3,11 @@
 import { useState } from "react";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
+import { useLowDataMode } from "@/lib/low-data-mode";
 
 export function InviteCard({ groupId }: { groupId: string }) {
   const [copied, setCopied] = useState(false);
+  const lowData = useLowDataMode();
   const inviteUrl =
     typeof window !== "undefined"
       ? `${window.location.origin}/groups/${groupId}`
@@ -28,14 +30,16 @@ export function InviteCard({ groupId }: { groupId: string }) {
       </p>
 
       <div className="mt-4 flex flex-col items-center gap-3">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(inviteUrl)}`}
-          alt="QR code to join this group"
-          width={160}
-          height={160}
-          className="rounded-lg border border-black/10"
-        />
+        {!lowData && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(inviteUrl)}`}
+            alt="QR code to join this group"
+            width={160}
+            height={160}
+            className="rounded-lg border border-black/10"
+          />
+        )}
         <p className="break-all text-center text-xs text-foreground/50">
           {inviteUrl}
         </p>

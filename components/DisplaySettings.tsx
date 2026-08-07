@@ -8,12 +8,20 @@ import { useLanguage } from "@/lib/i18n";
 export function DisplaySettings() {
   const [largeText, setLargeText] = useState(false);
   const [highContrast, setHighContrast] = useState(false);
+  const [lowData, setLowData] = useState(false);
   const { language, setLanguage } = useLanguage();
 
   useEffect(() => {
     setLargeText(localStorage.getItem("uzuza_text_size") === "large");
     setHighContrast(localStorage.getItem("uzuza_contrast") === "high");
+    setLowData(localStorage.getItem("uzuza_low_data") === "on");
   }, []);
+
+  function toggleLowData() {
+    const next = !lowData;
+    setLowData(next);
+    localStorage.setItem("uzuza_low_data", next ? "on" : "off");
+  }
 
   function toggleLargeText() {
     const next = !largeText;
@@ -79,6 +87,17 @@ export function DisplaySettings() {
               Kinyarwanda
             </button>
           </div>
+        </div>
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-foreground">Low data mode</p>
+            <p className="text-xs text-foreground/50">
+              Skips profile photos and QR codes to save data.
+            </p>
+          </div>
+          <Button variant={lowData ? "primary" : "secondary"} onClick={toggleLowData}>
+            {lowData ? "On" : "Off"}
+          </Button>
         </div>
       </div>
     </Card>

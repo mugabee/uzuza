@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Card } from "@/components/Card";
+import { useLowDataMode } from "@/lib/low-data-mode";
 
 type Profile = { id: string; full_name: string | null; phone: string | null; avatar_url?: string | null } | null;
 type Member = { user_id: string; role: string; profile: Profile };
@@ -22,6 +23,7 @@ export function MemberManagement({
   const router = useRouter();
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const lowData = useLowDataMode();
 
   async function handlePromote(userId: string) {
     setBusyId(userId);
@@ -68,14 +70,20 @@ export function MemberManagement({
         {members.map((m) => (
           <li key={m.user_id} className="flex items-center justify-between text-sm">
             <span className="flex items-center gap-2">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={m.profile?.avatar_url || "/default-avatar.svg"}
-                alt=""
-                width={28}
-                height={28}
-                className="h-7 w-7 rounded-full object-cover"
-              />
+              {lowData ? (
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
+                  {(m.profile?.full_name ?? "M").charAt(0).toUpperCase()}
+                </span>
+              ) : (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={m.profile?.avatar_url || "/default-avatar.svg"}
+                  alt=""
+                  width={28}
+                  height={28}
+                  className="h-7 w-7 rounded-full object-cover"
+                />
+              )}
               {m.profile?.full_name ?? "Member"}
             </span>
             <span className="flex items-center gap-2">
