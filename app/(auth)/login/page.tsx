@@ -33,7 +33,10 @@ export default function LoginPage() {
     const { error: otpError } =
       method === "phone"
         ? await supabase.auth.signInWithOtp({ phone: result.data })
-        : await supabase.auth.signInWithOtp({ email: result.data });
+        : await supabase.auth.signInWithOtp({
+            email: result.data,
+            options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+          });
     setLoading(false);
 
     if (otpError) {
@@ -90,7 +93,11 @@ export default function LoginPage() {
             autoFocus
           />
           <Button type="submit" disabled={loading}>
-            {loading ? "Sending code..." : "Send verification code"}
+            {loading
+              ? "Sending..."
+              : method === "phone"
+                ? "Send verification code"
+                : "Send sign-in link"}
           </Button>
         </form>
       </Card>
