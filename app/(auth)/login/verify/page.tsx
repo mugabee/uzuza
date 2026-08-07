@@ -116,6 +116,17 @@ export default function VerifyPage() {
           >
             {resending ? "Resending..." : "Resend code"}
           </button>
+          <button
+            type="button"
+            onClick={() => {
+              sessionStorage.removeItem("uzuza_login_method");
+              sessionStorage.removeItem("uzuza_login_identifier");
+              router.push("/login");
+            }}
+            className="text-sm text-foreground/60 underline-offset-2 hover:underline"
+          >
+            Didn't get a code? Try a different method
+          </button>
         </form>
       </Card>
     </main>
