@@ -11,6 +11,7 @@ import { AdminConfirmRow } from "@/components/AdminConfirmRow";
 import { PayoutPanel } from "@/components/PayoutPanel";
 import { MediationButton } from "@/components/MediationButton";
 import { MissedPaymentButton } from "@/components/MissedPaymentButton";
+import { CycleCelebration } from "@/components/CycleCelebration";
 
 type Profile = { id: string; full_name: string | null; phone: string | null } | null;
 
@@ -199,7 +200,7 @@ export function GroupLedger({
           </Button>
         )}
 
-        {completedCycle && (
+        {completedCycle && payoutRequest?.status !== "completed" && (
           <p className="mt-4 rounded-lg bg-primary/10 p-3 text-sm font-medium text-primary">
             Cycle {completedCycle.cycle_number} complete — every contribution
             confirmed.{" "}
@@ -212,6 +213,21 @@ export function GroupLedger({
           </p>
         )}
       </Card>
+
+      {completedCycle && payoutRequest?.status === "completed" && (
+        <CycleCelebration
+          groupId={group.id}
+          cycleId={completedCycle.id}
+          groupName={group.name}
+          cycleNumber={completedCycle.cycle_number}
+          totalSaved={contributions
+            .filter((c) => c.status === "confirmed")
+            .reduce((sum, c) => sum + Number(c.amount), 0)}
+          memberCount={members.length}
+          disputeCount={contributions.filter((c) => c.status === "missed").length}
+          recipientName={recipientName}
+        />
+      )}
 
       {activeCycle && myContribution && (
         <ContributeCard
