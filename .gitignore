@@ -44,3 +44,9 @@ next-env.d.ts
 # Account-level API tokens (Vercel/Supabase Management API) — tooling only,
 # never read by the app itself.
 .env.tools.local
+
+# Internal planning and reference docs. Kept locally, not published.
+AGENTS.md
+CLAUDE.md
+Uzuza_Master_Project_Plan.md
+docs/
