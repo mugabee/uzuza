@@ -14,6 +14,45 @@ import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
 import { Card } from "@/components/Card";
 
+const GROUP_TEMPLATES = [
+  {
+    id: "market",
+    label: "Market Group",
+    description: "Weekly contributions, larger group — fits traders and cash-frequency savers.",
+    values: {
+      contributionAmount: 25000,
+      frequency: "weekly" as const,
+      targetSize: 12,
+      approvalThreshold: "1" as const,
+    },
+    safetyFundType: "freeze" as const,
+  },
+  {
+    id: "professional",
+    label: "Professional Group",
+    description: "Higher monthly contribution, smaller group — fits salaried members.",
+    values: {
+      contributionAmount: 100000,
+      frequency: "monthly" as const,
+      targetSize: 8,
+      approvalThreshold: "1" as const,
+    },
+    safetyFundType: "freeze" as const,
+  },
+  {
+    id: "church",
+    label: "Church Group",
+    description: "Moderate monthly contribution, larger group, more than one admin must approve.",
+    values: {
+      contributionAmount: 50000,
+      frequency: "monthly" as const,
+      targetSize: 15,
+      approvalThreshold: "2-of-3" as const,
+    },
+    safetyFundType: "freeze" as const,
+  },
+];
+
 const GROUP_TYPES = [
   {
     value: "rotating" as const,
@@ -85,9 +124,12 @@ function GroupDetailsForm({
   // receiving the pot). Off/buffer stay available for groups that want less
   // friction, but the safer choice is what a new group starts with.
   const [safetyFundType, setSafetyFundType] = useState<"off" | "buffer" | "freeze">("freeze");
+  const [appliedTemplate, setAppliedTemplate] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
+    reset,
+    getValues,
     formState: { errors, isSubmitting },
   } = useForm<CreateGroupFormInput, unknown, CreateGroupInput>({
     resolver: zodResolver(createGroupSchema),
@@ -146,6 +188,33 @@ function GroupDetailsForm({
       <h1 className="mt-3 font-display text-2xl font-semibold text-primary">
         {groupType === "rotating" ? "Rotating Savings" : "Event Contribution"}
       </h1>
+
+      {groupType === "rotating" && (
+        <div className="mt-4 flex flex-col gap-2">
+          <span className="text-sm font-medium text-foreground">
+            Start from a template (optional)
+          </span>
+          {GROUP_TEMPLATES.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => {
+                reset({ ...getValues(), ...t.values });
+                setSafetyFundType(t.safetyFundType);
+                setAppliedTemplate(t.id);
+              }}
+              className={`rounded-xl border p-3 text-left text-sm transition-colors ${
+                appliedTemplate === t.id
+                  ? "border-primary bg-primary/5"
+                  : "border-black/10 hover:border-primary"
+              }`}
+            >
+              <div className="font-semibold text-foreground">{t.label}</div>
+              <div className="mt-0.5 text-xs text-foreground/60">{t.description}</div>
+            </button>
+          ))}
+        </div>
+      )}
 
       <form
         onSubmit={handleSubmit(onSubmit)}
