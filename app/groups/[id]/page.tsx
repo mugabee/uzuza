@@ -106,6 +106,7 @@ export default async function GroupPage({
           isAdmin={currentMembership.role === "admin"}
           members={membersWithNames}
           reservations={reservationsWithNames}
+          currentUserId={user.id}
         />
       </main>
     );

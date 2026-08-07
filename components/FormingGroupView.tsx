@@ -13,7 +13,7 @@ type Reservation = {
   id: string;
   user_id: string;
   fee_amount: number;
-  status: "pending" | "submitted" | "confirmed" | "refunded";
+  status: "pending" | "submitted" | "confirmed" | "cancelled" | "refunded";
   transaction_id: string | null;
   screenshot_path: string | null;
   profile: Profile;
@@ -35,12 +35,16 @@ export function FormingGroupView({
   isAdmin,
   members,
   reservations,
+  currentUserId,
 }: {
   group: Group;
   isAdmin: boolean;
   members: Member[];
   reservations: Reservation[];
+  currentUserId: string;
 }) {
+  const myReservation = reservations.find((r) => r.user_id === currentUserId);
+
   return (
     <div className="flex w-full max-w-md flex-col gap-5">
       <Card>
@@ -92,6 +96,11 @@ export function FormingGroupView({
         </Card>
       )}
 
+      {myReservation &&
+        (myReservation.status === "pending" || myReservation.status === "submitted") && (
+          <CancelReservationRow reservation={myReservation} />
+        )}
+
       {isAdmin &&
         reservations
           .filter((r) => r.status === "submitted")
@@ -105,6 +114,7 @@ function StatusBadge({ status }: { status: Reservation["status"] }) {
     pending: "bg-black/5 text-foreground/60",
     submitted: "bg-accent/15 text-accent",
     confirmed: "bg-primary/15 text-primary",
+    cancelled: "bg-black/5 text-foreground/40",
     refunded: "bg-red-100 text-red-600",
   };
   return (
@@ -183,6 +193,56 @@ function AdminReservationRow({ reservation }: { reservation: Reservation }) {
       <Button className="mt-4 w-full" onClick={handleConfirm} disabled={busy}>
         {busy ? "Confirming..." : "Confirm reservation"}
       </Button>
+    </Card>
+  );
+}
+
+function CancelReservationRow({ reservation }: { reservation: Reservation }) {
+  const router = useRouter();
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [confirming, setConfirming] = useState(false);
+
+  async function handleCancel() {
+    setBusy(true);
+    setError(null);
+    const supabase = createClient();
+    const { error: rpcError } = await supabase.rpc("cancel_reservation", {
+      p_reservation_id: reservation.id,
+    });
+    setBusy(false);
+    if (rpcError) {
+      setError(rpcError.message);
+      return;
+    }
+    router.push("/");
+    router.refresh();
+  }
+
+  return (
+    <Card>
+      <h2 className="font-display text-lg font-semibold text-primary">
+        Change your mind?
+      </h2>
+      <p className="mt-1 text-sm text-foreground/70">
+        Your deposit hasn't been confirmed yet, so cancelling now is free
+        and immediate. It frees your spot for someone else.
+      </p>
+      {error && <p className="mt-2 text-xs text-red-500">{error}</p>}
+      {confirming ? (
+        <div className="mt-3 flex gap-2">
+          <Button variant="secondary" className="flex-1" onClick={() => setConfirming(false)}>
+            Never mind
+          </Button>
+          <Button className="flex-1" onClick={handleCancel} disabled={busy}>
+            {busy ? "Cancelling..." : "Yes, cancel"}
+          </Button>
+        </div>
+      ) : (
+        <Button variant="secondary" className="mt-3 w-full" onClick={() => setConfirming(true)}>
+          Cancel my reservation
+        </Button>
+      )}
     </Card>
   );
 }
