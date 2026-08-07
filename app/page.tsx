@@ -129,13 +129,6 @@ export default async function Home() {
             Create another group
           </Button>
         </Link>
-
-        <Link
-          href="/profile/security"
-          className="text-center text-xs text-foreground/50 hover:text-primary"
-        >
-          Account security
-        </Link>
       </div>
     </main>
   );

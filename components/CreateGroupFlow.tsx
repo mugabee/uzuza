@@ -79,7 +79,12 @@ function GroupDetailsForm({
   const router = useRouter();
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isMatchingGroup, setIsMatchingGroup] = useState(false);
-  const [safetyFundType, setSafetyFundType] = useState<"off" | "buffer" | "freeze">("off");
+  // Full first-cycle freeze as the default — Section 3.7's own guidance:
+  // everyone contributes a full cycle before anyone is paid, the strongest
+  // protection against the highest-risk case (a member leaving after
+  // receiving the pot). Off/buffer stay available for groups that want less
+  // friction, but the safer choice is what a new group starts with.
+  const [safetyFundType, setSafetyFundType] = useState<"off" | "buffer" | "freeze">("freeze");
   const {
     register,
     handleSubmit,

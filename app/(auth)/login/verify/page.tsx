@@ -66,6 +66,10 @@ export default function VerifyPage() {
     sessionStorage.removeItem("uzuza_login_method");
     sessionStorage.removeItem("uzuza_login_identifier");
     router.push("/profile");
+    // Soft navigations reuse the already-rendered root layout, which
+    // read the (until now) signed-out session — refresh so it re-checks
+    // auth and the nav shows up immediately, not after the next hard load.
+    router.refresh();
   }
 
   async function handleResend() {
