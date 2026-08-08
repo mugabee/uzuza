@@ -122,7 +122,7 @@ export function ProposalsPanel({
         ))}
       </ul>
 
-      {error && <p className="mt-2 text-xs text-red-500">{error}</p>}
+      {error && <p role="alert" className="mt-2 text-xs text-red-500">{error}</p>}
 
       {!showForm ? (
         <button

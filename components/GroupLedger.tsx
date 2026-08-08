@@ -103,14 +103,29 @@ export function GroupLedger({
   const [error, setError] = useState<string | null>(null);
   const { t } = useLanguage();
   const showToast = useToast();
+  const [lastUpdated, setLastUpdated] = useState(() => new Date());
+  const [now, setNow] = useState(() => new Date());
 
   // Lightweight polling refresh so the ledger reflects what other admins
   // and members do without everyone needing to manually reload — same
   // approach already used for the pre-activation chat.
   useEffect(() => {
-    const interval = setInterval(() => router.refresh(), 6000);
+    const interval = setInterval(() => {
+      router.refresh();
+      setLastUpdated(new Date());
+    }, 6000);
     return () => clearInterval(interval);
   }, [router]);
+
+  // Ticks the "Updated Xs ago" label without re-fetching anything.
+  useEffect(() => {
+    const interval = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const secondsAgo = Math.max(0, Math.round((now.getTime() - lastUpdated.getTime()) / 1000));
+  const updatedLabel =
+    secondsAgo < 3 ? "Updated just now" : secondsAgo < 60 ? `Updated ${secondsAgo}s ago` : "Updating soon...";
 
   async function handleJoin() {
     setBusy(true);
@@ -174,7 +189,7 @@ export function GroupLedger({
           {Number(group.contribution_amount).toLocaleString()} RWF /{" "}
           {group.frequency}, {members.length}/{group.target_size} members
         </p>
-        {error && <p className="mt-3 text-xs text-red-500">{error}</p>}
+        {error && <p role="alert" className="mt-3 text-xs text-red-500">{error}</p>}
         <Button className="mt-6 w-full" onClick={handleJoin} disabled={busy}>
           {busy ? t("joining") : t("joinThisGroup")}
         </Button>
@@ -205,6 +220,10 @@ export function GroupLedger({
           {Number(group.contribution_amount).toLocaleString()} RWF /{" "}
           {group.frequency}, {members.length}/{group.target_size} members
         </p>
+        <p className="mt-1 flex items-center gap-1.5 text-xs text-foreground/40">
+          <span className="h-1.5 w-1.5 rounded-full bg-primary/60" />
+          {updatedLabel}
+        </p>
 
         <Link
           href={`/groups/${group.id}/constitution`}
@@ -213,7 +232,7 @@ export function GroupLedger({
           View group constitution
         </Link>
 
-        {error && <p className="mt-3 text-xs text-red-500">{error}</p>}
+        {error && <p role="alert" className="mt-3 text-xs text-red-500">{error}</p>}
 
         {isAdmin && !activeCycle && (
           <Button className="mt-4 w-full" onClick={handleStartCycle} disabled={busy}>

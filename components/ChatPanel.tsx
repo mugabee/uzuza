@@ -117,7 +117,7 @@ export function ChatPanel({
           Chat is closed now that the group is active.
         </p>
       )}
-      {error && <p className="mt-2 text-xs text-red-500">{error}</p>}
+      {error && <p role="alert" className="mt-2 text-xs text-red-500">{error}</p>}
     </Card>
   );
 }

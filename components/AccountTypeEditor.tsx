@@ -94,7 +94,7 @@ export function AccountTypeEditor({
             />
             <span>I understand and consent.</span>
           </label>
-          {error && <p className="mt-2 text-red-500">{error}</p>}
+          {error && <p role="alert" className="mt-2 text-red-500">{error}</p>}
           <div className="mt-3 flex gap-2">
             <Button
               onClick={() => switchTo("uzuza_held")}

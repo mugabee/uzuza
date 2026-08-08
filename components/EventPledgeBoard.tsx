@@ -225,7 +225,7 @@ function AdminPledgeQueue({ groupId }: { groupId: string }) {
       <h2 className="font-display text-lg font-semibold text-primary">
         Awaiting confirmation
       </h2>
-      {error && <p className="mt-2 text-xs text-red-500">{error}</p>}
+      {error && <p role="alert" className="mt-2 text-xs text-red-500">{error}</p>}
       <ul className="mt-3 flex flex-col gap-3">
         {rows.map((r) => (
           <li key={r.id} className="flex items-center justify-between text-sm">

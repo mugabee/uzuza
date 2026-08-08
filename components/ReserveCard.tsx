@@ -14,6 +14,8 @@ import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
 import { Card } from "@/components/Card";
 import { friendlyError } from "@/lib/friendly-error";
+import { compressImage } from "@/lib/compress-image";
+import { ScreenshotPreview } from "@/components/ScreenshotPreview";
 
 type Group = {
   id: string;
@@ -71,6 +73,7 @@ export function ReserveCard({ group }: { group: Group }) {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<TransferProofFormInput, unknown, TransferProofInput>({
     resolver: zodResolver(transferProofSchema),
@@ -81,10 +84,11 @@ export function ReserveCard({ group }: { group: Group }) {
     setError(null);
     const supabase = createClient();
 
+    const fileToUpload = await compressImage(values.screenshot);
     const path = `${reservation.id}/${Date.now()}-${values.screenshot.name}`;
     const { error: uploadError } = await supabase.storage
       .from("reservation-proofs")
-      .upload(path, values.screenshot);
+      .upload(path, fileToUpload);
     if (uploadError) {
       setError(friendlyError(uploadError.message));
       return;
@@ -144,7 +148,7 @@ export function ReserveCard({ group }: { group: Group }) {
           being built.
         </div>
 
-        {error && <p className="mt-3 text-xs text-red-500">{error}</p>}
+        {error && <p role="alert" className="mt-3 text-xs text-red-500">{error}</p>}
         <Button className="mt-4 w-full" onClick={handleReserve} disabled={busy}>
           {busy ? "Reserving..." : "Reserve this spot"}
         </Button>
@@ -190,10 +194,11 @@ export function ReserveCard({ group }: { group: Group }) {
             {...register("screenshot")}
           />
           {errors.screenshot?.message && (
-            <span className="text-xs text-red-500">{errors.screenshot.message}</span>
+            <span role="alert" className="text-xs text-red-500">{errors.screenshot.message}</span>
           )}
         </label>
-        {error && <p className="text-xs text-red-500">{error}</p>}
+        <ScreenshotPreview files={watch("screenshot")} />
+        {error && <p role="alert" className="text-xs text-red-500">{error}</p>}
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Submitting..." : "Submit proof"}
         </Button>

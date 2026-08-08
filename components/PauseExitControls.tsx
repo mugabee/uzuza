@@ -109,7 +109,7 @@ export function PauseExitControls({ groupId }: { groupId: string }) {
             className="rounded-lg border border-black/10 px-3 py-2 text-sm outline-none focus:border-primary"
             rows={2}
           />
-          {error && <p className="text-xs text-red-500">{error}</p>}
+          {error && <p role="alert" className="text-xs text-red-500">{error}</p>}
           <div className="flex gap-2">
             <Button onClick={handleRequestPause} disabled={busy}>
               {busy ? "Requesting..." : "Request pause"}
@@ -121,7 +121,7 @@ export function PauseExitControls({ groupId }: { groupId: string }) {
         </div>
       )}
 
-      {error && mode === "none" && <p className="mt-2 text-xs text-red-500">{error}</p>}
+      {error && mode === "none" && <p role="alert" className="mt-2 text-xs text-red-500">{error}</p>}
     </Card>
   );
 }

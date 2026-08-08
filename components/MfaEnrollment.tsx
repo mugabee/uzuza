@@ -130,14 +130,14 @@ export function MfaEnrollment() {
             onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
             inputMode="numeric"
           />
-          {error && <p className="text-xs text-red-500">{error}</p>}
+          {error && <p role="alert" className="text-xs text-red-500">{error}</p>}
           <Button disabled={busy || code.length !== 6} onClick={confirmEnroll}>
             {busy ? "Verifying..." : "Confirm"}
           </Button>
         </div>
       ) : (
         <div className="mt-4">
-          {error && <p className="mb-2 text-xs text-red-500">{error}</p>}
+          {error && <p role="alert" className="mb-2 text-xs text-red-500">{error}</p>}
           <Button disabled={busy} onClick={startEnroll}>
             {busy ? "Starting..." : "Enroll a second factor"}
           </Button>

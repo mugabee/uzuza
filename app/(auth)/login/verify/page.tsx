@@ -111,7 +111,7 @@ export default function VerifyPage() {
           </p>
 
           <div className="mt-6 flex flex-col gap-4">
-            {error && <p className="text-xs text-red-500">{error}</p>}
+            {error && <p role="alert" className="text-xs text-red-500">{error}</p>}
             <button
               type="button"
               onClick={handleResend}

@@ -15,6 +15,8 @@ import { Field } from "@/components/Field";
 import { Card } from "@/components/Card";
 import { useToast } from "@/lib/toast";
 import { friendlyError } from "@/lib/friendly-error";
+import { compressImage } from "@/lib/compress-image";
+import { ScreenshotPreview } from "@/components/ScreenshotPreview";
 
 type PayoutRequest = {
   id: string;
@@ -52,6 +54,7 @@ export function PayoutPanel({
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<PayoutProofFormInput, unknown, PayoutProofInput>({
     resolver: zodResolver(payoutProofSchema),
@@ -96,10 +99,11 @@ export function PayoutPanel({
     setError(null);
     const supabase = createClient();
 
+    const fileToUpload = await compressImage(values.screenshot);
     const path = `${payoutRequest.id}/${Date.now()}-${values.screenshot.name}`;
     const { error: uploadError } = await supabase.storage
       .from("payout-proofs")
-      .upload(path, values.screenshot);
+      .upload(path, fileToUpload);
     if (uploadError) {
       setError(friendlyError(uploadError.message));
       return;
@@ -137,7 +141,7 @@ export function PayoutPanel({
         <p className="mt-1 text-sm text-foreground/70">
           {readyMessage} Request the payout to {recipientName}.
         </p>
-        {error && <p className="mt-2 text-xs text-red-500">{error}</p>}
+        {error && <p role="alert" className="mt-2 text-xs text-red-500">{error}</p>}
         <Button className="mt-3 w-full" onClick={handleRequest} disabled={busy}>
           {busy ? "Requesting..." : "Request Payout"}
         </Button>
@@ -154,7 +158,7 @@ export function PayoutPanel({
         {Number(payoutRequest.amount).toLocaleString()} RWF
       </p>
 
-      {error && <p className="mt-2 text-xs text-red-500">{error}</p>}
+      {error && <p role="alert" className="mt-2 text-xs text-red-500">{error}</p>}
 
       {payoutRequest.status === "pending" && (
         <>
@@ -197,11 +201,12 @@ export function PayoutPanel({
               {...register("screenshot")}
             />
             {errors.screenshot?.message && (
-              <span className="text-xs text-red-500">
+              <span role="alert" className="text-xs text-red-500">
                 {errors.screenshot.message}
               </span>
             )}
           </label>
+          <ScreenshotPreview files={watch("screenshot")} />
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? "Submitting..." : "Mark Completed"}
           </Button>

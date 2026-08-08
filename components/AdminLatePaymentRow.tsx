@@ -102,7 +102,7 @@ export function AdminLatePaymentRow({
         />
       )}
 
-      {error && <p className="mt-2 text-xs text-red-500">{error}</p>}
+      {error && <p role="alert" className="mt-2 text-xs text-red-500">{error}</p>}
 
       {!rejecting ? (
         <div className="mt-4 flex gap-2">

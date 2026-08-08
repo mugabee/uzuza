@@ -61,7 +61,7 @@ export function MissedPaymentButton({
       <Button onClick={handleReport} disabled={busy} className="px-2 py-1 text-xs">
         {busy ? "..." : "Confirm"}
       </Button>
-      {error && <span className="text-xs text-red-500">{error}</span>}
+      {error && <span role="alert" className="text-xs text-red-500">{error}</span>}
     </span>
   );
 }

@@ -211,7 +211,7 @@ function AdminReservationRow({ reservation }: { reservation: Reservation }) {
         />
       )}
 
-      {error && <p className="mt-2 text-xs text-red-500">{error}</p>}
+      {error && <p role="alert" className="mt-2 text-xs text-red-500">{error}</p>}
 
       <Button className="mt-4 w-full" onClick={handleConfirm} disabled={busy}>
         {busy ? "Confirming..." : "Confirm reservation"}
@@ -253,7 +253,7 @@ function CancelReservationRow({ reservation }: { reservation: Reservation }) {
         Your deposit hasn't been confirmed yet, so cancelling now is free
         and immediate. It frees your spot for someone else.
       </p>
-      {error && <p className="mt-2 text-xs text-red-500">{error}</p>}
+      {error && <p role="alert" className="mt-2 text-xs text-red-500">{error}</p>}
       {confirming ? (
         <div className="mt-3 flex gap-2">
           <Button variant="secondary" className="flex-1" onClick={() => setConfirming(false)}>
