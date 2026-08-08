@@ -18,7 +18,14 @@ type Contribution = {
   id: string;
   unique_reference: string;
   amount: number;
-  status: "pending" | "submitted" | "confirmed" | "rejected" | "missed";
+  status:
+    | "pending"
+    | "submitted"
+    | "confirmed"
+    | "rejected"
+    | "missed"
+    | "late_submitted"
+    | "paid_late";
   rejected_reason: string | null;
   missed_fine_amount?: number | null;
 };

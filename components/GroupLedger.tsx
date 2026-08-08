@@ -12,6 +12,8 @@ import { PayoutPanel } from "@/components/PayoutPanel";
 import { MediationButton } from "@/components/MediationButton";
 import { MissedPaymentButton } from "@/components/MissedPaymentButton";
 import { CycleCelebration } from "@/components/CycleCelebration";
+import { LatePaymentCard } from "@/components/LatePaymentCard";
+import { AdminLatePaymentRow } from "@/components/AdminLatePaymentRow";
 import { useLanguage } from "@/lib/i18n";
 
 type Profile = { id: string; full_name: string | null; phone: string | null } | null;
@@ -23,7 +25,14 @@ type Contribution = {
   member_id: string;
   unique_reference: string;
   amount: number;
-  status: "pending" | "submitted" | "confirmed" | "rejected" | "missed";
+  status:
+    | "pending"
+    | "submitted"
+    | "confirmed"
+    | "rejected"
+    | "missed"
+    | "late_submitted"
+    | "paid_late";
   transaction_id: string | null;
   screenshot_path: string | null;
   rejected_reason: string | null;
@@ -231,6 +240,30 @@ export function GroupLedger({
         />
       )}
 
+      {completedCycle &&
+        myContribution &&
+        (myContribution.status === "missed" ||
+          myContribution.status === "late_submitted" ||
+          myContribution.status === "paid_late") && (
+          <LatePaymentCard
+            contribution={myContribution}
+            groupMomoNumber={
+              group.account_type === "uzuza_held"
+                ? (UZUZA_CUSTODY_NUMBER ?? "Uzuza custody number (being finalized)")
+                : group.momo_number
+            }
+            onSubmitted={() => router.refresh()}
+          />
+        )}
+
+      {isAdmin &&
+        completedCycle &&
+        contributions
+          .filter((c) => c.status === "late_submitted")
+          .map((c) => (
+            <AdminLatePaymentRow key={c.id} contribution={c} onDecided={() => router.refresh()} />
+          ))}
+
       {activeCycle && myContribution && (
         <ContributeCard
           contribution={myContribution}
@@ -340,6 +373,8 @@ function StatusBadge({ status }: { status: Contribution["status"] }) {
     confirmed: "bg-primary/15 text-primary",
     rejected: "bg-red-100 text-red-600",
     missed: "bg-red-100 text-red-600",
+    late_submitted: "bg-accent/15 text-accent",
+    paid_late: "bg-primary/15 text-primary",
   };
   return (
     <span
