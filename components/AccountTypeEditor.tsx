@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/Button";
+import { useToast } from "@/lib/toast";
+import { friendlyError } from "@/lib/friendly-error";
 
 export function AccountTypeEditor({
   groupId,
@@ -18,6 +20,7 @@ export function AccountTypeEditor({
   const [consented, setConsented] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const showToast = useToast();
 
   async function switchTo(accountType: "group_owned" | "uzuza_held") {
     setBusy(true);
@@ -30,9 +33,10 @@ export function AccountTypeEditor({
     });
     setBusy(false);
     if (rpcError) {
-      setError(rpcError.message);
+      setError(friendlyError(rpcError.message));
       return;
     }
+    showToast("Account type updated");
     setShowConsent(false);
     router.refresh();
   }

@@ -6,6 +6,8 @@ import { rejectContributionSchema } from "@/lib/validation";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { useLanguage } from "@/lib/i18n";
+import { useToast } from "@/lib/toast";
+import { friendlyError } from "@/lib/friendly-error";
 
 type Contribution = {
   id: string;
@@ -29,6 +31,7 @@ export function AdminConfirmRow({
   const [rejecting, setRejecting] = useState(false);
   const [reason, setReason] = useState("");
   const { t } = useLanguage();
+  const showToast = useToast();
 
   async function handleViewScreenshot() {
     if (!contribution.screenshot_path) return;
@@ -37,7 +40,7 @@ export function AdminConfirmRow({
       .from("contribution-proofs")
       .createSignedUrl(contribution.screenshot_path, 60);
     if (urlError) {
-      setError(urlError.message);
+      setError(friendlyError(urlError.message));
       return;
     }
     setScreenshotUrl(data.signedUrl);
@@ -54,9 +57,10 @@ export function AdminConfirmRow({
     });
     setBusy(false);
     if (rpcError) {
-      setError(rpcError.message);
+      setError(friendlyError(rpcError.message));
       return;
     }
+    showToast(approve ? "Contribution confirmed" : "Contribution rejected");
     onDecided();
   }
 

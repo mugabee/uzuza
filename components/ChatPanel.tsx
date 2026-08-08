@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
+import { friendlyError } from "@/lib/friendly-error";
 
 type Message = {
   id: string;
@@ -52,7 +53,7 @@ export function ChatPanel({
     });
     setBusy(false);
     if (rpcError) {
-      setError(rpcError.message);
+      setError(friendlyError(rpcError.message));
       return;
     }
     setBody("");

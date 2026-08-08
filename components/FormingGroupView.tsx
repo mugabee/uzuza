@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
+import { useToast } from "@/lib/toast";
+import { friendlyError } from "@/lib/friendly-error";
 
 type Profile = { id: string; full_name: string | null } | null;
 
@@ -148,6 +150,7 @@ function AdminReservationRow({ reservation }: { reservation: Reservation }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [screenshotUrl, setScreenshotUrl] = useState<string | null>(null);
+  const showToast = useToast();
 
   async function handleViewScreenshot() {
     if (!reservation.screenshot_path) return;
@@ -156,7 +159,7 @@ function AdminReservationRow({ reservation }: { reservation: Reservation }) {
       .from("reservation-proofs")
       .createSignedUrl(reservation.screenshot_path, 60);
     if (urlError) {
-      setError(urlError.message);
+      setError(friendlyError(urlError.message));
       return;
     }
     setScreenshotUrl(data.signedUrl);
@@ -171,9 +174,10 @@ function AdminReservationRow({ reservation }: { reservation: Reservation }) {
     });
     setBusy(false);
     if (rpcError) {
-      setError(rpcError.message);
+      setError(friendlyError(rpcError.message));
       return;
     }
+    showToast("Reservation confirmed");
     router.refresh();
   }
 
@@ -221,6 +225,7 @@ function CancelReservationRow({ reservation }: { reservation: Reservation }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [confirming, setConfirming] = useState(false);
+  const showToast = useToast();
 
   async function handleCancel() {
     setBusy(true);
@@ -231,9 +236,10 @@ function CancelReservationRow({ reservation }: { reservation: Reservation }) {
     });
     setBusy(false);
     if (rpcError) {
-      setError(rpcError.message);
+      setError(friendlyError(rpcError.message));
       return;
     }
+    showToast("Reservation cancelled");
     router.push("/");
     router.refresh();
   }

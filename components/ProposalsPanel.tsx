@@ -12,6 +12,8 @@ import {
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
 import { Card } from "@/components/Card";
+import { useToast } from "@/lib/toast";
+import { friendlyError } from "@/lib/friendly-error";
 
 type Proposal = {
   id: string;
@@ -32,6 +34,7 @@ export function ProposalsPanel({
   const [showForm, setShowForm] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const showToast = useToast();
 
   const {
     register,
@@ -62,9 +65,10 @@ export function ProposalsPanel({
       p_payload: payload,
     });
     if (rpcError) {
-      setError(rpcError.message);
+      setError(friendlyError(rpcError.message));
       return;
     }
+    showToast("Change proposed");
     setShowForm(false);
     router.refresh();
   }
@@ -78,9 +82,10 @@ export function ProposalsPanel({
     });
     setBusyId(null);
     if (rpcError) {
-      setError(rpcError.message);
+      setError(friendlyError(rpcError.message));
       return;
     }
+    showToast("Proposal approved");
     router.refresh();
   }
 

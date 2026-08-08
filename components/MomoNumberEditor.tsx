@@ -6,6 +6,8 @@ import { createClient } from "@/lib/supabase/client";
 import { momoNumberSchema } from "@/lib/validation";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
+import { useToast } from "@/lib/toast";
+import { friendlyError } from "@/lib/friendly-error";
 
 export function MomoNumberEditor({
   groupId,
@@ -18,6 +20,7 @@ export function MomoNumberEditor({
   const [value, setValue] = useState(currentNumber ?? "");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const showToast = useToast();
 
   async function handleSave() {
     setError(null);
@@ -34,9 +37,10 @@ export function MomoNumberEditor({
     });
     setSaving(false);
     if (rpcError) {
-      setError(rpcError.message);
+      setError(friendlyError(rpcError.message));
       return;
     }
+    showToast("MoMo number saved");
     router.refresh();
   }
 

@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/Button";
+import { useToast } from "@/lib/toast";
+import { friendlyError } from "@/lib/friendly-error";
 
 export function MissedPaymentButton({
   contributionId,
@@ -15,6 +17,7 @@ export function MissedPaymentButton({
   const [fine, setFine] = useState("0");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const showToast = useToast();
 
   async function handleReport() {
     setBusy(true);
@@ -26,9 +29,10 @@ export function MissedPaymentButton({
     });
     setBusy(false);
     if (rpcError) {
-      setError(rpcError.message);
+      setError(friendlyError(rpcError.message));
       return;
     }
+    showToast("Missed payment reported");
     setOpen(false);
     onReported();
   }

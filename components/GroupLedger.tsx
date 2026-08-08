@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { useToast } from "@/lib/toast";
+import { friendlyError } from "@/lib/friendly-error";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { ContributeCard } from "@/components/ContributeCard";
@@ -100,6 +102,15 @@ export function GroupLedger({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { t } = useLanguage();
+  const showToast = useToast();
+
+  // Lightweight polling refresh so the ledger reflects what other admins
+  // and members do without everyone needing to manually reload — same
+  // approach already used for the pre-activation chat.
+  useEffect(() => {
+    const interval = setInterval(() => router.refresh(), 6000);
+    return () => clearInterval(interval);
+  }, [router]);
 
   async function handleJoin() {
     setBusy(true);
@@ -110,9 +121,10 @@ export function GroupLedger({
     });
     setBusy(false);
     if (rpcError) {
-      setError(rpcError.message);
+      setError(friendlyError(rpcError.message));
       return;
     }
+    showToast("Joined the group");
     router.refresh();
   }
 
@@ -125,9 +137,10 @@ export function GroupLedger({
     });
     setBusy(false);
     if (rpcError) {
-      setError(rpcError.message);
+      setError(friendlyError(rpcError.message));
       return;
     }
+    showToast("Cycle started");
     router.refresh();
   }
 
@@ -144,6 +157,7 @@ export function GroupLedger({
       });
     }
     setBusy(false);
+    showToast(`Confirmed ${submitted.length} contribution${submitted.length === 1 ? "" : "s"}`);
     router.refresh();
   }
 

@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
 import { Card } from "@/components/Card";
+import { friendlyError } from "@/lib/friendly-error";
 
 const GROUP_TEMPLATES = [
   {
@@ -162,7 +163,7 @@ function GroupDetailsForm({
     });
 
     if (error) {
-      setSubmitError(error.message);
+      setSubmitError(friendlyError(error.message));
       return;
     }
 

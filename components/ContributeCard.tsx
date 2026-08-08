@@ -13,6 +13,8 @@ import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
 import { Card } from "@/components/Card";
 import { useLanguage } from "@/lib/i18n";
+import { useToast } from "@/lib/toast";
+import { friendlyError } from "@/lib/friendly-error";
 
 type Contribution = {
   id: string;
@@ -41,6 +43,7 @@ export function ContributeCard({
 }) {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const { t } = useLanguage();
+  const showToast = useToast();
   const {
     register,
     handleSubmit,
@@ -59,7 +62,7 @@ export function ContributeCard({
       .upload(path, values.screenshot);
 
     if (uploadError) {
-      setSubmitError(uploadError.message);
+      setSubmitError(friendlyError(uploadError.message));
       return;
     }
 
@@ -70,10 +73,11 @@ export function ContributeCard({
     });
 
     if (rpcError) {
-      setSubmitError(rpcError.message);
+      setSubmitError(friendlyError(rpcError.message));
       return;
     }
 
+    showToast("Proof submitted");
     onSubmitted();
   }
 

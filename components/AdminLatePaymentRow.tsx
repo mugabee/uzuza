@@ -5,6 +5,8 @@ import { createClient } from "@/lib/supabase/client";
 import { rejectContributionSchema } from "@/lib/validation";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
+import { useToast } from "@/lib/toast";
+import { friendlyError } from "@/lib/friendly-error";
 
 type Contribution = {
   id: string;
@@ -27,6 +29,7 @@ export function AdminLatePaymentRow({
   const [screenshotUrl, setScreenshotUrl] = useState<string | null>(null);
   const [rejecting, setRejecting] = useState(false);
   const [reason, setReason] = useState("");
+  const showToast = useToast();
 
   const owed = Number(contribution.amount) + Number(contribution.missed_fine_amount ?? 0);
 
@@ -37,7 +40,7 @@ export function AdminLatePaymentRow({
       .from("contribution-proofs")
       .createSignedUrl(contribution.screenshot_path, 60);
     if (urlError) {
-      setError(urlError.message);
+      setError(friendlyError(urlError.message));
       return;
     }
     setScreenshotUrl(data.signedUrl);
@@ -54,9 +57,10 @@ export function AdminLatePaymentRow({
     });
     setBusy(false);
     if (rpcError) {
-      setError(rpcError.message);
+      setError(friendlyError(rpcError.message));
       return;
     }
+    showToast(approve ? "Late payment confirmed" : "Late payment rejected");
     onDecided();
   }
 

@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
 import { Card } from "@/components/Card";
+import { friendlyError } from "@/lib/friendly-error";
 
 type Group = {
   id: string;
@@ -47,7 +48,7 @@ export function ReserveCard({ group }: { group: Group }) {
     );
     if (rpcError) {
       setBusy(false);
-      setError(rpcError.message);
+      setError(friendlyError(rpcError.message));
       return;
     }
     const { data: row, error: fetchError } = await supabase
@@ -57,7 +58,7 @@ export function ReserveCard({ group }: { group: Group }) {
       .single();
     setBusy(false);
     if (fetchError || !row) {
-      setError(fetchError?.message ?? "Could not load reservation");
+      setError(fetchError ? friendlyError(fetchError.message) : "Could not load reservation");
       return;
     }
     setReservation({
@@ -85,7 +86,7 @@ export function ReserveCard({ group }: { group: Group }) {
       .from("reservation-proofs")
       .upload(path, values.screenshot);
     if (uploadError) {
-      setError(uploadError.message);
+      setError(friendlyError(uploadError.message));
       return;
     }
 
@@ -95,7 +96,7 @@ export function ReserveCard({ group }: { group: Group }) {
       p_screenshot_path: path,
     });
     if (rpcError) {
-      setError(rpcError.message);
+      setError(friendlyError(rpcError.message));
       return;
     }
     setSubmitted(true);

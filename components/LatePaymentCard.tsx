@@ -12,6 +12,8 @@ import {
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
 import { Card } from "@/components/Card";
+import { useToast } from "@/lib/toast";
+import { friendlyError } from "@/lib/friendly-error";
 
 type Contribution = {
   id: string;
@@ -37,6 +39,7 @@ export function LatePaymentCard({
   onSubmitted: () => void;
 }) {
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const showToast = useToast();
   const {
     register,
     handleSubmit,
@@ -57,7 +60,7 @@ export function LatePaymentCard({
       .upload(path, values.screenshot);
 
     if (uploadError) {
-      setSubmitError(uploadError.message);
+      setSubmitError(friendlyError(uploadError.message));
       return;
     }
 
@@ -68,10 +71,11 @@ export function LatePaymentCard({
     });
 
     if (rpcError) {
-      setSubmitError(rpcError.message);
+      setSubmitError(friendlyError(rpcError.message));
       return;
     }
 
+    showToast("Late payment proof submitted");
     onSubmitted();
   }
 

@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
+import { useToast } from "@/lib/toast";
 
 type Factor = { id: string; status: "verified" | "unverified"; friendly_name: string | null };
 
@@ -16,6 +17,7 @@ export function MfaEnrollment() {
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const showToast = useToast();
 
   async function refresh() {
     const supabase = createClient();
@@ -69,6 +71,7 @@ export function MfaEnrollment() {
     setQrCode(null);
     setPendingFactorId(null);
     setCode("");
+    showToast("Two-factor authentication enabled");
     refresh();
   }
 
@@ -77,6 +80,7 @@ export function MfaEnrollment() {
     const supabase = createClient();
     await supabase.auth.mfa.unenroll({ factorId });
     setBusy(false);
+    showToast("Two-factor authentication removed");
     refresh();
   }
 

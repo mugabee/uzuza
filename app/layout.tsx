@@ -3,6 +3,7 @@ import { Manrope, Inter } from "next/font/google";
 import { createClient } from "@/lib/supabase/server";
 import { AppNav } from "@/components/AppNav";
 import { LanguageProvider } from "@/lib/i18n";
+import { ToastProvider } from "@/lib/toast";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -55,8 +56,10 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       </head>
       <body className="min-h-full flex flex-col bg-paper text-foreground font-sans">
         <LanguageProvider>
-          {children}
-          <AppNav signedIn={!!user} />
+          <ToastProvider>
+            {children}
+            <AppNav signedIn={!!user} />
+          </ToastProvider>
         </LanguageProvider>
       </body>
     </html>

@@ -4,7 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Card } from "@/components/Card";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { useLowDataMode } from "@/lib/low-data-mode";
+import { useToast } from "@/lib/toast";
+import { friendlyError } from "@/lib/friendly-error";
 
 type Profile = { id: string; full_name: string | null; phone: string | null; avatar_url?: string | null } | null;
 type Member = { user_id: string; role: string; profile: Profile };
@@ -23,7 +26,9 @@ export function MemberManagement({
   const router = useRouter();
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [confirmingRemove, setConfirmingRemove] = useState<string | null>(null);
   const lowData = useLowDataMode();
+  const showToast = useToast();
 
   async function handlePromote(userId: string) {
     setBusyId(userId);
@@ -36,16 +41,14 @@ export function MemberManagement({
     });
     setBusyId(null);
     if (rpcError) {
-      setError(rpcError.message);
+      setError(friendlyError(rpcError.message));
       return;
     }
+    showToast("Admin proposal submitted");
     router.refresh();
   }
 
   async function handleRemove(userId: string) {
-    if (!confirm("Remove this member from the group? This is permanent and shows on their record.")) {
-      return;
-    }
     setBusyId(userId);
     setError(null);
     const supabase = createClient();
@@ -54,12 +57,16 @@ export function MemberManagement({
       p_user_id: userId,
     });
     setBusyId(null);
+    setConfirmingRemove(null);
     if (rpcError) {
-      setError(rpcError.message);
+      setError(friendlyError(rpcError.message));
       return;
     }
+    showToast("Member removed");
     router.refresh();
   }
+
+  const memberBeingRemoved = members.find((m) => m.user_id === confirmingRemove);
 
   return (
     <Card>
@@ -101,7 +108,7 @@ export function MemberManagement({
                   {m.user_id !== currentUserId && (
                     <button
                       type="button"
-                      onClick={() => handleRemove(m.user_id)}
+                      onClick={() => setConfirmingRemove(m.user_id)}
                       disabled={busyId === m.user_id}
                       className="text-xs text-red-500 underline-offset-2 hover:underline"
                     >
@@ -115,6 +122,16 @@ export function MemberManagement({
         ))}
       </ul>
       {error && <p className="mt-2 text-xs text-red-500">{error}</p>}
+
+      <ConfirmDialog
+        open={!!confirmingRemove}
+        title="Remove this member?"
+        description={`${memberBeingRemoved?.profile?.full_name ?? "This member"} will be removed from the group. This is permanent and shows on their record.`}
+        confirmLabel="Remove"
+        busy={busyId === confirmingRemove}
+        onConfirm={() => confirmingRemove && handleRemove(confirmingRemove)}
+        onCancel={() => setConfirmingRemove(null)}
+      />
     </Card>
   );
 }

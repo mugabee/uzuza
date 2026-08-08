@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
+import { friendlyError } from "@/lib/friendly-error";
 
 export function PauseExitControls({ groupId }: { groupId: string }) {
   const router = useRouter();
@@ -26,7 +27,7 @@ export function PauseExitControls({ groupId }: { groupId: string }) {
     });
     setBusy(false);
     if (rpcError) {
-      setError(rpcError.message);
+      setError(friendlyError(rpcError.message));
       return;
     }
     setDone("Pause requested — waiting for an admin to approve.");
@@ -42,7 +43,7 @@ export function PauseExitControls({ groupId }: { groupId: string }) {
     });
     setBusy(false);
     if (rpcError) {
-      setError(rpcError.message);
+      setError(friendlyError(rpcError.message));
       return;
     }
     const { data: row } = await supabase

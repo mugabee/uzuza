@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
 import { Card } from "@/components/Card";
+import { friendlyError } from "@/lib/friendly-error";
 
 type Group = { id: string; name: string; contribution_amount: number };
 
@@ -49,7 +50,7 @@ export function PledgeCard({ group }: { group: Group }) {
       p_visibility: values.visibility,
     });
     if (error) {
-      setPledgeError(error.message);
+      setPledgeError(friendlyError(error.message));
       return;
     }
     setPledge({
@@ -85,7 +86,7 @@ export function PledgeCard({ group }: { group: Group }) {
       .from("pledge-proofs")
       .upload(path, values.screenshot);
     if (uploadError) {
-      setProofError(uploadError.message);
+      setProofError(friendlyError(uploadError.message));
       return;
     }
 
@@ -95,7 +96,7 @@ export function PledgeCard({ group }: { group: Group }) {
       p_screenshot_path: path,
     });
     if (rpcError) {
-      setProofError(rpcError.message);
+      setProofError(friendlyError(rpcError.message));
       return;
     }
     setSubmitted(true);

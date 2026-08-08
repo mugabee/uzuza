@@ -8,6 +8,8 @@ import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
 import { PayoutPanel } from "@/components/PayoutPanel";
 import { MomoNumberEditor } from "@/components/MomoNumberEditor";
+import { useToast } from "@/lib/toast";
+import { friendlyError } from "@/lib/friendly-error";
 
 type Group = {
   id: string;
@@ -178,6 +180,7 @@ function AdminPledgeQueue({ groupId }: { groupId: string }) {
   >(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const showToast = useToast();
 
   async function load() {
     const supabase = createClient();
@@ -187,7 +190,7 @@ function AdminPledgeQueue({ groupId }: { groupId: string }) {
       .eq("group_id", groupId)
       .eq("status", "submitted");
     if (fetchError) {
-      setError(fetchError.message);
+      setError(friendlyError(fetchError.message));
       return;
     }
     setRows(data ?? []);
@@ -207,9 +210,10 @@ function AdminPledgeQueue({ groupId }: { groupId: string }) {
     });
     setBusyId(null);
     if (rpcError) {
-      setError(rpcError.message);
+      setError(friendlyError(rpcError.message));
       return;
     }
+    showToast("Pledge confirmed");
     await load();
     router.refresh();
   }

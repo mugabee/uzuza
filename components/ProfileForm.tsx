@@ -10,6 +10,8 @@ import { profileSchema, type ProfileInput } from "@/lib/validation";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
 import { Card } from "@/components/Card";
+import { useToast } from "@/lib/toast";
+import { friendlyError } from "@/lib/friendly-error";
 
 export function ProfileForm({
   userId,
@@ -26,6 +28,7 @@ export function ProfileForm({
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState(defaultAvatarUrl);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const showToast = useToast();
   const {
     register,
     handleSubmit,
@@ -48,7 +51,7 @@ export function ProfileForm({
       .upload(path, file, { upsert: true });
     if (uploadError) {
       setUploadingAvatar(false);
-      setSubmitError(uploadError.message);
+      setSubmitError(friendlyError(uploadError.message));
       return;
     }
     const {
@@ -62,6 +65,7 @@ export function ProfileForm({
       .eq("id", userId);
     setAvatarUrl(bustedUrl);
     setUploadingAvatar(false);
+    showToast("Photo updated");
   }
 
   async function onSubmit(values: ProfileInput) {
@@ -81,10 +85,11 @@ export function ProfileForm({
       .eq("id", user.id);
 
     if (error) {
-      setSubmitError(error.message);
+      setSubmitError(friendlyError(error.message));
       return;
     }
 
+    showToast("Profile saved");
     router.push("/");
     router.refresh();
   }

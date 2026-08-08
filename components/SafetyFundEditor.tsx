@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
+import { useToast } from "@/lib/toast";
+import { friendlyError } from "@/lib/friendly-error";
 
 type SafetyFundType = "off" | "buffer" | "freeze";
 
@@ -32,6 +34,7 @@ export function SafetyFundEditor({
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const showToast = useToast();
 
   async function handleChange(value: SafetyFundType) {
     if (value === currentType) return;
@@ -44,9 +47,10 @@ export function SafetyFundEditor({
     });
     setBusy(false);
     if (rpcError) {
-      setError(rpcError.message);
+      setError(friendlyError(rpcError.message));
       return;
     }
+    showToast("Safety fund setting updated");
     router.refresh();
   }
 

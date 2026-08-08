@@ -13,6 +13,8 @@ import {
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
 import { Card } from "@/components/Card";
+import { useToast } from "@/lib/toast";
+import { friendlyError } from "@/lib/friendly-error";
 
 type PayoutRequest = {
   id: string;
@@ -45,6 +47,7 @@ export function PayoutPanel({
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const showToast = useToast();
 
   const {
     register,
@@ -64,9 +67,10 @@ export function PayoutPanel({
         : await supabase.rpc("request_event_payout", { p_group_id: target.groupId });
     setBusy(false);
     if (rpcError) {
-      setError(rpcError.message);
+      setError(friendlyError(rpcError.message));
       return;
     }
+    showToast("Payout requested");
     router.refresh();
   }
 
@@ -80,9 +84,10 @@ export function PayoutPanel({
     });
     setBusy(false);
     if (rpcError) {
-      setError(rpcError.message);
+      setError(friendlyError(rpcError.message));
       return;
     }
+    showToast("Payout approved");
     router.refresh();
   }
 
@@ -96,7 +101,7 @@ export function PayoutPanel({
       .from("payout-proofs")
       .upload(path, values.screenshot);
     if (uploadError) {
-      setError(uploadError.message);
+      setError(friendlyError(uploadError.message));
       return;
     }
 
@@ -106,9 +111,10 @@ export function PayoutPanel({
       p_screenshot_path: path,
     });
     if (rpcError) {
-      setError(rpcError.message);
+      setError(friendlyError(rpcError.message));
       return;
     }
+    showToast("Payout completed");
     router.refresh();
   }
 
