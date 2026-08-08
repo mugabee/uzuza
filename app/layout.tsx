@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Manrope, Inter } from "next/font/google";
 import { createClient } from "@/lib/supabase/server";
 import { AppNav } from "@/components/AppNav";
@@ -18,6 +18,14 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Uzuza",
   description: "Digital platform for ibimina and event contributions",
+  appleWebApp: {
+    title: "Uzuza",
+    statusBarStyle: "default",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#1a5f4a",
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
