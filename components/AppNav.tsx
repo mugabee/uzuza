@@ -77,7 +77,7 @@ export function AppNav({ signedIn }: { signedIn: boolean }) {
         style={{ height: "calc(56px + env(safe-area-inset-bottom))" }}
       />
       <nav
-        className="fixed inset-x-0 bottom-0 z-10 flex items-stretch justify-around border-t border-black/10 bg-white/95 backdrop-blur"
+        className="fixed inset-x-0 bottom-0 z-10 flex items-stretch justify-around border-t border-black/[0.06] bg-white/90 shadow-[0_-4px_20px_-4px_rgba(28,28,26,0.06)] backdrop-blur-md"
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
       {TABS.map((tab) => {
@@ -86,44 +86,62 @@ export function AppNav({ signedIn }: { signedIn: boolean }) {
           <Link
             key={tab.href}
             href={tab.href}
-            className={`flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] font-medium transition-colors ${
-              active ? "text-primary" : "text-foreground/50 hover:text-primary"
-            }`}
+            className="group flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] font-medium"
           >
-            <svg
-              width="22"
-              height="22"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={active ? 2.25 : 1.75}
-              strokeLinecap="round"
-              strokeLinejoin="round"
+            <span
+              className={`flex h-7 w-11 items-center justify-center rounded-full transition-colors duration-200 ${
+                active ? "bg-primary/10" : "group-hover:bg-primary/5"
+              }`}
             >
-              {tab.icon}
-            </svg>
-            {tab.label}
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={active ? 2.25 : 1.75}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className={`transition-colors duration-200 ${
+                  active ? "text-primary" : "text-foreground/50 group-hover:text-primary"
+                }`}
+              >
+                {tab.icon}
+              </svg>
+            </span>
+            <span
+              className={`transition-colors duration-200 ${
+                active ? "text-primary" : "text-foreground/50 group-hover:text-primary"
+              }`}
+            >
+              {tab.label}
+            </span>
           </Link>
         );
       })}
       <button
         type="button"
         onClick={handleSignOut}
-        className="flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] font-medium text-foreground/50 transition-colors hover:text-primary"
+        className="group flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] font-medium"
       >
-        <svg
-          width="22"
-          height="22"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={1.75}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <SignOutIcon />
-        </svg>
-        Sign out
+        <span className="flex h-7 w-11 items-center justify-center rounded-full transition-colors duration-200 group-hover:bg-primary/5">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={1.75}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="text-foreground/50 transition-colors duration-200 group-hover:text-primary"
+          >
+            <SignOutIcon />
+          </svg>
+        </span>
+        <span className="text-foreground/50 transition-colors duration-200 group-hover:text-primary">
+          Sign out
+        </span>
       </button>
       </nav>
     </>

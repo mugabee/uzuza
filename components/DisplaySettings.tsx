@@ -71,18 +71,18 @@ export function DisplaySettings() {
               Kinyarwanda covers the contribute, approve, and ledger screens so far.
             </p>
           </div>
-          <div className="flex gap-1 rounded-full bg-black/5 p-1 text-xs font-medium">
+          <div className="flex gap-1 rounded-full bg-black/[0.04] p-1 text-xs font-medium">
             <button
               type="button"
               onClick={() => setLanguage("en")}
-              className={`rounded-full px-3 py-1.5 ${language === "en" ? "bg-white text-primary shadow-sm" : "text-foreground/60"}`}
+              className={`rounded-full px-3 py-1.5 transition-all duration-200 ${language === "en" ? "bg-white text-primary shadow-[var(--shadow-soft)]" : "text-foreground/60 hover:text-foreground/80"}`}
             >
               English
             </button>
             <button
               type="button"
               onClick={() => setLanguage("rw")}
-              className={`rounded-full px-3 py-1.5 ${language === "rw" ? "bg-white text-primary shadow-sm" : "text-foreground/60"}`}
+              className={`rounded-full px-3 py-1.5 transition-all duration-200 ${language === "rw" ? "bg-white text-primary shadow-[var(--shadow-soft)]" : "text-foreground/60 hover:text-foreground/80"}`}
             >
               Kinyarwanda
             </button>

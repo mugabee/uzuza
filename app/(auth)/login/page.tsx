@@ -61,7 +61,7 @@ export default function LoginPage() {
           Sign in with your phone or email to continue.
         </p>
 
-        <div className="mt-6 flex gap-1 rounded-full bg-black/5 p-1 text-sm font-medium">
+        <div className="mt-6 flex gap-1 rounded-full bg-black/[0.04] p-1 text-sm font-medium">
           {(["phone", "email"] as const).map((m) => (
             <button
               key={m}
@@ -71,10 +71,10 @@ export default function LoginPage() {
                 setIdentifier("");
                 setError(null);
               }}
-              className={`flex-1 rounded-full py-2 capitalize transition-colors ${
+              className={`flex-1 rounded-full py-2 capitalize transition-all duration-200 ${
                 method === m
-                  ? "bg-white text-primary shadow-sm"
-                  : "text-foreground/60"
+                  ? "bg-white text-primary shadow-[var(--shadow-soft)]"
+                  : "text-foreground/60 hover:text-foreground/80"
               }`}
             >
               {m}

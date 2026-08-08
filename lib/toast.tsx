@@ -26,7 +26,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         {toasts.map((t) => (
           <div
             key={t.id}
-            className={`pointer-events-auto rounded-full px-4 py-2 text-sm font-medium text-white shadow-lg ${
+            className={`pointer-events-auto animate-fade-slide-down rounded-full px-4 py-2 text-sm font-medium text-white shadow-[var(--shadow-soft-md)] ${
               t.kind === "success" ? "bg-primary" : "bg-red-600"
             }`}
           >

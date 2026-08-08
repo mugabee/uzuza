@@ -23,8 +23,8 @@ export function ConfirmDialog({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-6">
-      <Card className="max-w-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-6 backdrop-blur-[2px]">
+      <Card className="max-w-sm shadow-[var(--shadow-soft-lg)] animate-fade-scale-in">
         <h2 className="font-display text-lg font-semibold text-primary">{title}</h2>
         <p className="mt-2 text-sm text-foreground/70">{description}</p>
         <div className="mt-5 flex gap-2">

@@ -119,7 +119,7 @@ export default async function Home() {
 
           return (
             <Link key={group.id} href={`/groups/${group.id}`}>
-              <Card className="transition-shadow hover:shadow-md">
+              <Card className="transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-soft-md)]">
                 <div className="flex items-center justify-between">
                   <h2 className="font-semibold text-foreground">{group.name}</h2>
                   <span className="text-xs uppercase tracking-wide text-accent">
