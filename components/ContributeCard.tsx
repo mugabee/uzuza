@@ -15,6 +15,8 @@ import { Card } from "@/components/Card";
 import { useLanguage } from "@/lib/i18n";
 import { useToast } from "@/lib/toast";
 import { friendlyError } from "@/lib/friendly-error";
+import { compressImage } from "@/lib/compress-image";
+import { ScreenshotPreview } from "@/components/ScreenshotPreview";
 
 type Contribution = {
   id: string;
@@ -47,6 +49,7 @@ export function ContributeCard({
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<ContributionProofFormInput, unknown, ContributionProofInput>({
     resolver: zodResolver(contributionProofSchema),
@@ -56,10 +59,11 @@ export function ContributeCard({
     setSubmitError(null);
     const supabase = createClient();
 
+    const fileToUpload = await compressImage(values.screenshot);
     const path = `${contribution.id}/${Date.now()}-${values.screenshot.name}`;
     const { error: uploadError } = await supabase.storage
       .from("contribution-proofs")
-      .upload(path, values.screenshot);
+      .upload(path, fileToUpload);
 
     if (uploadError) {
       setSubmitError(friendlyError(uploadError.message));
@@ -147,12 +151,13 @@ export function ContributeCard({
               {...register("screenshot")}
             />
             {errors.screenshot?.message && (
-              <span className="text-xs text-red-500">
+              <span role="alert" className="text-xs text-red-500">
                 {errors.screenshot.message}
               </span>
             )}
           </label>
-          {submitError && <p className="text-xs text-red-500">{submitError}</p>}
+          <ScreenshotPreview files={watch("screenshot")} />
+          {submitError && <p role="alert" className="text-xs text-red-500">{submitError}</p>}
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? t("submitting") : t("submitProof")}
           </Button>

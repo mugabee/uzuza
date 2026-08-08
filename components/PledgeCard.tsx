@@ -16,6 +16,8 @@ import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
 import { Card } from "@/components/Card";
 import { friendlyError } from "@/lib/friendly-error";
+import { compressImage } from "@/lib/compress-image";
+import { ScreenshotPreview } from "@/components/ScreenshotPreview";
 
 type Group = { id: string; name: string; contribution_amount: number };
 
@@ -70,6 +72,7 @@ export function PledgeCard({ group }: { group: Group }) {
   const {
     register: registerProof,
     handleSubmit: handleSubmitProof,
+    watch: watchProof,
     formState: { errors: proofErrors, isSubmitting: proofSubmitting },
   } = useForm<TransferProofFormInput, unknown, TransferProofInput>({
     resolver: zodResolver(transferProofSchema),
@@ -81,10 +84,11 @@ export function PledgeCard({ group }: { group: Group }) {
     setProofError(null);
     const supabase = createClient();
 
+    const fileToUpload = await compressImage(values.screenshot);
     const path = `${pledge.id}/${Date.now()}-${values.screenshot.name}`;
     const { error: uploadError } = await supabase.storage
       .from("pledge-proofs")
-      .upload(path, values.screenshot);
+      .upload(path, fileToUpload);
     if (uploadError) {
       setProofError(friendlyError(uploadError.message));
       return;
@@ -153,7 +157,7 @@ export function PledgeCard({ group }: { group: Group }) {
               <option value="private">Private — nothing shown</option>
             </select>
           </label>
-          {pledgeError && <p className="text-xs text-red-500">{pledgeError}</p>}
+          {pledgeError && <p role="alert" className="text-xs text-red-500">{pledgeError}</p>}
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? "Pledging..." : "Pledge"}
           </Button>
@@ -198,10 +202,11 @@ export function PledgeCard({ group }: { group: Group }) {
             {...registerProof("screenshot")}
           />
           {proofErrors.screenshot?.message && (
-            <span className="text-xs text-red-500">{proofErrors.screenshot.message}</span>
+            <span role="alert" className="text-xs text-red-500">{proofErrors.screenshot.message}</span>
           )}
         </label>
-        {proofError && <p className="text-xs text-red-500">{proofError}</p>}
+        <ScreenshotPreview files={watchProof("screenshot")} />
+        {proofError && <p role="alert" className="text-xs text-red-500">{proofError}</p>}
         <Button type="submit" disabled={proofSubmitting}>
           {proofSubmitting ? "Submitting..." : "Submit proof"}
         </Button>

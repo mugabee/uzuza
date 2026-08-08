@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { AppNav } from "@/components/AppNav";
 import { LanguageProvider } from "@/lib/i18n";
 import { ToastProvider } from "@/lib/toast";
+import { OfflineBanner } from "@/components/OfflineBanner";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -55,6 +56,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         />
       </head>
       <body className="min-h-full flex flex-col bg-paper text-foreground font-sans">
+        <OfflineBanner />
         <LanguageProvider>
           <ToastProvider>
             {children}
