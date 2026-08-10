@@ -8,9 +8,9 @@ import { createClient } from "@/lib/supabase/client";
 import {
   createPledgeSchema,
   type CreatePledgeInput,
-  transferProofSchema,
-  type TransferProofFormInput,
-  type TransferProofInput,
+  pledgeProofSchema,
+  type PledgeProofFormInput,
+  type PledgeProofInput,
 } from "@/lib/validation";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
@@ -18,6 +18,7 @@ import { Card } from "@/components/Card";
 import { friendlyError } from "@/lib/friendly-error";
 import { compressImage } from "@/lib/compress-image";
 import { ScreenshotPreview } from "@/components/ScreenshotPreview";
+import { PaymentChannelPicker } from "@/components/PaymentChannelPicker";
 
 type Group = { id: string; name: string; contribution_amount: number };
 
@@ -73,13 +74,15 @@ export function PledgeCard({ group }: { group: Group }) {
     register: registerProof,
     handleSubmit: handleSubmitProof,
     watch: watchProof,
+    setValue: setValueProof,
     formState: { errors: proofErrors, isSubmitting: proofSubmitting },
-  } = useForm<TransferProofFormInput, unknown, TransferProofInput>({
-    resolver: zodResolver(transferProofSchema),
+  } = useForm<PledgeProofFormInput, unknown, PledgeProofInput>({
+    resolver: zodResolver(pledgeProofSchema),
+    defaultValues: { paymentChannel: "momo_manual", payerCurrency: "RWF" },
   });
   const [proofError, setProofError] = useState<string | null>(null);
 
-  async function onSubmitProof(values: TransferProofInput) {
+  async function onSubmitProof(values: PledgeProofInput) {
     if (!pledge) return;
     setProofError(null);
     const supabase = createClient();
@@ -94,10 +97,19 @@ export function PledgeCard({ group }: { group: Group }) {
       return;
     }
 
+    const fxRate =
+      values.paymentChannel !== "momo_manual" && values.payerAmount
+        ? pledge.amount / values.payerAmount
+        : undefined;
+
     const { error: rpcError } = await supabase.rpc("submit_pledge_proof", {
       p_pledge_id: pledge.id,
       p_transaction_id: values.transactionId,
       p_screenshot_path: path,
+      p_payment_channel: values.paymentChannel,
+      p_payer_currency: values.payerCurrency,
+      p_payer_amount: values.payerAmount ?? null,
+      p_fx_rate_to_rwf: fxRate ?? null,
     });
     if (rpcError) {
       setProofError(friendlyError(rpcError.message));
@@ -187,6 +199,12 @@ export function PledgeCard({ group }: { group: Group }) {
       </p>
 
       <form onSubmit={handleSubmitProof(onSubmitProof)} className="mt-4 flex flex-col gap-3">
+        <PaymentChannelPicker
+          register={registerProof}
+          watch={watchProof}
+          setValue={setValueProof}
+          rwfAmount={pledge.amount}
+        />
         <Field
           label="MoMo transaction ID / confirmation text"
           placeholder="e.g. MP240613.1234.A56789"

@@ -6,9 +6,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createClient } from "@/lib/supabase/client";
 import {
-  transferProofSchema,
-  type TransferProofFormInput,
-  type TransferProofInput,
+  reservationProofSchema,
+  type ReservationProofFormInput,
+  type ReservationProofInput,
 } from "@/lib/validation";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
@@ -16,6 +16,7 @@ import { Card } from "@/components/Card";
 import { friendlyError } from "@/lib/friendly-error";
 import { compressImage } from "@/lib/compress-image";
 import { ScreenshotPreview } from "@/components/ScreenshotPreview";
+import { PaymentChannelPicker } from "@/components/PaymentChannelPicker";
 
 type Group = {
   id: string;
@@ -74,12 +75,14 @@ export function ReserveCard({ group }: { group: Group }) {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors, isSubmitting },
-  } = useForm<TransferProofFormInput, unknown, TransferProofInput>({
-    resolver: zodResolver(transferProofSchema),
+  } = useForm<ReservationProofFormInput, unknown, ReservationProofInput>({
+    resolver: zodResolver(reservationProofSchema),
+    defaultValues: { paymentChannel: "momo_manual", payerCurrency: "RWF" },
   });
 
-  async function onSubmit(values: TransferProofInput) {
+  async function onSubmit(values: ReservationProofInput) {
     if (!reservation) return;
     setError(null);
     const supabase = createClient();
@@ -94,10 +97,19 @@ export function ReserveCard({ group }: { group: Group }) {
       return;
     }
 
+    const fxRate =
+      values.paymentChannel !== "momo_manual" && values.payerAmount
+        ? reservation.feeAmount / values.payerAmount
+        : undefined;
+
     const { error: rpcError } = await supabase.rpc("submit_reservation_proof", {
       p_reservation_id: reservation.id,
       p_transaction_id: values.transactionId,
       p_screenshot_path: path,
+      p_payment_channel: values.paymentChannel,
+      p_payer_currency: values.payerCurrency,
+      p_payer_amount: values.payerAmount ?? null,
+      p_fx_rate_to_rwf: fxRate ?? null,
     });
     if (rpcError) {
       setError(friendlyError(rpcError.message));
@@ -179,6 +191,12 @@ export function ReserveCard({ group }: { group: Group }) {
       </dl>
 
       <form onSubmit={handleSubmit(onSubmit)} className="mt-4 flex flex-col gap-3">
+        <PaymentChannelPicker
+          register={register}
+          watch={watch}
+          setValue={setValue}
+          rwfAmount={reservation.feeAmount}
+        />
         <Field
           label="MoMo transaction ID / confirmation text"
           placeholder="e.g. MP240613.1234.A56789"

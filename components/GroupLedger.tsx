@@ -39,6 +39,9 @@ type Contribution = {
   screenshot_path: string | null;
   rejected_reason: string | null;
   missed_fine_amount?: number | null;
+  payment_channel?: "momo_manual" | "international_manual" | "momo_remittance" | "card_gateway";
+  payer_currency?: string;
+  payer_amount?: number | null;
   profile: Profile;
 };
 

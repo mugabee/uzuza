@@ -78,17 +78,44 @@ export const transferProofSchema = z.object({
 export type TransferProofFormInput = z.input<typeof transferProofSchema>;
 export type TransferProofInput = z.output<typeof transferProofSchema>;
 
-export const contributionProofSchema = transferProofSchema;
-export type ContributionProofFormInput = TransferProofFormInput;
-export type ContributionProofInput = TransferProofInput;
-
 export const payoutProofSchema = transferProofSchema;
 export type PayoutProofFormInput = TransferProofFormInput;
 export type PayoutProofInput = TransferProofInput;
 
-export const pledgeProofSchema = transferProofSchema;
-export type PledgeProofFormInput = TransferProofFormInput;
-export type PledgeProofInput = TransferProofInput;
+// Extends the base proof-of-payment shape with how/from-where a sender
+// paid. `card_gateway` is deliberately excluded — schema-ready on the
+// backend (payment_channel enum), but no real gateway exists yet, so the
+// UI never lets anyone select it.
+export const paymentChannelSchema = z.enum([
+  "momo_manual",
+  "international_manual",
+  "momo_remittance",
+]);
+export type PaymentChannel = z.infer<typeof paymentChannelSchema>;
+
+export const internationalProofSchema = transferProofSchema.extend({
+  paymentChannel: paymentChannelSchema,
+  payerCurrency: z.string().trim().length(3, "Pick a currency"),
+  payerAmount: z.coerce
+    .number()
+    .positive("Enter the amount you sent")
+    .optional()
+    .or(z.literal("").transform(() => undefined)),
+});
+export type InternationalProofFormInput = z.input<typeof internationalProofSchema>;
+export type InternationalProofInput = z.output<typeof internationalProofSchema>;
+
+export const contributionProofSchema = internationalProofSchema;
+export type ContributionProofFormInput = InternationalProofFormInput;
+export type ContributionProofInput = InternationalProofInput;
+
+export const pledgeProofSchema = internationalProofSchema;
+export type PledgeProofFormInput = InternationalProofFormInput;
+export type PledgeProofInput = InternationalProofInput;
+
+export const reservationProofSchema = internationalProofSchema;
+export type ReservationProofFormInput = InternationalProofFormInput;
+export type ReservationProofInput = InternationalProofInput;
 
 export const rejectContributionSchema = z.object({
   reason: z.string().trim().min(3, "Say why this is being rejected").max(300),

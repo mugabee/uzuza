@@ -137,7 +137,7 @@ export default async function GroupPage({
     ? await supabase
         .from("contributions")
         .select(
-          "id, member_id, unique_reference, amount, status, transaction_id, screenshot_path, rejected_reason, missed_fine_amount",
+          "id, member_id, unique_reference, amount, status, transaction_id, screenshot_path, rejected_reason, missed_fine_amount, payment_channel, payer_currency, payer_amount",
         )
         .eq("cycle_id", latestCycle.id)
     : { data: [] };
