@@ -206,12 +206,20 @@ export function GroupLedger({
           <span className="inline-block rounded-full bg-accent/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-accent">
             {group.group_type === "rotating" ? "Rotating Savings" : "Event Contribution"}
           </span>
-          <Link
-            href={`/groups/${group.id}/settings`}
-            className="text-sm font-medium text-primary underline-offset-2 hover:underline"
-          >
-            Settings
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              href={`/groups/${group.id}/chat`}
+              className="text-sm font-medium text-primary underline-offset-2 hover:underline"
+            >
+              Chat
+            </Link>
+            <Link
+              href={`/groups/${group.id}/settings`}
+              className="text-sm font-medium text-primary underline-offset-2 hover:underline"
+            >
+              Settings
+            </Link>
+          </div>
         </div>
         <h1 className="mt-3 font-display text-2xl font-semibold text-primary">
           {group.name}

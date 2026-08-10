@@ -72,8 +72,7 @@ export function ChatPanel({
         {groupName} — Chat
       </h1>
       <p className="mt-1 text-xs text-foreground/50">
-        Text only, no links or media. Visible only while the group is
-        forming.
+        Text only, no links or media. Visible to current group members.
       </p>
 
       <div className="mt-4 flex max-h-96 flex-col gap-3 overflow-y-auto">
@@ -114,7 +113,7 @@ export function ChatPanel({
         </form>
       ) : (
         <p className="mt-4 text-xs text-foreground/50">
-          Chat is closed now that the group is active.
+          You can't send messages in this chat right now.
         </p>
       )}
       {error && <p role="alert" className="mt-2 text-xs text-red-500">{error}</p>}

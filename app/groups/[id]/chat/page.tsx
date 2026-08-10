@@ -24,12 +24,14 @@ export default async function ChatPage({
 
   const { data: membership } = await supabase
     .from("group_members")
-    .select("user_id")
+    .select("user_id, membership_status")
     .eq("group_id", id)
     .eq("user_id", user.id)
     .maybeSingle();
 
   if (!membership) redirect(`/groups/${id}`);
+  const canSend = membership.membership_status === "active" ||
+    membership.membership_status === "paused";
 
   const { data: messages } = await supabase
     .from("chat_messages")
@@ -59,7 +61,7 @@ export default async function ChatPage({
         <ChatPanel
           groupId={id}
           groupName={group.name}
-          canSend={group.status === "forming"}
+          canSend={canSend}
           currentUserId={user.id}
           initialMessages={messagesWithNames}
         />
