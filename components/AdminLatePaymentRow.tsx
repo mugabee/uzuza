@@ -14,6 +14,9 @@ type Contribution = {
   missed_fine_amount?: number | null;
   transaction_id: string | null;
   screenshot_path: string | null;
+  payment_channel?: "momo_manual" | "international_manual" | "momo_remittance" | "card_gateway";
+  payer_currency?: string;
+  payer_amount?: number | null;
   profile: { full_name: string | null } | null;
 };
 
@@ -29,9 +32,29 @@ export function AdminLatePaymentRow({
   const [screenshotUrl, setScreenshotUrl] = useState<string | null>(null);
   const [rejecting, setRejecting] = useState(false);
   const [reason, setReason] = useState("");
+  const [mtnStatus, setMtnStatus] = useState<string | null>(null);
+  const [mtnBusy, setMtnBusy] = useState(false);
   const showToast = useToast();
 
   const owed = Number(contribution.amount) + Number(contribution.missed_fine_amount ?? 0);
+
+  async function handleCheckMtnRemittance() {
+    if (!contribution.transaction_id) return;
+    setMtnBusy(true);
+    setMtnStatus(null);
+    try {
+      const res = await fetch("/api/momo/remittance-status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ referenceId: contribution.transaction_id }),
+      });
+      const data = await res.json();
+      setMtnStatus(res.ok ? `MTN status: ${data.status}` : (data.error ?? "Lookup failed"));
+    } catch {
+      setMtnStatus("Lookup failed");
+    }
+    setMtnBusy(false);
+  }
 
   async function handleViewScreenshot() {
     if (!contribution.screenshot_path) return;
@@ -83,6 +106,38 @@ export function AdminLatePaymentRow({
       <p className="mt-1 text-sm text-foreground/70">
         {owed.toLocaleString()} RWF (incl. fine) — txn: {contribution.transaction_id}
       </p>
+
+      {contribution.payment_channel && contribution.payment_channel !== "momo_manual" && (
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <span className="inline-flex items-center gap-1 rounded-full bg-accent/15 px-2.5 py-1 text-xs font-medium text-accent">
+            {contribution.payment_channel === "momo_remittance"
+              ? "🌍 MTN Remittance"
+              : contribution.payment_channel === "card_gateway"
+                ? "💳 Card/Gateway"
+                : "🌍 International transfer"}
+          </span>
+          {contribution.payer_amount != null && contribution.payer_currency && (
+            <span className="text-xs text-foreground/50">
+              sender paid ≈ {Number(contribution.payer_amount).toLocaleString()}{" "}
+              {contribution.payer_currency}
+            </span>
+          )}
+        </div>
+      )}
+
+      {contribution.payment_channel === "momo_remittance" && contribution.transaction_id && (
+        <div className="mt-2">
+          <button
+            type="button"
+            onClick={handleCheckMtnRemittance}
+            disabled={mtnBusy}
+            className="text-xs font-medium text-primary underline-offset-2 hover:underline disabled:opacity-50"
+          >
+            {mtnBusy ? "Checking..." : "Check via MTN"}
+          </button>
+          {mtnStatus && <p className="mt-1 text-xs text-foreground/60">{mtnStatus}</p>}
+        </div>
+      )}
 
       {contribution.screenshot_path && !screenshotUrl && (
         <button

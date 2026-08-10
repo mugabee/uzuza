@@ -16,6 +16,7 @@ import { useToast } from "@/lib/toast";
 import { friendlyError } from "@/lib/friendly-error";
 import { compressImage } from "@/lib/compress-image";
 import { ScreenshotPreview } from "@/components/ScreenshotPreview";
+import { PaymentChannelPicker } from "@/components/PaymentChannelPicker";
 
 type Contribution = {
   id: string;
@@ -46,9 +47,11 @@ export function LatePaymentCard({
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<ContributionProofFormInput, unknown, ContributionProofInput>({
     resolver: zodResolver(contributionProofSchema),
+    defaultValues: { paymentChannel: "momo_manual", payerCurrency: "RWF" },
   });
 
   const owed = Number(contribution.amount) + Number(contribution.missed_fine_amount ?? 0);
@@ -68,10 +71,19 @@ export function LatePaymentCard({
       return;
     }
 
+    const fxRate =
+      values.paymentChannel !== "momo_manual" && values.payerAmount
+        ? owed / values.payerAmount
+        : undefined;
+
     const { error: rpcError } = await supabase.rpc("submit_late_payment_proof", {
       p_contribution_id: contribution.id,
       p_transaction_id: values.transactionId,
       p_screenshot_path: path,
+      p_payment_channel: values.paymentChannel,
+      p_payer_currency: values.payerCurrency,
+      p_payer_amount: values.payerAmount ?? null,
+      p_fx_rate_to_rwf: fxRate ?? null,
     });
 
     if (rpcError) {
@@ -130,6 +142,12 @@ export function LatePaymentCard({
       </dl>
 
       <form onSubmit={handleSubmit(onSubmit)} className="mt-4 flex flex-col gap-3">
+        <PaymentChannelPicker
+          register={register}
+          watch={watch}
+          setValue={setValue}
+          rwfAmount={owed}
+        />
         <Field
           label="MoMo transaction ID / confirmation text"
           placeholder="e.g. MP240613.1234.A56789"
