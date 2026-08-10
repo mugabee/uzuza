@@ -410,6 +410,10 @@ export function GroupLedger({
   );
 }
 
+// Ticks modeled on WhatsApp's sent/delivered pattern (familiar at a glance
+// to the app's primary Rwanda/Uganda user base): one tick once a member
+// has submitted proof, two once an admin has confirmed it — same
+// metaphor as a message being sent vs. read.
 function StatusBadge({ status }: { status: Contribution["status"] }) {
   const styles: Record<Contribution["status"], string> = {
     pending: "bg-black/5 text-foreground/60",
@@ -420,11 +424,23 @@ function StatusBadge({ status }: { status: Contribution["status"] }) {
     late_submitted: "bg-accent/15 text-accent",
     paid_late: "bg-primary/15 text-primary",
   };
+  const ticks: Partial<Record<Contribution["status"], string>> = {
+    pending: "○",
+    submitted: "✓",
+    late_submitted: "✓",
+    confirmed: "✓✓",
+    paid_late: "✓✓",
+    rejected: "✕",
+    missed: "✕",
+  };
   return (
     <span
-      className={`rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${styles[status]}`}
+      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${styles[status]}`}
     >
-      {status}
+      <span aria-hidden="true" className="font-sans tracking-tighter">
+        {ticks[status]}
+      </span>
+      {status.replace("_", " ")}
     </span>
   );
 }

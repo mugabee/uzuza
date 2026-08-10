@@ -68,7 +68,7 @@ export function DisplaySettings() {
           <div>
             <p className="text-sm font-medium text-foreground">Language</p>
             <p className="text-xs text-foreground/50">
-              Kinyarwanda covers the contribute, approve, and ledger screens so far.
+              Kinyarwanda and Luganda cover the contribute, approve, and ledger screens so far.
             </p>
           </div>
           <div className="flex gap-1 rounded-full bg-black/[0.04] p-1 text-xs font-medium">
@@ -85,6 +85,13 @@ export function DisplaySettings() {
               className={`rounded-full px-3 py-1.5 transition-all duration-200 ${language === "rw" ? "bg-white text-primary shadow-[var(--shadow-soft)]" : "text-foreground/60 hover:text-foreground/80"}`}
             >
               Kinyarwanda
+            </button>
+            <button
+              type="button"
+              onClick={() => setLanguage("lg")}
+              className={`rounded-full px-3 py-1.5 transition-all duration-200 ${language === "lg" ? "bg-white text-primary shadow-[var(--shadow-soft)]" : "text-foreground/60 hover:text-foreground/80"}`}
+            >
+              Luganda
             </button>
           </div>
         </div>

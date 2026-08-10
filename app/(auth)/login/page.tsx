@@ -89,6 +89,11 @@ export default function LoginPage() {
             error={error ?? undefined}
             autoFocus
           />
+          {method === "phone" && !error && (
+            <p className="-mt-2 text-xs text-foreground/40">
+              🇷🇼 Rwanda (+250) or 🇺🇬 Uganda (+256) numbers
+            </p>
+          )}
           <Button type="submit" disabled={loading}>
             {loading ? "Sending..." : "Send verification code"}
           </Button>

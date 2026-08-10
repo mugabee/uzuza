@@ -3,14 +3,16 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
 // Section 3.8 pulls Kinyarwanda into v1 scope for the core screens:
-// contribute, approve, ledger. These translations are a first draft, not
-// reviewed by a native speaker — treat them as a starting point to have
-// checked before relying on them for real users, the same way any other
-// unverified content in this app gets flagged rather than presented as
-// finished. Everything else (error messages from the backend, admin
-// tooling, the internal console) stays English for now.
+// contribute, approve, ledger. Luganda was added alongside it once Uganda
+// became a named market, not just Rwanda (CLAUDE.md's East Africa
+// expansion). Both are first drafts, not reviewed by a native speaker —
+// treat them as a starting point to have checked before relying on them
+// for real users, the same way any other unverified content in this app
+// gets flagged rather than presented as finished. Everything else (error
+// messages from the backend, admin tooling, the internal console) stays
+// English for now.
 
-type Language = "en" | "rw";
+type Language = "en" | "rw" | "lg";
 
 const translations = {
   en: {
@@ -83,6 +85,41 @@ const translations = {
     joinThisGroup: "Injira muri iri tsinda",
     joining: "Kwinjira...",
   },
+  lg: {
+    yourContribution: "Ensimbi zo",
+    confirmedThankYou: "Zikakasiddwa — weebale.",
+    amount: "Omuwendo",
+    payTo: "Sasula ku",
+    reference: "Ennamba y'okwogera",
+    notSetYet: "Tetunnateekebwawo",
+    sendInstructions:
+      "Weereza omuwendo guno gwennyini nga oyita mu MoMo, ng'oteeka ne ennamba waggulu bwe kiba kisoboka. Oluvannyuma weereza obukakafu wammanga.",
+    previousRejected: "Okusaba okwasembayo kwagaanibwa",
+    pleaseResubmit: "Weereza nate.",
+    transactionIdLabel: "Ennamba y'empapula za MoMo / obubaka bw'okukakasa",
+    screenshotLabel: "Ekifaananyi ky'okusasula",
+    submitting: "Kiweerezebwa...",
+    submitProof: "Weereza obukakafu",
+    waitingConfirmation: "Kulindirira omukulembeze okukakasa.",
+    markedMissed: "Kiwandiikiddwa nga tekisasuddwa",
+    fineApplies: "ekisale kya",
+    rwfApplies: "RWF kyetaagisa",
+    contactAdmin: "Tuukirira omukulembeze.",
+    approve: "Kkiriza",
+    reject: "Gaana",
+    confirmReject: "Kakasa okugaana",
+    cancel: "Sazaamu",
+    whyRejecting: "Lwaki kino kigaanibwa?",
+    viewScreenshot: "Laba ekifaananyi",
+    member: "Omumemba",
+    startCycle: "Tandika Omuzingo",
+    startNextCycle: "Tandika Omuzingo Oguddako",
+    starting: "Kitandika...",
+    noActiveCycle: "Tewali muzingo gukola",
+    paymentDue: "Okusasula okusuubirwa",
+    joinThisGroup: "Yingira mu kibiina kino",
+    joining: "Kuyingira...",
+  },
 } as const;
 
 type TranslationKey = keyof typeof translations.en;
@@ -98,7 +135,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const saved = localStorage.getItem("uzuza_language");
-    if (saved === "rw" || saved === "en") setLanguageState(saved);
+    if (saved === "rw" || saved === "en" || saved === "lg") setLanguageState(saved);
   }, []);
 
   function setLanguage(l: Language) {

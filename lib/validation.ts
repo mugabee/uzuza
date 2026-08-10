@@ -1,13 +1,18 @@
 import { z } from "zod";
 
-// Rwanda mobile numbers: +250 followed by 9 digits. E.164 format is what
-// Supabase phone auth requires regardless of SMS transport.
-const rwandaPhoneRegex = /^\+250[17]\d{8}$/;
+// East African mobile numbers, E.164 format (required by Supabase phone
+// auth regardless of SMS transport either way): Rwanda (+250, MTN/Airtel
+// prefixes 7/1) and Uganda (+256, mobile numbers all start with 7 after
+// the country code) — the app's two primary markets per CLAUDE.md.
+const eastAfricaPhoneRegex = /^\+(250[17]\d{8}|256[7]\d{8})$/;
 
 export const phoneSchema = z
   .string()
   .trim()
-  .regex(rwandaPhoneRegex, "Enter a valid Rwanda phone number, e.g. +250788123456");
+  .regex(
+    eastAfricaPhoneRegex,
+    "Enter a valid Rwanda (+250...) or Uganda (+256...) phone number, e.g. +250788123456",
+  );
 
 export const emailSchema = z.string().trim().email("Enter a valid email address");
 

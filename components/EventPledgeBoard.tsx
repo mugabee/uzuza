@@ -159,6 +159,8 @@ export function EventPledgeBoard({
   );
 }
 
+// Same WhatsApp-style tick convention as GroupLedger's StatusBadge — one
+// tick submitted, two once confirmed.
 function StatusBadge({ status }: { status: PledgeRow["status"] }) {
   const styles: Record<PledgeRow["status"], string> = {
     pledged: "bg-black/5 text-foreground/60",
@@ -166,8 +168,15 @@ function StatusBadge({ status }: { status: PledgeRow["status"] }) {
     confirmed: "bg-primary/15 text-primary",
     cancelled: "bg-red-100 text-red-600",
   };
+  const ticks: Record<PledgeRow["status"], string> = {
+    pledged: "○",
+    submitted: "✓",
+    confirmed: "✓✓",
+    cancelled: "✕",
+  };
   return (
-    <span className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${styles[status]}`}>
+    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium capitalize ${styles[status]}`}>
+      <span aria-hidden="true" className="font-sans tracking-tighter">{ticks[status]}</span>
       {status}
     </span>
   );

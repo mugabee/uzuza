@@ -4,7 +4,6 @@ import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Card } from "@/components/Card";
-import { Button } from "@/components/Button";
 import { friendlyError } from "@/lib/friendly-error";
 
 type Message = {
@@ -75,41 +74,82 @@ export function ChatPanel({
         Text only, no links or media. Visible to current group members.
       </p>
 
-      <div className="mt-4 flex max-h-96 flex-col gap-3 overflow-y-auto">
+      <div
+        className="mt-4 flex max-h-96 flex-col gap-1.5 overflow-y-auto rounded-xl p-3"
+        style={{
+          backgroundColor: "#e9ddc9",
+          backgroundImage:
+            "radial-gradient(rgba(0,0,0,0.035) 1px, transparent 1px)",
+          backgroundSize: "16px 16px",
+        }}
+      >
         {initialMessages.length === 0 && (
-          <p className="text-sm text-foreground/50">No messages yet.</p>
+          <p className="py-6 text-center text-sm text-foreground/40">
+            No messages yet — say hello.
+          </p>
         )}
-        {initialMessages.map((m) => (
-          <div key={m.id} className="text-sm">
-            <div className="flex items-baseline justify-between">
-              <span className="font-medium text-foreground">
-                {m.sender_id === currentUserId ? "You" : m.senderName}
-              </span>
-              <button
-                type="button"
-                onClick={() => handleFlag(m.id)}
-                className="text-xs text-foreground/30 hover:text-red-500"
+        {initialMessages.map((m) => {
+          const mine = m.sender_id === currentUserId;
+          return (
+            <div key={m.id} className={`flex ${mine ? "justify-end" : "justify-start"}`}>
+              <div
+                className={`relative max-w-[80%] rounded-lg px-3 py-1.5 text-sm shadow-sm ${
+                  mine
+                    ? "rounded-tr-none bg-[#d9fdd3] text-foreground"
+                    : "rounded-tl-none bg-white text-foreground"
+                }`}
               >
-                Report
-              </button>
+                {!mine && (
+                  <p className="text-xs font-semibold text-primary">{m.senderName}</p>
+                )}
+                <div className="flex items-end justify-between gap-2">
+                  <p className="whitespace-pre-wrap break-words">{m.body}</p>
+                  <button
+                    type="button"
+                    onClick={() => handleFlag(m.id)}
+                    aria-label="Report message"
+                    className="shrink-0 text-[10px] text-foreground/25 hover:text-red-500"
+                  >
+                    ⚑
+                  </button>
+                </div>
+                <span className="mt-0.5 block text-right text-[10px] text-foreground/40">
+                  {new Date(m.created_at).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </span>
+              </div>
             </div>
-            <p className="text-foreground/80">{m.body}</p>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {canSend ? (
-        <form onSubmit={handleSend} className="mt-4 flex gap-2">
+        <form onSubmit={handleSend} className="mt-3 flex items-center gap-2">
           <input
             value={body}
             onChange={(e) => setBody(e.target.value)}
-            placeholder="Say something..."
+            placeholder="Type a message"
             maxLength={500}
-            className="flex-1 rounded-lg border border-black/10 px-3 py-2 text-sm outline-none focus:border-primary"
+            className="flex-1 rounded-full border border-black/10 bg-white px-4 py-2.5 text-sm outline-none focus:border-primary"
           />
-          <Button type="submit" disabled={busy}>
-            Send
-          </Button>
+          <button
+            type="submit"
+            disabled={busy}
+            aria-label="Send"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-white shadow-[var(--shadow-soft)] transition-transform duration-150 active:scale-95 disabled:opacity-50"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="18"
+              height="18"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path d="M3 20l18-8L3 4v6l12 2-12 2z" />
+            </svg>
+          </button>
         </form>
       ) : (
         <p className="mt-4 text-xs text-foreground/50">
