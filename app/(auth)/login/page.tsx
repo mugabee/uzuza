@@ -55,7 +55,11 @@ export default function LoginPage() {
           Welcome to Uzuza
         </h1>
         <p className="mt-1 text-sm text-foreground/70">
-          Sign in with your phone or email to continue.
+          Enter your phone or email — we'll text or email you a code.
+        </p>
+        <p className="mt-1 text-xs text-foreground/50">
+          New here? You'll get an account automatically once you verify the
+          code — no separate sign-up needed.
         </p>
 
         <div className="mt-6 flex gap-1 rounded-full bg-black/[0.04] p-1 text-sm font-medium">
