@@ -80,10 +80,7 @@ export default function VerifyPage() {
     const { error: otpError } =
       method === "phone"
         ? await supabase.auth.signInWithOtp({ phone: identifier })
-        : await supabase.auth.signInWithOtp({
-            email: identifier,
-            options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
-          });
+        : await supabase.auth.signInWithOtp({ email: identifier });
     setResending(false);
     if (otpError) setError(otpError.message);
   }
@@ -96,43 +93,6 @@ export default function VerifyPage() {
     router.push("/login");
   };
 
-  if (method === "email") {
-    return (
-      <main className="flex flex-1 flex-col items-center justify-center px-6 py-16">
-        <Card className="max-w-sm">
-          <h1 className="font-display text-2xl font-semibold text-primary">
-            Check your email
-          </h1>
-          <p className="mt-1 text-sm text-foreground/70">
-            We sent a sign-in link to{" "}
-            <span className="font-medium text-foreground">{identifier}</span>.
-            Open it on this device to continue — it'll bring you straight
-            back here, signed in.
-          </p>
-
-          <div className="mt-6 flex flex-col gap-4">
-            {error && <p role="alert" className="text-xs text-red-500">{error}</p>}
-            <button
-              type="button"
-              onClick={handleResend}
-              disabled={resending}
-              className="text-sm font-medium text-primary underline-offset-2 hover:underline disabled:opacity-50"
-            >
-              {resending ? "Resending..." : "Resend link"}
-            </button>
-            <button
-              type="button"
-              onClick={tryDifferentMethod}
-              className="text-sm text-foreground/60 underline-offset-2 hover:underline"
-            >
-              Didn't get it? Try a different method
-            </button>
-          </div>
-        </Card>
-      </main>
-    );
-  }
-
   return (
     <main className="flex flex-1 flex-col items-center justify-center px-6 py-16">
       <Card className="max-w-sm">
@@ -140,7 +100,7 @@ export default function VerifyPage() {
           Enter your code
         </h1>
         <p className="mt-1 text-sm text-foreground/70">
-          We sent a 6-digit code to{" "}
+          We sent a verification code to{" "}
           <span className="font-medium text-foreground">{identifier}</span>.
         </p>
 
