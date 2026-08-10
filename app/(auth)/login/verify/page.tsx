@@ -12,6 +12,7 @@ export default function VerifyPage() {
   const router = useRouter();
   const [method, setMethod] = useState<"phone" | "email" | null>(null);
   const [identifier, setIdentifier] = useState<string | null>(null);
+  const [intent, setIntent] = useState<"signin" | "signup" | null>(null);
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -23,12 +24,17 @@ export default function VerifyPage() {
       | "email"
       | null;
     const id = sessionStorage.getItem("uzuza_login_identifier");
+    const i = sessionStorage.getItem("uzuza_login_intent") as
+      | "signin"
+      | "signup"
+      | null;
     if (!m || !id) {
       router.replace("/login");
       return;
     }
     setMethod(m);
     setIdentifier(id);
+    setIntent(i ?? "signup");
   }, [router]);
 
   async function handleSubmit(e: FormEvent) {
@@ -65,6 +71,7 @@ export default function VerifyPage() {
 
     sessionStorage.removeItem("uzuza_login_method");
     sessionStorage.removeItem("uzuza_login_identifier");
+    sessionStorage.removeItem("uzuza_login_intent");
     router.push("/profile");
     // Soft navigations reuse the already-rendered root layout, which
     // read the (until now) signed-out session — refresh so it re-checks
@@ -77,10 +84,17 @@ export default function VerifyPage() {
     setResending(true);
     setError(null);
     const supabase = createClient();
+    const shouldCreateUser = intent === "signup";
     const { error: otpError } =
       method === "phone"
-        ? await supabase.auth.signInWithOtp({ phone: identifier })
-        : await supabase.auth.signInWithOtp({ email: identifier });
+        ? await supabase.auth.signInWithOtp({
+            phone: identifier,
+            options: { shouldCreateUser },
+          })
+        : await supabase.auth.signInWithOtp({
+            email: identifier,
+            options: { shouldCreateUser },
+          });
     setResending(false);
     if (otpError) setError(otpError.message);
   }
@@ -90,6 +104,7 @@ export default function VerifyPage() {
   const tryDifferentMethod = () => {
     sessionStorage.removeItem("uzuza_login_method");
     sessionStorage.removeItem("uzuza_login_identifier");
+    sessionStorage.removeItem("uzuza_login_intent");
     router.push("/login");
   };
 
@@ -97,10 +112,10 @@ export default function VerifyPage() {
     <main className="flex flex-1 flex-col items-center justify-center px-6 py-16">
       <Card className="max-w-sm">
         <h1 className="font-display text-2xl font-semibold text-primary">
-          Enter your code
+          {intent === "signup" ? "Confirm your account" : "Enter your code"}
         </h1>
         <p className="mt-1 text-sm text-foreground/70">
-          We sent a verification code to{" "}
+          We sent a {intent === "signup" ? "sign-up" : "sign-in"} code to{" "}
           <span className="font-medium text-foreground">{identifier}</span>.
         </p>
 
