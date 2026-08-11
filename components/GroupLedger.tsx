@@ -242,10 +242,10 @@ export function GroupLedger({
         </p>
 
         <Link
-          href={`/groups/${group.id}/constitution`}
+          href={`/groups/${group.id}/settings`}
           className="mt-2 inline-block text-sm font-medium text-primary underline-offset-2 hover:underline"
         >
-          View group constitution
+          View group rules & settings
         </Link>
 
         {error && <p role="alert" className="mt-3 text-xs text-red-500">{error}</p>}

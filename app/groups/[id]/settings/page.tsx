@@ -9,6 +9,7 @@ import { AccountTypeEditor } from "@/components/AccountTypeEditor";
 import { SafetyFundEditor } from "@/components/SafetyFundEditor";
 import { ProposalsPanel } from "@/components/ProposalsPanel";
 import { PauseExitControls } from "@/components/PauseExitControls";
+import { GroupConstitutionSection } from "@/components/GroupConstitutionSection";
 
 export default async function GroupSettingsPage({
   params,
@@ -24,7 +25,7 @@ export default async function GroupSettingsPage({
   const { data: group } = await supabase
     .from("groups")
     .select(
-      "id, name, group_type, contribution_amount, frequency, target_size, momo_number, created_by, status, account_type, safety_fund_type",
+      "id, name, group_type, contribution_amount, frequency, target_size, momo_number, created_by, status, account_type, safety_fund_type, rotation_method, approval_threshold",
     )
     .eq("id", id)
     .single();
@@ -60,6 +61,22 @@ export default async function GroupSettingsPage({
     .eq("group_id", id)
     .order("created_at", { ascending: false });
 
+  const { data: acknowledgments } = await supabase
+    .from("constitution_acknowledgments")
+    .select("user_id, acknowledged_at")
+    .eq("group_id", id);
+
+  const hasAcknowledged = (acknowledgments ?? []).some(
+    (a) => a.user_id === user.id,
+  );
+
+  const membersWithStatus = (members ?? []).map((m) => ({
+    userId: m.user_id,
+    name: profiles?.find((p) => p.id === m.user_id)?.full_name ?? "Member",
+    acknowledgedAt:
+      acknowledgments?.find((a) => a.user_id === m.user_id)?.acknowledged_at ?? null,
+  }));
+
   return (
     <main className="flex flex-1 flex-col items-center px-6 py-16">
       <div className="flex w-full max-w-md flex-col gap-5">
@@ -91,12 +108,6 @@ export default async function GroupSettingsPage({
               </>
             )}
           </p>
-          <Link
-            href={`/groups/${id}/constitution`}
-            className="mt-2 inline-block text-sm font-medium text-primary underline-offset-2 hover:underline"
-          >
-            View group constitution
-          </Link>
           {isAdmin && (
             <MomoNumberEditor groupId={id} currentNumber={group.momo_number} />
           )}
@@ -107,6 +118,19 @@ export default async function GroupSettingsPage({
             />
           )}
         </Card>
+
+        {group.group_type === "rotating" && (
+          <GroupConstitutionSection
+            groupId={id}
+            groupName={group.name}
+            contributionAmount={Number(group.contribution_amount)}
+            frequency={group.frequency}
+            rotationMethod={group.rotation_method}
+            approvalThreshold={group.approval_threshold}
+            membersWithStatus={membersWithStatus}
+            hasAcknowledged={hasAcknowledged}
+          />
+        )}
 
         {isAdmin && group.group_type === "rotating" && (
           <SafetyFundEditor groupId={id} currentType={group.safety_fund_type} />

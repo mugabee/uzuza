@@ -80,9 +80,9 @@ export function FormingGroupView({
           {acknowledgedCount}/{members.length} members have acknowledged the
           rules. The group can't activate until everyone has.
         </p>
-        <Link href={`/groups/${group.id}/constitution`}>
+        <Link href={`/groups/${group.id}/settings`}>
           <Button variant={hasAcknowledgedConstitution ? "secondary" : "primary"} className="mt-3 w-full">
-            {hasAcknowledgedConstitution ? "Review constitution" : "Read and acknowledge"}
+            {hasAcknowledgedConstitution ? "Review group rules" : "Read and acknowledge"}
           </Button>
         </Link>
       </Card>
