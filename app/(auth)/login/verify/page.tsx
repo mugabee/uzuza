@@ -130,7 +130,8 @@ export default function VerifyPage() {
             error={error ?? undefined}
             autoFocus
           />
-          <Button type="submit" disabled={loading}>
+          <Button type="submit" disabled={loading}
+            loading={loading}>
             {loading ? "Verifying..." : "Verify and continue"}
           </Button>
           <button

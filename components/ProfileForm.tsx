@@ -145,7 +145,8 @@ export function ProfileForm({
         {submitError && (
           <p role="alert" className="text-xs text-red-500">{submitError}</p>
         )}
-        <Button type="submit" disabled={isSubmitting}>
+        <Button type="submit" disabled={isSubmitting}
+            loading={isSubmitting}>
           {isSubmitting ? "Saving..." : "Save"}
         </Button>
       </form>

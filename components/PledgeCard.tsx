@@ -170,7 +170,8 @@ export function PledgeCard({ group }: { group: Group }) {
             </select>
           </label>
           {pledgeError && <p role="alert" className="text-xs text-red-500">{pledgeError}</p>}
-          <Button type="submit" disabled={isSubmitting}>
+          <Button type="submit" disabled={isSubmitting}
+            loading={isSubmitting}>
             {isSubmitting ? "Pledging..." : "Pledge"}
           </Button>
         </form>
@@ -225,7 +226,8 @@ export function PledgeCard({ group }: { group: Group }) {
         </label>
         <ScreenshotPreview files={watchProof("screenshot")} />
         {proofError && <p role="alert" className="text-xs text-red-500">{proofError}</p>}
-        <Button type="submit" disabled={proofSubmitting}>
+        <Button type="submit" disabled={proofSubmitting}
+            loading={proofSubmitting}>
           {proofSubmitting ? "Submitting..." : "Submit proof"}
         </Button>
       </form>

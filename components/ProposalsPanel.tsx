@@ -158,7 +158,8 @@ export function ProposalsPanel({
           </label>
           <Field label="New MoMo number (optional)" {...register("momoNumber")} />
           <div className="flex gap-2">
-            <Button type="submit" disabled={isSubmitting}>
+            <Button type="submit" disabled={isSubmitting}
+            loading={isSubmitting}>
               {isSubmitting ? "Submitting..." : "Submit proposal"}
             </Button>
             <Button variant="secondary" onClick={() => setShowForm(false)}>

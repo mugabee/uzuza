@@ -59,7 +59,8 @@ export function MediationButton({ groupId }: { groupId: string }) {
       />
       {error && <p role="alert" className="text-xs text-red-500">{error}</p>}
       <div className="flex gap-2">
-        <Button type="submit" disabled={isSubmitting}>
+        <Button type="submit" disabled={isSubmitting}
+            loading={isSubmitting}>
           {isSubmitting ? "Sending..." : "Send"}
         </Button>
         <Button variant="secondary" onClick={() => setOpen(false)}>

@@ -161,7 +161,8 @@ export function ReserveCard({ group }: { group: Group }) {
         </div>
 
         {error && <p role="alert" className="mt-3 text-xs text-red-500">{error}</p>}
-        <Button className="mt-4 w-full" onClick={handleReserve} disabled={busy}>
+        <Button className="mt-4 w-full" onClick={handleReserve} disabled={busy}
+            loading={busy}>
           {busy ? "Reserving..." : "Reserve this spot"}
         </Button>
       </Card>
@@ -217,7 +218,8 @@ export function ReserveCard({ group }: { group: Group }) {
         </label>
         <ScreenshotPreview files={watch("screenshot")} />
         {error && <p role="alert" className="text-xs text-red-500">{error}</p>}
-        <Button type="submit" disabled={isSubmitting}>
+        <Button type="submit" disabled={isSubmitting}
+            loading={isSubmitting}>
           {isSubmitting ? "Submitting..." : "Submit proof"}
         </Button>
       </form>

@@ -30,6 +30,7 @@ type Contribution = {
     | "late_submitted"
     | "paid_late";
   missed_fine_amount?: number | null;
+  screenshot_path?: string | null;
 };
 
 export function LatePaymentCard({
@@ -42,7 +43,24 @@ export function LatePaymentCard({
   onSubmitted: () => void;
 }) {
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [screenshotUrl, setScreenshotUrl] = useState<string | null>(null);
+  const [loadingScreenshot, setLoadingScreenshot] = useState(false);
   const showToast = useToast();
+
+  async function handleViewScreenshot() {
+    if (!contribution.screenshot_path) return;
+    setLoadingScreenshot(true);
+    const supabase = createClient();
+    const { data, error } = await supabase.storage
+      .from("contribution-proofs")
+      .createSignedUrl(contribution.screenshot_path, 60);
+    setLoadingScreenshot(false);
+    if (error) {
+      setSubmitError(friendlyError(error.message));
+      return;
+    }
+    setScreenshotUrl(data.signedUrl);
+  }
   const {
     register,
     handleSubmit,
@@ -95,6 +113,29 @@ export function LatePaymentCard({
     onSubmitted();
   }
 
+  const screenshotBlock = contribution.screenshot_path && (
+    <div className="mt-3">
+      {!screenshotUrl ? (
+        <button
+          type="button"
+          onClick={handleViewScreenshot}
+          disabled={loadingScreenshot}
+          className="text-sm font-medium text-primary underline-offset-2 hover:underline disabled:opacity-50"
+        >
+          {loadingScreenshot ? "Loading..." : "View your submitted screenshot"}
+        </button>
+      ) : (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={screenshotUrl}
+          alt="Your submitted payment screenshot"
+          className="max-h-64 rounded-lg border border-black/10"
+        />
+      )}
+      {submitError && <p role="alert" className="mt-2 text-xs text-red-500">{submitError}</p>}
+    </div>
+  );
+
   if (contribution.status === "paid_late") {
     return (
       <Card>
@@ -104,6 +145,7 @@ export function LatePaymentCard({
         <p className="mt-2 text-sm font-medium text-primary">
           Confirmed — you're back in good standing.
         </p>
+        {screenshotBlock}
       </Card>
     );
   }
@@ -117,6 +159,7 @@ export function LatePaymentCard({
         <p className="mt-4 text-sm text-foreground/70">
           Waiting for admin confirmation.
         </p>
+        {screenshotBlock}
       </Card>
     );
   }
@@ -168,7 +211,8 @@ export function LatePaymentCard({
         </label>
         <ScreenshotPreview files={watch("screenshot")} />
         {submitError && <p role="alert" className="text-xs text-red-500">{submitError}</p>}
-        <Button type="submit" disabled={isSubmitting}>
+        <Button type="submit" disabled={isSubmitting}
+            loading={isSubmitting}>
           {isSubmitting ? "Submitting..." : "Submit proof"}
         </Button>
       </form>

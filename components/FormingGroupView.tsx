@@ -213,7 +213,8 @@ function AdminReservationRow({ reservation }: { reservation: Reservation }) {
 
       {error && <p role="alert" className="mt-2 text-xs text-red-500">{error}</p>}
 
-      <Button className="mt-4 w-full" onClick={handleConfirm} disabled={busy}>
+      <Button className="mt-4 w-full" onClick={handleConfirm} disabled={busy}
+            loading={busy}>
         {busy ? "Confirming..." : "Confirm reservation"}
       </Button>
     </Card>
@@ -259,7 +260,8 @@ function CancelReservationRow({ reservation }: { reservation: Reservation }) {
           <Button variant="secondary" className="flex-1" onClick={() => setConfirming(false)}>
             Never mind
           </Button>
-          <Button className="flex-1" onClick={handleCancel} disabled={busy}>
+          <Button className="flex-1" onClick={handleCancel} disabled={busy}
+            loading={busy}>
             {busy ? "Cancelling..." : "Yes, cancel"}
           </Button>
         </div>

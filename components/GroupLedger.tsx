@@ -193,7 +193,8 @@ export function GroupLedger({
           {group.frequency}, {members.length}/{group.target_size} members
         </p>
         {error && <p role="alert" className="mt-3 text-xs text-red-500">{error}</p>}
-        <Button className="mt-6 w-full" onClick={handleJoin} disabled={busy}>
+        <Button className="mt-6 w-full" onClick={handleJoin} disabled={busy}
+            loading={busy}>
           {busy ? t("joining") : t("joinThisGroup")}
         </Button>
       </Card>
@@ -246,7 +247,8 @@ export function GroupLedger({
         {error && <p role="alert" className="mt-3 text-xs text-red-500">{error}</p>}
 
         {isAdmin && !activeCycle && (
-          <Button className="mt-4 w-full" onClick={handleStartCycle} disabled={busy}>
+          <Button className="mt-4 w-full" onClick={handleStartCycle} disabled={busy}
+            loading={busy}>
             {busy
               ? t("starting")
               : completedCycle
@@ -353,7 +355,8 @@ export function GroupLedger({
       )}
 
       {isAdmin && contributions.some((c) => c.status === "submitted") && (
-        <Button variant="secondary" onClick={handleConfirmAll} disabled={busy}>
+        <Button variant="secondary" onClick={handleConfirmAll} disabled={busy}
+            loading={busy}>
           {busy ? "Confirming..." : "Confirm all"}
         </Button>
       )}

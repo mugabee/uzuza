@@ -28,10 +28,12 @@ export function ConfirmDialog({
         <h2 className="font-display text-lg font-semibold text-primary">{title}</h2>
         <p className="mt-2 text-sm text-foreground/70">{description}</p>
         <div className="mt-5 flex gap-2">
-          <Button variant="secondary" className="flex-1" onClick={onCancel} disabled={busy}>
+          <Button variant="secondary" className="flex-1" onClick={onCancel} disabled={busy}
+            loading={busy}>
             Cancel
           </Button>
-          <Button className="flex-1" onClick={onConfirm} disabled={busy}>
+          <Button className="flex-1" onClick={onConfirm} disabled={busy}
+            loading={busy}>
             {busy ? "Working..." : confirmLabel}
           </Button>
         </div>

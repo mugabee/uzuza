@@ -161,10 +161,12 @@ export function AdminLatePaymentRow({
 
       {!rejecting ? (
         <div className="mt-4 flex gap-2">
-          <Button onClick={() => decide(true)} disabled={busy}>
+          <Button onClick={() => decide(true)} disabled={busy}
+            loading={busy}>
             Approve
           </Button>
-          <Button variant="secondary" onClick={() => setRejecting(true)} disabled={busy}>
+          <Button variant="secondary" onClick={() => setRejecting(true)} disabled={busy}
+            loading={busy}>
             Reject
           </Button>
         </div>
@@ -178,10 +180,12 @@ export function AdminLatePaymentRow({
             rows={2}
           />
           <div className="flex gap-2">
-            <Button onClick={handleRejectSubmit} disabled={busy}>
+            <Button onClick={handleRejectSubmit} disabled={busy}
+            loading={busy}>
               Confirm reject
             </Button>
-            <Button variant="secondary" onClick={() => setRejecting(false)} disabled={busy}>
+            <Button variant="secondary" onClick={() => setRejecting(false)} disabled={busy}
+            loading={busy}>
               Cancel
             </Button>
           </div>

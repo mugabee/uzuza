@@ -142,7 +142,8 @@ export function PayoutPanel({
           {readyMessage} Request the payout to {recipientName}.
         </p>
         {error && <p role="alert" className="mt-2 text-xs text-red-500">{error}</p>}
-        <Button className="mt-3 w-full" onClick={handleRequest} disabled={busy}>
+        <Button className="mt-3 w-full" onClick={handleRequest} disabled={busy}
+            loading={busy}>
           {busy ? "Requesting..." : "Request Payout"}
         </Button>
       </Card>
@@ -164,7 +165,8 @@ export function PayoutPanel({
         <>
           <p className="mt-3 text-sm">{approvalCount} approval(s) so far.</p>
           {isAdmin && !hasApproved && (
-            <Button className="mt-3 w-full" onClick={handleApprove} disabled={busy}>
+            <Button className="mt-3 w-full" onClick={handleApprove} disabled={busy}
+            loading={busy}>
               {busy ? "Approving..." : "Approve Payout"}
             </Button>
           )}
@@ -207,7 +209,8 @@ export function PayoutPanel({
             )}
           </label>
           <ScreenshotPreview files={watch("screenshot")} />
-          <Button type="submit" disabled={isSubmitting}>
+          <Button type="submit" disabled={isSubmitting}
+            loading={isSubmitting}>
             {isSubmitting ? "Submitting..." : "Mark Completed"}
           </Button>
         </form>

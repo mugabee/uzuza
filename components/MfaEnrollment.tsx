@@ -109,6 +109,7 @@ export function MfaEnrollment() {
             variant="secondary"
             className="mt-3"
             disabled={busy}
+            loading={busy}
             onClick={() => unenroll(verified.id)}
           >
             Remove second factor
@@ -138,7 +139,8 @@ export function MfaEnrollment() {
       ) : (
         <div className="mt-4">
           {error && <p role="alert" className="mb-2 text-xs text-red-500">{error}</p>}
-          <Button disabled={busy} onClick={startEnroll}>
+          <Button disabled={busy}
+            loading={busy} onClick={startEnroll}>
             {busy ? "Starting..." : "Enroll a second factor"}
           </Button>
         </div>

@@ -62,7 +62,8 @@ export function UnmatchedPaymentsClient({ payments }: { payments: Payment[] }) {
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
           />
-          <Button onClick={handleLog} disabled={busy}>
+          <Button onClick={handleLog} disabled={busy}
+            loading={busy}>
             {busy ? "Logging..." : "Log payment"}
           </Button>
         </div>

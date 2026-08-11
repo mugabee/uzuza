@@ -154,7 +154,8 @@ export default function LoginPage() {
                   🇷🇼 Rwanda (+250) or 🇺🇬 Uganda (+256) numbers
                 </p>
               )}
-              <Button type="submit" disabled={loading}>
+              <Button type="submit" disabled={loading}
+            loading={loading}>
                 {loading
                   ? "Sending..."
                   : intent === "signup"

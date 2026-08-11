@@ -33,6 +33,7 @@ type Contribution = {
     | "paid_late";
   rejected_reason: string | null;
   missed_fine_amount?: number | null;
+  screenshot_path?: string | null;
 };
 
 export function ContributeCard({
@@ -45,8 +46,25 @@ export function ContributeCard({
   onSubmitted: () => void;
 }) {
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [screenshotUrl, setScreenshotUrl] = useState<string | null>(null);
+  const [loadingScreenshot, setLoadingScreenshot] = useState(false);
   const { t } = useLanguage();
   const showToast = useToast();
+
+  async function handleViewScreenshot() {
+    if (!contribution.screenshot_path) return;
+    setLoadingScreenshot(true);
+    const supabase = createClient();
+    const { data, error } = await supabase.storage
+      .from("contribution-proofs")
+      .createSignedUrl(contribution.screenshot_path, 60);
+    setLoadingScreenshot(false);
+    if (error) {
+      setSubmitError(friendlyError(error.message));
+      return;
+    }
+    setScreenshotUrl(data.signedUrl);
+  }
   const {
     register,
     handleSubmit,
@@ -176,7 +194,8 @@ export function ContributeCard({
           </label>
           <ScreenshotPreview files={watch("screenshot")} />
           {submitError && <p role="alert" className="text-xs text-red-500">{submitError}</p>}
-          <Button type="submit" disabled={isSubmitting}>
+          <Button type="submit" disabled={isSubmitting}
+            loading={isSubmitting}>
             {isSubmitting ? t("submitting") : t("submitProof")}
           </Button>
         </form>
@@ -186,6 +205,28 @@ export function ContributeCard({
         <p className="mt-4 text-sm text-foreground/70">
           {t("waitingConfirmation")}
         </p>
+      )}
+
+      {contribution.status !== "pending" && contribution.screenshot_path && (
+        <div className="mt-3">
+          {!screenshotUrl ? (
+            <button
+              type="button"
+              onClick={handleViewScreenshot}
+              disabled={loadingScreenshot}
+              className="text-sm font-medium text-primary underline-offset-2 hover:underline disabled:opacity-50"
+            >
+              {loadingScreenshot ? "Loading..." : "View your submitted screenshot"}
+            </button>
+          ) : (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={screenshotUrl}
+              alt="Your submitted payment screenshot"
+              className="max-h-64 rounded-lg border border-black/10"
+            />
+          )}
+        </div>
       )}
 
       {contribution.status === "missed" && (

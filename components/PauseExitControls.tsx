@@ -111,7 +111,8 @@ export function PauseExitControls({ groupId }: { groupId: string }) {
           />
           {error && <p role="alert" className="text-xs text-red-500">{error}</p>}
           <div className="flex gap-2">
-            <Button onClick={handleRequestPause} disabled={busy}>
+            <Button onClick={handleRequestPause} disabled={busy}
+            loading={busy}>
               {busy ? "Requesting..." : "Request pause"}
             </Button>
             <Button variant="secondary" onClick={() => setMode("none")}>

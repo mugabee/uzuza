@@ -58,7 +58,8 @@ export function MissedPaymentButton({
         className="w-16 rounded border border-black/10 px-1 py-0.5 text-xs"
         placeholder="Fine"
       />
-      <Button onClick={handleReport} disabled={busy} className="px-2 py-1 text-xs">
+      <Button onClick={handleReport} disabled={busy}
+            loading={busy} className="px-2 py-1 text-xs">
         {busy ? "..." : "Confirm"}
       </Button>
       {error && <span role="alert" className="text-xs text-red-500">{error}</span>}
