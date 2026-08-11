@@ -1,6 +1,8 @@
 "use client";
 
 import { createContext, useCallback, useContext, useState, type ReactNode } from "react";
+import { Capacitor } from "@capacitor/core";
+import { Haptics, NotificationType } from "@capacitor/haptics";
 
 type Toast = { id: number; message: string; kind: "success" | "error" };
 
@@ -8,12 +10,24 @@ const ToastContext = createContext<{ show: (message: string, kind?: Toast["kind"
 
 let nextId = 1;
 
+// Toasts are already the single funnel almost every action in the app uses
+// to report success/failure, which makes this the one place to add haptic
+// feedback centrally instead of scattering Haptics calls across ~20
+// components. No-op in a normal browser (Capacitor.isNativePlatform()).
+function triggerHaptic(kind: Toast["kind"]) {
+  if (!Capacitor.isNativePlatform()) return;
+  Haptics.notification({
+    type: kind === "success" ? NotificationType.Success : NotificationType.Error,
+  }).catch(() => {});
+}
+
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   const show = useCallback((message: string, kind: Toast["kind"] = "success") => {
     const id = nextId++;
     setToasts((prev) => [...prev, { id, message, kind }]);
+    triggerHaptic(kind);
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
     }, 3000);

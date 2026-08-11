@@ -16,6 +16,7 @@ import { MissedPaymentButton } from "@/components/MissedPaymentButton";
 import { CycleCelebration } from "@/components/CycleCelebration";
 import { LatePaymentCard } from "@/components/LatePaymentCard";
 import { AdminLatePaymentRow } from "@/components/AdminLatePaymentRow";
+import { PullToRefresh } from "@/components/PullToRefresh";
 import { useLanguage } from "@/lib/i18n";
 
 type Profile = { id: string; full_name: string | null; phone: string | null } | null;
@@ -208,6 +209,12 @@ export function GroupLedger({
   const myContribution = contributions.find((c) => c.member_id === currentUserId);
 
   return (
+    <PullToRefresh
+      onRefresh={() => {
+        router.refresh();
+        setLastUpdated(new Date());
+      }}
+    >
     <div className="flex w-full max-w-md flex-col gap-5">
       <Card>
         <div className="flex items-start justify-between gap-3">
@@ -414,6 +421,7 @@ export function GroupLedger({
         />
       )}
     </div>
+    </PullToRefresh>
   );
 }
 

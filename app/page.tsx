@@ -5,6 +5,7 @@ import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
 import { SavingsJourneyCard } from "@/components/SavingsJourneyCard";
 import { IntroCard } from "@/components/IntroCard";
+import { HomePullToRefresh } from "@/components/HomePullToRefresh";
 
 export default async function Home() {
   const supabase = await createClient();
@@ -82,6 +83,7 @@ export default async function Home() {
 
   return (
     <main className="flex flex-1 flex-col items-center px-6 py-16">
+      <HomePullToRefresh>
       <div className="flex w-full max-w-md flex-col gap-5">
         <IntroCard />
         <Card>
@@ -156,6 +158,7 @@ export default async function Home() {
           </Button>
         </Link>
       </div>
+      </HomePullToRefresh>
     </main>
   );
 }
