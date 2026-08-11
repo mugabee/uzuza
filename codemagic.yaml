@@ -3,7 +3,7 @@ workflows:
     name: Uzuza Android Debug Build
     max_build_duration: 30
     environment:
-      node: 20
+      node: 22
       java: 21
       vars:
         # Nothing secret needed for a debug build - it loads the live
