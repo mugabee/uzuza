@@ -1,0 +1,56 @@
+name: Android Debug Build
+
+# Builds an installable debug APK entirely on GitHub's runners - no local
+# Android Studio/SDK/Gradle needed on any contributor's machine. This is a
+# debug build (auto-signed with Gradle's own throwaway debug key), fine for
+# sideloading onto a real device to test, not for a real Play Store
+# submission - that needs a proper release keystore, a later step.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths:
+      - "android/**"
+      - "capacitor.config.ts"
+      - "www/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/android-build.yml"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Sync Capacitor config into the native Android project
+        run: npx cap sync android
+
+      - name: Make gradlew executable
+        run: chmod +x android/gradlew
+
+      - name: Build debug APK
+        working-directory: android
+        run: ./gradlew assembleDebug --no-daemon
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: uzuza-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30
