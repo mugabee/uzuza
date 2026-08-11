@@ -35,8 +35,13 @@ export function ChatPanel({
 
   // Lightweight polling refresh instead of a realtime subscription — keeps
   // this consistent with the rest of the app's router.refresh() pattern.
+  // Skips while backgrounded/hidden so it doesn't compete for bandwidth
+  // with whatever the user's actually doing on mobile data.
   useEffect(() => {
-    const interval = setInterval(() => router.refresh(), 4000);
+    const interval = setInterval(() => {
+      if (document.visibilityState !== "visible") return;
+      router.refresh();
+    }, 8000);
     return () => clearInterval(interval);
   }, [router]);
 

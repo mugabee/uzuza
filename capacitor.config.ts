@@ -24,6 +24,20 @@ const config: CapacitorConfig = {
   ios: {
     contentInset: "automatic",
   },
+  plugins: {
+    // Auto-hide off: on a slow mobile connection, the fixed-duration
+    // default can hide the splash before the live site has actually
+    // finished loading, showing a blank flash underneath. The web app
+    // itself calls SplashScreen.hide() once it's actually rendered
+    // (components/SplashScreenHider.tsx) - Capacitor's native bridge is
+    // injected into the remote page even in server.url mode, so this
+    // works the same as it would for a bundled app.
+    SplashScreen: {
+      launchAutoHide: false,
+      backgroundColor: "#f7f4ee",
+      androidScaleType: "CENTER_CROP",
+    },
+  },
 };
 
 export default config;

@@ -110,13 +110,17 @@ export function GroupLedger({
   const [now, setNow] = useState(() => new Date());
 
   // Lightweight polling refresh so the ledger reflects what other admins
-  // and members do without everyone needing to manually reload — same
-  // approach already used for the pre-activation chat.
+  // and members do without everyone needing to manually reload. Every tick
+  // is a full server round-trip, so this stays infrequent (20s, not the
+  // original 6s) and skips entirely while the app is backgrounded/hidden -
+  // on mobile data, competing background refreshes were a real contributor
+  // to the whole app feeling sluggish, not just this screen.
   useEffect(() => {
     const interval = setInterval(() => {
+      if (document.visibilityState !== "visible") return;
       router.refresh();
       setLastUpdated(new Date());
-    }, 6000);
+    }, 20000);
     return () => clearInterval(interval);
   }, [router]);
 
