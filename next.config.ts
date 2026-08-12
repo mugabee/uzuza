@@ -18,7 +18,11 @@ const nextConfig: NextConfig = {
             value: [
               "default-src 'self'",
               `connect-src 'self' ${supabaseOrigin} https://api.qrserver.com`,
-              "img-src 'self' data: https://api.qrserver.com",
+              // blob: is required for ScreenshotPreview's local file-picker
+              // preview (URL.createObjectURL) - without it, the CSP silently
+              // blocked the preview image with no visible error anywhere in
+              // the app, only in the browser console.
+              "img-src 'self' data: blob: https://api.qrserver.com",
               "script-src 'self' 'unsafe-inline'",
               "style-src 'self' 'unsafe-inline'",
             ].join("; "),

@@ -105,6 +105,7 @@ export function GroupLedger({
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [tab, setTab] = useState<"overview" | "ledger" | "members">("overview");
   const { t } = useLanguage();
   const showToast = useToast();
   const [lastUpdated, setLastUpdated] = useState(() => new Date());
@@ -282,6 +283,31 @@ export function GroupLedger({
         )}
       </Card>
 
+      <div className="flex gap-1 rounded-full bg-surface-secondary p-1 text-sm font-medium">
+        {(
+          [
+            ["overview", "Overview"],
+            ["ledger", group.group_type === "rotating" ? "Ledger" : "Contributions"],
+            ["members", "Members"],
+          ] as const
+        ).map(([key, label]) => (
+          <button
+            key={key}
+            type="button"
+            onClick={() => setTab(key)}
+            className={`flex-1 rounded-full py-2 transition-all duration-200 ${
+              tab === key
+                ? "bg-surface text-primary shadow-[var(--shadow-soft)]"
+                : "text-foreground/60 hover:text-foreground/80"
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {tab === "overview" && (
+        <>
       {completedCycle && payoutRequest?.status === "completed" && (
         <CycleCelebration
           groupId={group.id}
@@ -332,8 +358,16 @@ export function GroupLedger({
           onSubmitted={() => router.refresh()}
         />
       )}
+        </>
+      )}
 
-      {activeCycle && (
+      {tab === "ledger" && !activeCycle && (
+        <Card>
+          <p className="text-sm text-foreground/60">No active cycle right now.</p>
+        </Card>
+      )}
+
+      {tab === "ledger" && activeCycle && (
         <Card>
           <div className="flex items-center justify-between">
             <h2 className="font-display text-lg font-semibold text-primary">
@@ -415,6 +449,32 @@ export function GroupLedger({
         </Card>
       )}
 
+      {tab === "members" && (
+        <Card>
+          <div className="flex items-center justify-between">
+            <h2 className="font-display text-lg font-semibold text-primary">
+              Members
+            </h2>
+            <Link
+              href={`/groups/${group.id}/settings`}
+              className="text-xs text-primary underline-offset-2 hover:underline"
+            >
+              Manage
+            </Link>
+          </div>
+          <ul className="mt-3 flex flex-col gap-2">
+            {members.map((m) => (
+              <li key={m.user_id} className="flex items-center justify-between text-sm">
+                <span>{m.profile?.full_name ?? "Member"}</span>
+                <span className="text-xs capitalize text-foreground/50">{m.role}</span>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      )}
+
+      {tab === "overview" && (
+        <>
       {isAdmin && contributions.some((c) => c.status === "submitted") && (
         <Button variant="secondary" onClick={handleConfirmAll} disabled={busy}
             loading={busy}>
@@ -434,28 +494,6 @@ export function GroupLedger({
           ))}
 
       <Card>
-        <div className="flex items-center justify-between">
-          <h2 className="font-display text-lg font-semibold text-primary">
-            Members
-          </h2>
-          <Link
-            href={`/groups/${group.id}/settings`}
-            className="text-xs text-primary underline-offset-2 hover:underline"
-          >
-            Manage
-          </Link>
-        </div>
-        <ul className="mt-3 flex flex-col gap-2">
-          {members.map((m) => (
-            <li key={m.user_id} className="flex items-center justify-between text-sm">
-              <span>{m.profile?.full_name ?? "Member"}</span>
-              <span className="text-xs capitalize text-foreground/50">{m.role}</span>
-            </li>
-          ))}
-        </ul>
-      </Card>
-
-      <Card>
         <MediationButton groupId={group.id} />
       </Card>
 
@@ -469,6 +507,8 @@ export function GroupLedger({
           recipientName={recipientName}
           readyMessage="Cycle complete — every contribution confirmed."
         />
+      )}
+        </>
       )}
     </div>
     </PullToRefresh>
