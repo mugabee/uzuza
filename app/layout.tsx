@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Manrope, Inter } from "next/font/google";
 import { createClient } from "@/lib/supabase/server";
 import { AppNav } from "@/components/AppNav";
+import { NotificationBell } from "@/components/NotificationBell";
 import { LanguageProvider } from "@/lib/i18n";
 import { ToastProvider } from "@/lib/toast";
 import { OfflineBanner } from "@/components/OfflineBanner";
@@ -63,6 +64,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         <OfflineBanner />
         <LanguageProvider>
           <ToastProvider>
+            <NotificationBell signedIn={!!user} />
             {children}
             <AppNav signedIn={!!user} />
           </ToastProvider>

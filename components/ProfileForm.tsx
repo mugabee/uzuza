@@ -29,6 +29,7 @@ export function ProfileForm({
   const [avatarUrl, setAvatarUrl] = useState(defaultAvatarUrl);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const showToast = useToast();
+  const [inviteCode, setInviteCode] = useState("");
   const {
     register,
     handleSubmit,
@@ -89,6 +90,15 @@ export function ProfileForm({
       return;
     }
 
+    if (inviteCode.trim()) {
+      const { error: redeemError } = await supabase.rpc("redeem_invite_code", {
+        p_code: inviteCode.trim(),
+      });
+      if (redeemError) {
+        showToast(friendlyError(redeemError.message), "error");
+      }
+    }
+
     showToast("Profile saved");
     router.push("/");
     router.refresh();
@@ -141,6 +151,12 @@ export function ProfileForm({
           placeholder="+250788123456"
           error={errors.phone?.message}
           {...register("phone")}
+        />
+        <Field
+          label="Invite code (optional)"
+          placeholder="e.g. 418669"
+          value={inviteCode}
+          onChange={(e) => setInviteCode(e.target.value)}
         />
         {submitError && (
           <p role="alert" className="text-xs text-red-500">{submitError}</p>

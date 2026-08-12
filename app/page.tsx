@@ -4,6 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
 import { SavingsJourneyCard } from "@/components/SavingsJourneyCard";
+import { TrustScoreCard } from "@/components/TrustScoreCard";
+import { SavingsInsightsChart } from "@/components/SavingsInsightsChart";
 import { IntroCard } from "@/components/IntroCard";
 import { HomePullToRefresh } from "@/components/HomePullToRefresh";
 
@@ -22,6 +24,7 @@ export default async function Home() {
 
   const { data: journeyRows } = await supabase.rpc("get_lifetime_savings_summary");
   const journey = journeyRows?.[0];
+  const { data: insights } = await supabase.rpc("get_savings_insights");
 
   if (!memberships || memberships.length === 0) {
     return (
@@ -29,13 +32,20 @@ export default async function Home() {
         <div className="flex w-full max-w-sm flex-col gap-5">
           <IntroCard />
           {journey && (
-            <SavingsJourneyCard
-              totalSaved={Number(journey.total_saved)}
-              cyclesCompleted={journey.cycles_completed}
-              currentStreak={journey.current_streak}
-              groupsCount={journey.groups_count}
-            />
+            <>
+              <SavingsJourneyCard
+                totalSaved={Number(journey.total_saved)}
+                cyclesCompleted={journey.cycles_completed}
+                currentStreak={journey.current_streak}
+                groupsCount={journey.groups_count}
+              />
+              <TrustScoreCard
+                cyclesCompleted={journey.cycles_completed}
+                missedCount={journey.missed_count}
+              />
+            </>
           )}
+          {insights && <SavingsInsightsChart data={insights} />}
           <Card className="text-center">
             <h1 className="font-display text-2xl font-semibold text-primary">
               No groups yet
@@ -88,13 +98,20 @@ export default async function Home() {
         <IntroCard />
 
         {journey && (
-          <SavingsJourneyCard
-            totalSaved={Number(journey.total_saved)}
-            cyclesCompleted={journey.cycles_completed}
-            currentStreak={journey.current_streak}
-            groupsCount={journey.groups_count}
-          />
+          <>
+            <SavingsJourneyCard
+              totalSaved={Number(journey.total_saved)}
+              cyclesCompleted={journey.cycles_completed}
+              currentStreak={journey.current_streak}
+              groupsCount={journey.groups_count}
+            />
+            <TrustScoreCard
+              cyclesCompleted={journey.cycles_completed}
+              missedCount={journey.missed_count}
+            />
+          </>
         )}
+        {insights && <SavingsInsightsChart data={insights} />}
 
         <Card>
           <h1 className="font-display text-2xl font-semibold text-primary">

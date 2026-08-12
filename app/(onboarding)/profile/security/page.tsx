@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { MfaEnrollment } from "@/components/MfaEnrollment";
 import { DisplaySettings } from "@/components/DisplaySettings";
+import { ReferralCard } from "@/components/ReferralCard";
+import { OtherSettings } from "@/components/OtherSettings";
 import { Card } from "@/components/Card";
 
 export default async function ProfileSecurityPage() {
@@ -64,8 +66,10 @@ export default async function ProfileSecurityPage() {
           </Card>
         </Link>
 
+        <ReferralCard />
         <MfaEnrollment />
         <DisplaySettings />
+        <OtherSettings />
       </div>
     </main>
   );
