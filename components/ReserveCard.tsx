@@ -149,7 +149,7 @@ export function ReserveCard({ group }: { group: Group }) {
           {group.frequency}, target {group.target_size} members
         </p>
 
-        <div className="mt-4 rounded-lg bg-black/5 p-3 text-xs text-foreground/70">
+        <div className="mt-4 rounded-lg bg-surface-secondary p-3 text-xs text-foreground/70">
           Reserving costs a refundable deposit of{" "}
           <strong>{fee.toLocaleString()} RWF</strong> (5% of the contribution
           amount, capped at 50,000 RWF). This deposit is held in Uzuza's own

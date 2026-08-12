@@ -10,7 +10,7 @@ export default async function InternalLayout({
 
   return (
     <div className="flex min-h-screen flex-col bg-paper">
-      <nav className="flex gap-6 border-b border-black/10 bg-white px-8 py-4 text-sm">
+      <nav className="flex gap-6 border-b border-border bg-surface px-8 py-4 text-sm">
         <span className="font-display font-semibold text-primary">
           Uzuza Internal
         </span>

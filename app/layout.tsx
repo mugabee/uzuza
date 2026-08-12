@@ -50,8 +50,10 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             __html: `(function(){try{
               var s=localStorage.getItem('uzuza_text_size');
               var c=localStorage.getItem('uzuza_contrast');
+              var t=localStorage.getItem('uzuza_theme');
               if(s==='large')document.documentElement.setAttribute('data-text-size','large');
               if(c==='high')document.documentElement.setAttribute('data-contrast','high');
+              if(t==='dark')document.documentElement.setAttribute('data-theme','dark');
             }catch(e){}})();`,
           }}
         />

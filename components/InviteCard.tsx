@@ -37,7 +37,7 @@ export function InviteCard({ groupId }: { groupId: string }) {
             alt="QR code to join this group"
             width={160}
             height={160}
-            className="rounded-lg border border-black/10"
+            className="rounded-lg border border-border"
           />
         )}
         <p className="break-all text-center text-xs text-foreground/50">

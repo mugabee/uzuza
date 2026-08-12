@@ -42,7 +42,7 @@ export default async function PledgePage({
         </Card>
 
         {user ? (
-          <details className="rounded-2xl border border-black/[0.06] bg-white p-4">
+          <details className="rounded-2xl border border-border bg-surface p-4">
             <summary className="cursor-pointer text-sm font-medium text-foreground/70">
               Prefer to pay a different way?
             </summary>

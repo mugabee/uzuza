@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { BottomSheet } from "@/components/BottomSheet";
 
 const TABS = [
   {
@@ -23,10 +24,33 @@ const TABS = [
       </>
     ),
   },
+];
+
+const QUICK_ACTIONS = [
   {
     href: "/groups/new",
-    label: "New",
+    label: "Create a group",
+    description: "Start a rotating savings group or an event collection",
     icon: <path d="M12 5v14M5 12h14" />,
+  },
+  {
+    href: "/find",
+    label: "Find a group to join",
+    description: "Browse open groups you can request to join",
+    icon: (
+      <>
+        <circle cx="10.5" cy="10.5" r="6.5" />
+        <path d="m20 20-4.35-4.35" />
+      </>
+    ),
+  },
+  {
+    href: "/",
+    label: "My groups",
+    description: "Jump back to your home dashboard",
+    icon: (
+      <path d="M3 11.5 12 4l9 7.5M5.5 10v9a1 1 0 0 0 1 1H10v-5.5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1V20h3.5a1 1 0 0 0 1-1v-9" />
+    ),
   },
 ];
 
@@ -50,6 +74,7 @@ export function AppNav({ signedIn }: { signedIn: boolean }) {
   const pathname = usePathname();
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [quickActionsOpen, setQuickActionsOpen] = useState(false);
   const navRef = useRef<HTMLElement>(null);
 
   const profileActive = pathname.startsWith("/profile");
@@ -78,6 +103,7 @@ export function AppNav({ signedIn }: { signedIn: boolean }) {
   // new page.
   useEffect(() => {
     setMenuOpen(false);
+    setQuickActionsOpen(false);
   }, [pathname]);
 
   // The internal ops console and the pre-auth screens each render their
@@ -107,7 +133,7 @@ export function AppNav({ signedIn }: { signedIn: boolean }) {
       />
       <nav
         ref={navRef}
-        className="fixed inset-x-0 bottom-0 z-10 flex items-stretch justify-around border-t border-black/[0.06] bg-white/90 shadow-[0_-4px_20px_-4px_rgba(28,28,26,0.06)] backdrop-blur-md"
+        className="fixed inset-x-0 bottom-0 z-10 flex items-stretch justify-around border-t border-border bg-surface/90 shadow-[0_-4px_20px_-4px_rgba(28,28,26,0.06)] backdrop-blur-md"
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
         {TABS.map((tab) => {
@@ -150,6 +176,20 @@ export function AppNav({ signedIn }: { signedIn: boolean }) {
           );
         })}
 
+        <div className="flex flex-1 items-center justify-center">
+          <button
+            type="button"
+            onClick={() => setQuickActionsOpen(true)}
+            aria-label="Quick actions"
+            aria-haspopup="dialog"
+            className="-mt-6 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_4px_12px_-2px_rgba(26,95,74,0.4),0_8px_24px_-4px_rgba(26,95,74,0.3)] ring-4 ring-surface transition-transform duration-150 active:scale-95"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+          </button>
+        </div>
+
         <div className="relative flex flex-1">
           <button
             type="button"
@@ -191,7 +231,7 @@ export function AppNav({ signedIn }: { signedIn: boolean }) {
           {menuOpen && (
             <div
               role="menu"
-              className="absolute bottom-full right-0 mb-2 w-48 origin-bottom-right animate-fade-scale-in rounded-2xl border border-black/[0.06] bg-white p-1.5 shadow-[var(--shadow-soft-md)]"
+              className="absolute bottom-full right-0 mb-2 w-48 origin-bottom-right animate-fade-scale-in rounded-2xl border border-border bg-surface p-1.5 shadow-[var(--shadow-soft-md)]"
             >
               <Link
                 role="menuitem"
@@ -207,7 +247,7 @@ export function AppNav({ signedIn }: { signedIn: boolean }) {
               >
                 Security & display
               </Link>
-              <div className="my-1 h-px bg-black/[0.06]" />
+              <div className="my-1 h-px bg-border" />
               <button
                 type="button"
                 role="menuitem"
@@ -232,6 +272,37 @@ export function AppNav({ signedIn }: { signedIn: boolean }) {
           )}
         </div>
       </nav>
+
+      <BottomSheet
+        open={quickActionsOpen}
+        onClose={() => setQuickActionsOpen(false)}
+        title="Quick actions"
+      >
+        <div className="flex flex-col gap-1">
+          {QUICK_ACTIONS.map((action) => (
+            <Link
+              key={action.label}
+              href={action.href}
+              onClick={() => setQuickActionsOpen(false)}
+              className="flex items-center gap-3 rounded-xl px-2 py-3 transition-colors duration-150 hover:bg-primary/5"
+            >
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round">
+                  {action.icon}
+                </svg>
+              </span>
+              <span>
+                <span className="block text-sm font-semibold text-foreground">
+                  {action.label}
+                </span>
+                <span className="block text-xs text-foreground/50">
+                  {action.description}
+                </span>
+              </span>
+            </Link>
+          ))}
+        </div>
+      </BottomSheet>
     </>
   );
 }

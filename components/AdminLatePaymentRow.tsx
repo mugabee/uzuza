@@ -153,7 +153,7 @@ export function AdminLatePaymentRow({
         <img
           src={screenshotUrl}
           alt="Payment screenshot"
-          className="mt-2 max-h-64 rounded-lg border border-black/10"
+          className="mt-2 max-h-64 rounded-lg border border-border"
         />
       )}
 
@@ -176,7 +176,7 @@ export function AdminLatePaymentRow({
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             placeholder="Why is this being rejected?"
-            className="rounded-lg border border-black/10 px-3 py-2 text-sm outline-none focus:border-primary"
+            className="rounded-lg border border-border px-3 py-2 text-sm outline-none focus:border-primary"
             rows={2}
           />
           <div className="flex gap-2">

@@ -6,6 +6,27 @@
   --primary: #1a5f4a;
   --primary-foreground: #f7f4ee;
   --accent: #c9962c;
+  --surface: #ffffff;
+  --surface-secondary: rgba(28, 28, 26, 0.04);
+  --border: rgba(28, 28, 26, 0.08);
+  --chat-wallpaper: #e9ddc9;
+  --chat-bubble-mine: #d9fdd3;
+}
+
+/* Real dark theme, not just an inverted contrast mode — toggled via
+   Display settings, applied as html[data-theme="dark"] before paint (see
+   the inline script in layout.tsx) so there's no flash of light mode. */
+html[data-theme="dark"] {
+  --paper: #14161a;
+  --foreground: #edece8;
+  --primary: #34a17f;
+  --primary-foreground: #0b120f;
+  --accent: #e0ac3f;
+  --surface: #1e2126;
+  --surface-secondary: rgba(255, 255, 255, 0.06);
+  --border: rgba(255, 255, 255, 0.1);
+  --chat-wallpaper: #2a2f26;
+  --chat-bubble-mine: #1f4d38;
 }
 
 @theme inline {
@@ -14,6 +35,11 @@
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-accent: var(--accent);
+  --color-surface: var(--surface);
+  --color-surface-secondary: var(--surface-secondary);
+  --color-border: var(--border);
+  --color-chat-wallpaper: var(--chat-wallpaper);
+  --color-chat-bubble-mine: var(--chat-bubble-mine);
   --font-sans: var(--font-inter);
   --font-display: var(--font-manrope);
 
@@ -35,10 +61,8 @@ html[data-contrast="high"] {
   --primary: #0a3f30;
   --primary-foreground: #ffffff;
   --accent: #7a5200;
-}
-
-html[data-contrast="high"] .ring-1.ring-black\/\[0\.06\] {
-  --tw-ring-color: rgb(0 0 0 / 0.3);
+  --surface: #ffffff;
+  --border: rgb(0 0 0 / 0.3);
 }
 
 /* Subtle depth behind the whole page instead of one flat color — barely

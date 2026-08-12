@@ -90,7 +90,7 @@ export function PaymentChannelPicker({
               className={`flex flex-col items-center gap-1 rounded-xl border px-2 py-3 text-center transition-all duration-150 ${
                 channel === c.value
                   ? "border-primary bg-primary/5 shadow-[var(--shadow-soft)]"
-                  : "border-black/10 hover:border-black/20"
+                  : "border-border hover:border-black/20"
               }`}
             >
               <span className="text-xl">{c.icon}</span>
@@ -103,18 +103,18 @@ export function PaymentChannelPicker({
         </div>
         <div
           title="Coming soon"
-          className="mt-2 flex items-center justify-center gap-1.5 rounded-xl border border-dashed border-black/10 px-3 py-2 text-xs text-foreground/30"
+          className="mt-2 flex items-center justify-center gap-1.5 rounded-xl border border-dashed border-border px-3 py-2 text-xs text-foreground/30"
         >
           🔒 Card / bank gateway — coming soon
         </div>
       </div>
 
       {isInternational && (
-        <div className="flex flex-col gap-3 rounded-xl bg-black/[0.03] p-3 animate-fade-slide-down">
+        <div className="flex flex-col gap-3 rounded-xl bg-surface-secondary p-3 animate-fade-slide-down">
           <label className="flex flex-col gap-1.5 text-sm">
             <span className="font-medium text-foreground">Sending from</span>
             <select
-              className="rounded-lg border border-black/10 px-3 py-2.5 text-sm outline-none focus:border-primary"
+              className="rounded-lg border border-border px-3 py-2.5 text-sm outline-none focus:border-primary"
               {...register("payerCurrency")}
             >
               {SUPPORTED_CURRENCIES.map((c) => (
@@ -125,7 +125,7 @@ export function PaymentChannelPicker({
             </select>
           </label>
 
-          <div className="flex items-center justify-between rounded-lg bg-white px-3 py-2.5 text-sm shadow-[var(--shadow-soft)]">
+          <div className="flex items-center justify-between rounded-lg bg-surface px-3 py-2.5 text-sm shadow-[var(--shadow-soft)]">
             <span className="text-foreground/60">≈ estimated cost</span>
             <span className="font-semibold text-primary">
               {fx.loading
@@ -144,7 +144,7 @@ export function PaymentChannelPicker({
               type="number"
               step="0.01"
               inputMode="decimal"
-              className="rounded-lg border border-black/10 px-3 py-2.5 text-sm outline-none focus:border-primary"
+              className="rounded-lg border border-border px-3 py-2.5 text-sm outline-none focus:border-primary"
               {...register("payerAmount")}
             />
           </label>

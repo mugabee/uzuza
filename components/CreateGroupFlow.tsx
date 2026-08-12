@@ -88,7 +88,7 @@ export function CreateGroupFlow() {
             <button
               key={t.value}
               onClick={() => setGroupType(t.value)}
-              className="rounded-xl border border-black/10 p-4 text-left transition-colors hover:border-primary hover:bg-primary/5"
+              className="rounded-xl border border-border p-4 text-left transition-colors hover:border-primary hover:bg-primary/5"
             >
               <div className="font-semibold text-foreground">{t.title}</div>
               <div className="mt-1 text-sm text-foreground/60">
@@ -207,7 +207,7 @@ function GroupDetailsForm({
               className={`rounded-xl border p-3 text-left text-sm transition-colors ${
                 appliedTemplate === t.id
                   ? "border-primary bg-primary/5"
-                  : "border-black/10 hover:border-primary"
+                  : "border-border hover:border-primary"
               }`}
             >
               <div className="font-semibold text-foreground">{t.label}</div>
@@ -250,7 +250,7 @@ function GroupDetailsForm({
           <label className="flex flex-col gap-1.5 text-sm">
             <span className="font-medium text-foreground">Frequency</span>
             <select
-              className="rounded-lg border border-black/10 px-4 py-2.5 outline-none focus:border-primary"
+              className="rounded-lg border border-border px-4 py-2.5 outline-none focus:border-primary"
               {...register("frequency")}
             >
               <option value="monthly">Monthly</option>
@@ -269,7 +269,7 @@ function GroupDetailsForm({
           <label className="flex flex-col gap-1.5 text-sm">
             <span className="font-medium text-foreground">Safety fund</span>
             <select
-              className="rounded-lg border border-black/10 px-4 py-2.5 outline-none focus:border-primary"
+              className="rounded-lg border border-border px-4 py-2.5 outline-none focus:border-primary"
               value={safetyFundType}
               onChange={(e) => setSafetyFundType(e.target.value as typeof safetyFundType)}
             >

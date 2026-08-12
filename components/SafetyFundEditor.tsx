@@ -69,7 +69,7 @@ export function SafetyFundEditor({
             className={`flex cursor-pointer items-start gap-2 rounded-lg border p-3 text-sm ${
               currentType === option.value
                 ? "border-primary bg-primary/5"
-                : "border-black/10"
+                : "border-border"
             }`}
           >
             <input

@@ -39,7 +39,7 @@ export function MediationQueueClient({ cases }: { cases: MediationCase[] }) {
               className={`rounded-full px-2 py-0.5 text-xs font-semibold uppercase ${
                 c.stakes === "financial"
                   ? "bg-red-100 text-red-600"
-                  : "bg-black/5 text-foreground/60"
+                  : "bg-surface-secondary text-foreground/60"
               }`}
             >
               {c.stakes}

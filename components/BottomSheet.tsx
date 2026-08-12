@@ -47,7 +47,7 @@ export function BottomSheet({
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="relative w-full max-w-md animate-fade-slide-up rounded-t-3xl bg-white px-5 pt-3 shadow-[0_-8px_30px_-4px_rgba(28,28,26,0.2)]"
+        className="relative w-full max-w-md animate-fade-slide-up rounded-t-3xl bg-surface px-5 pt-3 shadow-[0_-8px_30px_-4px_rgba(28,28,26,0.2)]"
         style={{ paddingBottom: "calc(1.5rem + env(safe-area-inset-bottom))" }}
       >
         <div className="mx-auto h-1.5 w-10 rounded-full bg-black/10" />
@@ -61,7 +61,7 @@ export function BottomSheet({
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="ml-auto flex h-8 w-8 items-center justify-center rounded-full text-foreground/40 transition-colors duration-150 hover:bg-black/5 hover:text-foreground/70"
+            className="ml-auto flex h-8 w-8 items-center justify-center rounded-full text-foreground/40 transition-colors duration-150 hover:bg-surface-secondary hover:text-foreground/70"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round">
               <path d="M6 6l12 12M18 6L6 18" />

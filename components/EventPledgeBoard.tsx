@@ -81,7 +81,7 @@ export function EventPledgeBoard({
             ) : null}
           </p>
           {group.pledge_goal ? (
-            <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-black/5">
+            <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-surface-secondary">
               <div
                 className="h-full bg-accent"
                 style={{
@@ -109,7 +109,7 @@ export function EventPledgeBoard({
         )}
 
         {shareUrl && (
-          <div className="mt-6 flex flex-col items-center gap-2 border-t border-black/10 pt-4">
+          <div className="mt-6 flex flex-col items-center gap-2 border-t border-border pt-4">
             <p className="text-xs text-foreground/50">Share & invite</p>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -117,7 +117,7 @@ export function EventPledgeBoard({
               alt="QR code to this event"
               width={160}
               height={160}
-              className="rounded-lg border border-black/10"
+              className="rounded-lg border border-border"
             />
             <p className="break-all text-center text-xs text-foreground/50">{shareUrl}</p>
           </div>
@@ -170,7 +170,7 @@ export function EventPledgeBoard({
 // tick submitted, two once confirmed.
 function StatusBadge({ status }: { status: PledgeRow["status"] }) {
   const styles: Record<PledgeRow["status"], string> = {
-    pledged: "bg-black/5 text-foreground/60",
+    pledged: "bg-surface-secondary text-foreground/60",
     submitted: "bg-accent/15 text-accent",
     confirmed: "bg-primary/15 text-primary",
     cancelled: "bg-red-100 text-red-600",

@@ -129,7 +129,7 @@ export function LatePaymentCard({
         <img
           src={screenshotUrl}
           alt="Your submitted payment screenshot"
-          className="max-h-64 rounded-lg border border-black/10"
+          className="max-h-64 rounded-lg border border-border"
         />
       )}
       {submitError && <p role="alert" className="mt-2 text-xs text-red-500">{submitError}</p>}

@@ -103,7 +103,7 @@ export function GroupConstitutionSection({
         </div>
       </div>
 
-      <div className="mt-6 border-t border-black/10 pt-4">
+      <div className="mt-6 border-t border-border pt-4">
         <h3 className="font-semibold text-foreground">Acknowledgment</h3>
         <ul className="mt-2 flex flex-col gap-1 text-sm">
           {membersWithStatus.map((m) => (

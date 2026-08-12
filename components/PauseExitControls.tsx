@@ -106,7 +106,7 @@ export function PauseExitControls({ groupId }: { groupId: string }) {
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             placeholder="Why do you need to skip this round? (optional)"
-            className="rounded-lg border border-black/10 px-3 py-2 text-sm outline-none focus:border-primary"
+            className="rounded-lg border border-border px-3 py-2 text-sm outline-none focus:border-primary"
             rows={2}
           />
           {error && <p role="alert" className="text-xs text-red-500">{error}</p>}

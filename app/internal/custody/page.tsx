@@ -32,7 +32,7 @@ export default async function InternalCustodyPage() {
             / {cap.toLocaleString()} RWF cap
           </span>
         </p>
-        <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-black/5">
+        <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-surface-secondary">
           <div
             className="h-full bg-accent"
             style={{ width: `${Math.min((heldTotal / (cap || 1)) * 100, 100)}%` }}

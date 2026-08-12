@@ -76,7 +76,7 @@ export function AccountTypeEditor({
           Hold contributions in Uzuza custody instead
         </button>
       ) : (
-        <div className="rounded-lg bg-black/5 p-3 text-xs text-foreground/70">
+        <div className="rounded-lg bg-surface-secondary p-3 text-xs text-foreground/70">
           <p>
             Uzuza will hold confirmed contributions instead of the group's
             own account, subject to a platform-wide cap and per-group

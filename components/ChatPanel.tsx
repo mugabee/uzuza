@@ -80,9 +80,8 @@ export function ChatPanel({
       </p>
 
       <div
-        className="mt-4 flex max-h-96 flex-col gap-1.5 overflow-y-auto rounded-xl p-3"
+        className="mt-4 flex max-h-96 flex-col gap-1.5 overflow-y-auto rounded-xl bg-chat-wallpaper p-3"
         style={{
-          backgroundColor: "#e9ddc9",
           backgroundImage:
             "radial-gradient(rgba(0,0,0,0.035) 1px, transparent 1px)",
           backgroundSize: "16px 16px",
@@ -100,8 +99,8 @@ export function ChatPanel({
               <div
                 className={`relative max-w-[80%] rounded-lg px-3 py-1.5 text-sm shadow-sm ${
                   mine
-                    ? "rounded-tr-none bg-[#d9fdd3] text-foreground"
-                    : "rounded-tl-none bg-white text-foreground"
+                    ? "rounded-tr-none bg-chat-bubble-mine text-foreground"
+                    : "rounded-tl-none bg-surface text-foreground"
                 }`}
               >
                 {!mine && (
@@ -137,7 +136,7 @@ export function ChatPanel({
             onChange={(e) => setBody(e.target.value)}
             placeholder="Type a message"
             maxLength={500}
-            className="flex-1 rounded-full border border-black/10 bg-white px-4 py-2.5 text-sm outline-none focus:border-primary"
+            className="flex-1 rounded-full border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-primary"
           />
           <button
             type="submit"

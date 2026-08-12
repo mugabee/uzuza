@@ -46,7 +46,7 @@ export default async function InternalAuditPage() {
                 {e.actor_user_id ? ` · by ${e.actor_user_id}` : " · system"}
               </p>
               {Object.keys(e.metadata ?? {}).length > 0 && (
-                <pre className="mt-2 overflow-x-auto rounded-lg bg-black/5 p-2 text-xs">
+                <pre className="mt-2 overflow-x-auto rounded-lg bg-surface-secondary p-2 text-xs">
                   {JSON.stringify(e.metadata, null, 2)}
                 </pre>
               )}

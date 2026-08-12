@@ -67,7 +67,7 @@ export default async function FindGroupsPage() {
                   </p>
                 )}
                 <div className="mt-2 flex items-center gap-2">
-                  <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-black/5">
+                  <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-surface-secondary">
                     <div
                       className="h-full rounded-full bg-accent"
                       style={{ width: `${filled * 100}%` }}

@@ -55,7 +55,7 @@ export function MissedPaymentButton({
         type="number"
         value={fine}
         onChange={(e) => setFine(e.target.value)}
-        className="w-16 rounded border border-black/10 px-1 py-0.5 text-xs"
+        className="w-16 rounded border border-border px-1 py-0.5 text-xs"
         placeholder="Fine"
       />
       <Button onClick={handleReport} disabled={busy}

@@ -102,7 +102,7 @@ export function ProposalsPanel({
       )}
       <ul className="mt-2 flex flex-col gap-3">
         {pending.map((p) => (
-          <li key={p.id} className="rounded-lg bg-black/5 p-3 text-sm">
+          <li key={p.id} className="rounded-lg bg-surface-secondary p-3 text-sm">
             <p className="text-foreground/80">
               {Object.entries(p.payload)
                 .map(([k, v]) => `${k.replace(/_/g, " ")} → ${v}`)
@@ -146,7 +146,7 @@ export function ProposalsPanel({
               New approval threshold (optional)
             </span>
             <select
-              className="rounded-lg border border-black/10 px-4 py-2.5 outline-none focus:border-primary"
+              className="rounded-lg border border-border px-4 py-2.5 outline-none focus:border-primary"
               {...register("approvalThreshold")}
               defaultValue=""
             >

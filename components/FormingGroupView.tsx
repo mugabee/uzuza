@@ -132,10 +132,10 @@ export function FormingGroupView({
 
 function StatusBadge({ status }: { status: Reservation["status"] }) {
   const styles: Record<Reservation["status"], string> = {
-    pending: "bg-black/5 text-foreground/60",
+    pending: "bg-surface-secondary text-foreground/60",
     submitted: "bg-accent/15 text-accent",
     confirmed: "bg-primary/15 text-primary",
-    cancelled: "bg-black/5 text-foreground/40",
+    cancelled: "bg-surface-secondary text-foreground/40",
     refunded: "bg-red-100 text-red-600",
   };
   return (
@@ -207,7 +207,7 @@ function AdminReservationRow({ reservation }: { reservation: Reservation }) {
         <img
           src={screenshotUrl}
           alt="Payment screenshot"
-          className="mt-2 max-h-64 rounded-lg border border-black/10"
+          className="mt-2 max-h-64 rounded-lg border border-border"
         />
       )}
 

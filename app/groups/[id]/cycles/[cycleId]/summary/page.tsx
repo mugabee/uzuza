@@ -83,7 +83,7 @@ export default async function CycleSummaryPage({
 
       <table className="mt-6 w-full border-collapse text-sm">
         <thead>
-          <tr className="border-b border-black/10 text-left text-foreground/60">
+          <tr className="border-b border-border text-left text-foreground/60">
             <th className="py-2">Member</th>
             <th className="py-2">Amount</th>
             <th className="py-2">Status</th>

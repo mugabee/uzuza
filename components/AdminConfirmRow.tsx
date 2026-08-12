@@ -157,7 +157,7 @@ export function AdminConfirmRow({
         <img
           src={screenshotUrl}
           alt="Payment screenshot"
-          className="mt-2 max-h-64 rounded-lg border border-black/10"
+          className="mt-2 max-h-64 rounded-lg border border-border"
         />
       )}
 
@@ -184,7 +184,7 @@ export function AdminConfirmRow({
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             placeholder={t("whyRejecting")}
-            className="rounded-lg border border-black/10 px-3 py-2 text-sm outline-none focus:border-primary"
+            className="rounded-lg border border-border px-3 py-2 text-sm outline-none focus:border-primary"
             rows={2}
           />
           <div className="flex gap-2">

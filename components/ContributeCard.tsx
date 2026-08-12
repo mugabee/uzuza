@@ -238,7 +238,7 @@ export function ContributeCard({
             <img
               src={screenshotUrl}
               alt="Your submitted payment screenshot"
-              className="max-h-64 rounded-lg border border-black/10"
+              className="max-h-64 rounded-lg border border-border"
             />
           )}
         </div>

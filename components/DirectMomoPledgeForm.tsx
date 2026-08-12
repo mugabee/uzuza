@@ -144,7 +144,7 @@ export function DirectMomoPledgeForm({
       <label className="flex flex-col gap-1.5 text-sm">
         <span className="font-medium text-foreground">Visibility</span>
         <select
-          className="rounded-lg border border-black/10 px-4 py-2.5 outline-none focus:border-primary"
+          className="rounded-lg border border-border px-4 py-2.5 outline-none focus:border-primary"
           {...register("visibility")}
         >
           <option value="public">Public — name and amount visible</option>

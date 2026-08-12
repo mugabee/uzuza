@@ -344,7 +344,7 @@ export function GroupLedger({
               {contributions.length} confirmed
             </span>
           </div>
-          <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-black/5">
+          <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-surface-secondary">
             <div
               className="h-full rounded-full bg-primary transition-all duration-500"
               style={{
@@ -481,7 +481,7 @@ export function GroupLedger({
 // metaphor as a message being sent vs. read.
 function StatusBadge({ status }: { status: Contribution["status"] }) {
   const styles: Record<Contribution["status"], string> = {
-    pending: "bg-black/5 text-foreground/60",
+    pending: "bg-surface-secondary text-foreground/60",
     submitted: "bg-accent/15 text-accent",
     confirmed: "bg-primary/15 text-primary",
     rejected: "bg-red-100 text-red-600",

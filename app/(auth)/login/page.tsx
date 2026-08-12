@@ -94,7 +94,7 @@ export default function LoginPage() {
             className={`rounded-xl border px-3 py-3 text-center text-sm font-semibold transition-all duration-150 ${
               intent === "signin"
                 ? "border-primary bg-primary/5 text-primary shadow-[var(--shadow-soft)]"
-                : "border-black/10 text-foreground/70 hover:border-black/20"
+                : "border-border text-foreground/70 hover:border-black/20"
             }`}
           >
             Sign In
@@ -111,7 +111,7 @@ export default function LoginPage() {
             className={`rounded-xl border px-3 py-3 text-center text-sm font-semibold transition-all duration-150 ${
               intent === "signup"
                 ? "border-primary bg-primary/5 text-primary shadow-[var(--shadow-soft)]"
-                : "border-black/10 text-foreground/70 hover:border-black/20"
+                : "border-border text-foreground/70 hover:border-black/20"
             }`}
           >
             Create Account
@@ -123,7 +123,7 @@ export default function LoginPage() {
 
         {intent && (
           <>
-            <div className="mt-5 flex gap-1 rounded-full bg-black/[0.04] p-1 text-sm font-medium">
+            <div className="mt-5 flex gap-1 rounded-full bg-surface-secondary p-1 text-sm font-medium">
               {(["phone", "email"] as const).map((m) => (
                 <button
                   key={m}
@@ -135,7 +135,7 @@ export default function LoginPage() {
                   }}
                   className={`flex-1 rounded-full py-2 capitalize transition-all duration-200 ${
                     method === m
-                      ? "bg-white text-primary shadow-[var(--shadow-soft)]"
+                      ? "bg-surface text-primary shadow-[var(--shadow-soft)]"
                       : "text-foreground/60 hover:text-foreground/80"
                   }`}
                 >

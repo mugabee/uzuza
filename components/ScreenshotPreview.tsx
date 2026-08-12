@@ -22,7 +22,7 @@ export function ScreenshotPreview({ files }: { files: FileList | undefined }) {
   if (!file || !url) return null;
 
   return (
-    <div className="flex items-center gap-2 rounded-lg border border-black/10 p-2">
+    <div className="flex items-center gap-2 rounded-lg border border-border p-2">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={url} alt="" className="h-12 w-12 rounded object-cover" />
       <div className="min-w-0 text-xs text-foreground/60">
