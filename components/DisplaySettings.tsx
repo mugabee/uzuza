@@ -1,52 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
 import { useLanguage } from "@/lib/i18n";
+import { useTheme, useLargeText, useHighContrast, useLowDataMode } from "@/lib/prefs";
 
 export function DisplaySettings() {
-  const [largeText, setLargeText] = useState(false);
-  const [highContrast, setHighContrast] = useState(false);
-  const [lowData, setLowData] = useState(false);
-  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [largeText, toggleLargeText] = useLargeText();
+  const [highContrast, toggleHighContrast] = useHighContrast();
+  const [lowData, toggleLowData] = useLowDataMode();
+  const [theme, applyTheme] = useTheme();
   const { language, setLanguage } = useLanguage();
-
-  useEffect(() => {
-    setLargeText(localStorage.getItem("uzuza_text_size") === "large");
-    setHighContrast(localStorage.getItem("uzuza_contrast") === "high");
-    setLowData(localStorage.getItem("uzuza_low_data") === "on");
-    setTheme(localStorage.getItem("uzuza_theme") === "dark" ? "dark" : "light");
-  }, []);
-
-  function applyTheme(next: "light" | "dark") {
-    setTheme(next);
-    localStorage.setItem("uzuza_theme", next);
-    if (next === "dark") document.documentElement.setAttribute("data-theme", "dark");
-    else document.documentElement.removeAttribute("data-theme");
-  }
-
-  function toggleLowData() {
-    const next = !lowData;
-    setLowData(next);
-    localStorage.setItem("uzuza_low_data", next ? "on" : "off");
-  }
-
-  function toggleLargeText() {
-    const next = !largeText;
-    setLargeText(next);
-    localStorage.setItem("uzuza_text_size", next ? "large" : "default");
-    if (next) document.documentElement.setAttribute("data-text-size", "large");
-    else document.documentElement.removeAttribute("data-text-size");
-  }
-
-  function toggleHighContrast() {
-    const next = !highContrast;
-    setHighContrast(next);
-    localStorage.setItem("uzuza_contrast", next ? "high" : "default");
-    if (next) document.documentElement.setAttribute("data-contrast", "high");
-    else document.documentElement.removeAttribute("data-contrast");
-  }
 
   return (
     <Card>

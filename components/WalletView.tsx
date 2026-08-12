@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Card } from "@/components/Card";
 import { AnimatedNumber } from "@/components/AnimatedNumber";
+import { useBalanceHidden } from "@/lib/prefs";
 
 type Transaction = {
   kind: string;
@@ -31,17 +32,7 @@ export function WalletView({ transactions }: { transactions: Transaction[] }) {
   const [tab, setTab] = useState<"overview" | "transactions">("overview");
   const [period, setPeriod] = useState<(typeof PERIODS)[number]["key"]>("7d");
   const [summary, setSummary] = useState<{ money_received: number; money_sent: number } | null>(null);
-  const [hidden, setHidden] = useState(false);
-
-  useEffect(() => {
-    setHidden(localStorage.getItem("uzuza_balance_hidden") === "on");
-  }, []);
-
-  function toggleHidden() {
-    const next = !hidden;
-    setHidden(next);
-    localStorage.setItem("uzuza_balance_hidden", next ? "on" : "off");
-  }
+  const [hidden, toggleHidden] = useBalanceHidden();
 
   useEffect(() => {
     let cancelled = false;

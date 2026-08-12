@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Card } from "@/components/Card";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
-import { useLowDataMode } from "@/lib/low-data-mode";
+import { useLowDataMode } from "@/lib/prefs";
 import { useToast } from "@/lib/toast";
 import { friendlyError } from "@/lib/friendly-error";
 
@@ -27,7 +27,7 @@ export function MemberManagement({
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [confirmingRemove, setConfirmingRemove] = useState<string | null>(null);
-  const lowData = useLowDataMode();
+  const [lowData] = useLowDataMode();
   const showToast = useToast();
 
   async function handlePromote(userId: string) {
@@ -110,7 +110,7 @@ export function MemberManagement({
                       type="button"
                       onClick={() => setConfirmingRemove(m.user_id)}
                       disabled={busyId === m.user_id}
-                      className="text-xs text-red-500 underline-offset-2 hover:underline"
+                      className="text-xs text-danger underline-offset-2 hover:underline"
                     >
                       Remove
                     </button>
@@ -121,7 +121,7 @@ export function MemberManagement({
           </li>
         ))}
       </ul>
-      {error && <p role="alert" className="mt-2 text-xs text-red-500">{error}</p>}
+      {error && <p role="alert" className="mt-2 text-xs text-danger">{error}</p>}
 
       <ConfirmDialog
         open={!!confirmingRemove}

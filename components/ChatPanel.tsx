@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { friendlyError } from "@/lib/friendly-error";
+import { usePoll } from "@/lib/use-poll";
 
 type Message = {
   id: string;
@@ -35,15 +36,7 @@ export function ChatPanel({
 
   // Lightweight polling refresh instead of a realtime subscription — keeps
   // this consistent with the rest of the app's router.refresh() pattern.
-  // Skips while backgrounded/hidden so it doesn't compete for bandwidth
-  // with whatever the user's actually doing on mobile data.
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (document.visibilityState !== "visible") return;
-      router.refresh();
-    }, 8000);
-    return () => clearInterval(interval);
-  }, [router]);
+  usePoll(() => router.refresh(), 8000);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ block: "end" });
@@ -119,7 +112,7 @@ export function ChatPanel({
                     type="button"
                     onClick={() => handleFlag(m.id)}
                     aria-label="Report message"
-                    className="shrink-0 text-[10px] text-foreground/25 hover:text-red-500"
+                    className="shrink-0 text-[10px] text-foreground/25 hover:text-danger"
                   >
                     ⚑
                   </button>
@@ -169,7 +162,7 @@ export function ChatPanel({
         </p>
       )}
       {error && (
-        <p role="alert" className="shrink-0 px-3 pb-2 text-xs text-red-500">
+        <p role="alert" className="shrink-0 px-3 pb-2 text-xs text-danger">
           {error}
         </p>
       )}

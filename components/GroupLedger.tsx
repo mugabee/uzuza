@@ -18,6 +18,7 @@ import { LatePaymentCard } from "@/components/LatePaymentCard";
 import { AdminLatePaymentRow } from "@/components/AdminLatePaymentRow";
 import { PullToRefresh } from "@/components/PullToRefresh";
 import { useLanguage } from "@/lib/i18n";
+import { usePoll } from "@/lib/use-poll";
 
 type Profile = { id: string; full_name: string | null; phone: string | null } | null;
 
@@ -114,17 +115,13 @@ export function GroupLedger({
   // Lightweight polling refresh so the ledger reflects what other admins
   // and members do without everyone needing to manually reload. Every tick
   // is a full server round-trip, so this stays infrequent (20s, not the
-  // original 6s) and skips entirely while the app is backgrounded/hidden -
-  // on mobile data, competing background refreshes were a real contributor
-  // to the whole app feeling sluggish, not just this screen.
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (document.visibilityState !== "visible") return;
-      router.refresh();
-      setLastUpdated(new Date());
-    }, 20000);
-    return () => clearInterval(interval);
-  }, [router]);
+  // original 6s) - usePoll already skips entirely while the app is
+  // backgrounded/hidden, which on mobile data was a real contributor to
+  // the whole app feeling sluggish, not just this screen.
+  usePoll(() => {
+    router.refresh();
+    setLastUpdated(new Date());
+  }, 20000);
 
   // Ticks the "Updated Xs ago" label without re-fetching anything.
   useEffect(() => {
@@ -198,7 +195,7 @@ export function GroupLedger({
           {Number(group.contribution_amount).toLocaleString()} RWF /{" "}
           {group.frequency}, {members.length}/{group.target_size} members
         </p>
-        {error && <p role="alert" className="mt-3 text-xs text-red-500">{error}</p>}
+        {error && <p role="alert" className="mt-3 text-xs text-danger">{error}</p>}
         <Button className="mt-6 w-full" onClick={handleJoin} disabled={busy}
             loading={busy}>
           {busy ? t("joining") : t("joinThisGroup")}
@@ -256,7 +253,7 @@ export function GroupLedger({
           View group rules & settings
         </Link>
 
-        {error && <p role="alert" className="mt-3 text-xs text-red-500">{error}</p>}
+        {error && <p role="alert" className="mt-3 text-xs text-danger">{error}</p>}
 
         {isAdmin && !activeCycle && (
           <Button className="mt-4 w-full" onClick={handleStartCycle} disabled={busy}
@@ -412,7 +409,7 @@ export function GroupLedger({
                       isPositive
                         ? "bg-primary/10 text-primary"
                         : isNegative
-                          ? "bg-red-50 text-red-600"
+                          ? "bg-danger/10 text-danger"
                           : "bg-accent/10 text-accent"
                     }`}
                   >
@@ -430,7 +427,7 @@ export function GroupLedger({
                   <div className="flex shrink-0 items-center gap-2">
                     <span
                       className={`font-semibold ${
-                        isPositive ? "text-primary" : isNegative ? "text-red-600" : "text-foreground/70"
+                        isPositive ? "text-primary" : isNegative ? "text-danger" : "text-foreground/70"
                       }`}
                     >
                       {Number(c.amount).toLocaleString()} RWF
@@ -524,8 +521,8 @@ function StatusBadge({ status }: { status: Contribution["status"] }) {
     pending: "bg-surface-secondary text-foreground/60",
     submitted: "bg-accent/15 text-accent",
     confirmed: "bg-primary/15 text-primary",
-    rejected: "bg-red-100 text-red-600",
-    missed: "bg-red-100 text-red-600",
+    rejected: "bg-danger/15 text-danger",
+    missed: "bg-danger/15 text-danger",
     late_submitted: "bg-accent/15 text-accent",
     paid_late: "bg-primary/15 text-primary",
   };

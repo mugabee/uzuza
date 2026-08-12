@@ -3,11 +3,11 @@
 import { useState } from "react";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
-import { useLowDataMode } from "@/lib/low-data-mode";
+import { useLowDataMode } from "@/lib/prefs";
 
 export function InviteCard({ groupId }: { groupId: string }) {
   const [copied, setCopied] = useState(false);
-  const lowData = useLowDataMode();
+  const [lowData] = useLowDataMode();
   const inviteUrl =
     typeof window !== "undefined"
       ? `${window.location.origin}/groups/${groupId}`

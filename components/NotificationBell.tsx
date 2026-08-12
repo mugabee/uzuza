@@ -2,30 +2,36 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { usePoll } from "@/lib/use-poll";
 
 export function NotificationBell({ signedIn }: { signedIn: boolean }) {
   const pathname = usePathname();
   const [count, setCount] = useState(0);
-
+  const cancelledRef = useRef(false);
   useEffect(() => {
+    cancelledRef.current = false;
+    return () => {
+      cancelledRef.current = true;
+    };
+  }, []);
+
+  async function refresh() {
     if (!signedIn) return;
     const supabase = createClient();
-    let cancelled = false;
+    const { data } = await supabase.rpc("get_unread_notification_count");
+    if (!cancelledRef.current) setCount(data ?? 0);
+  }
 
-    async function refresh() {
-      const { data } = await supabase.rpc("get_unread_notification_count");
-      if (!cancelled) setCount(data ?? 0);
-    }
-
+  // Refetch immediately on navigation (e.g. right after marking things
+  // read on /notifications and clicking away), not just on the interval.
+  useEffect(() => {
     refresh();
-    const interval = setInterval(refresh, 20000);
-    return () => {
-      cancelled = true;
-      clearInterval(interval);
-    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signedIn, pathname]);
+
+  usePoll(refresh, 20000);
 
   if (!signedIn || pathname.startsWith("/internal") || pathname.startsWith("/login")) {
     return null;
@@ -43,7 +49,7 @@ export function NotificationBell({ signedIn }: { signedIn: boolean }) {
         <path d="M9.5 17a2.5 2.5 0 0 0 5 0" />
       </svg>
       {count > 0 && (
-        <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold leading-none text-white">
+        <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-danger px-1 text-[10px] font-bold leading-none text-white">
           {count > 9 ? "9+" : count}
         </span>
       )}

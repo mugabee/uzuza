@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { AnimatedNumber } from "@/components/AnimatedNumber";
+import { useBalanceHidden } from "@/lib/prefs";
 
 export function SavingsJourneyCard({
   totalSaved,
@@ -14,17 +14,7 @@ export function SavingsJourneyCard({
   currentStreak: number;
   groupsCount: number;
 }) {
-  const [hidden, setHidden] = useState(false);
-
-  useEffect(() => {
-    setHidden(localStorage.getItem("uzuza_balance_hidden") === "on");
-  }, []);
-
-  function toggleHidden() {
-    const next = !hidden;
-    setHidden(next);
-    localStorage.setItem("uzuza_balance_hidden", next ? "on" : "off");
-  }
+  const [hidden, toggleHidden] = useBalanceHidden();
 
   return (
     <div
