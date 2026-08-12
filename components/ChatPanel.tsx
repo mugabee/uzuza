@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { Card } from "@/components/Card";
 import { friendlyError } from "@/lib/friendly-error";
 
 type Message = {
@@ -32,6 +31,7 @@ export function ChatPanel({
   const [body, setBody] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const bottomRef = useRef<HTMLDivElement>(null);
 
   // Lightweight polling refresh instead of a realtime subscription — keeps
   // this consistent with the rest of the app's router.refresh() pattern.
@@ -44,6 +44,10 @@ export function ChatPanel({
     }, 8000);
     return () => clearInterval(interval);
   }, [router]);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ block: "end" });
+  }, [initialMessages.length]);
 
   async function handleSend(e: FormEvent) {
     e.preventDefault();
@@ -71,17 +75,20 @@ export function ChatPanel({
   }
 
   return (
-    <Card>
-      <h1 className="font-display text-lg font-semibold text-primary">
-        {groupName} — Chat
-      </h1>
-      <p className="mt-1 text-xs text-foreground/50">
-        Text only, no links or media. Visible to current group members.
-      </p>
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl bg-surface shadow-[var(--shadow-soft)] ring-1 ring-border">
+      <div className="shrink-0 border-b border-border px-4 py-3">
+        <h1 className="font-display text-lg font-semibold text-primary">
+          {groupName} — Chat
+        </h1>
+        <p className="mt-0.5 text-xs text-foreground/50">
+          Text only, no links or media. Visible to current group members.
+        </p>
+      </div>
 
       <div
-        className="mt-4 flex max-h-96 flex-col gap-1.5 overflow-y-auto rounded-xl bg-chat-wallpaper p-3"
+        className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto p-3"
         style={{
+          backgroundColor: "var(--chat-wallpaper)",
           backgroundImage:
             "radial-gradient(rgba(0,0,0,0.035) 1px, transparent 1px)",
           backgroundSize: "16px 16px",
@@ -127,10 +134,11 @@ export function ChatPanel({
             </div>
           );
         })}
+        <div ref={bottomRef} />
       </div>
 
       {canSend ? (
-        <form onSubmit={handleSend} className="mt-3 flex items-center gap-2">
+        <form onSubmit={handleSend} className="flex shrink-0 items-center gap-2 border-t border-border p-3">
           <input
             value={body}
             onChange={(e) => setBody(e.target.value)}
@@ -156,11 +164,15 @@ export function ChatPanel({
           </button>
         </form>
       ) : (
-        <p className="mt-4 text-xs text-foreground/50">
+        <p className="shrink-0 border-t border-border p-3 text-xs text-foreground/50">
           You can't send messages in this chat right now.
         </p>
       )}
-      {error && <p role="alert" className="mt-2 text-xs text-red-500">{error}</p>}
-    </Card>
+      {error && (
+        <p role="alert" className="shrink-0 px-3 pb-2 text-xs text-red-500">
+          {error}
+        </p>
+      )}
+    </div>
   );
 }

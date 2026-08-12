@@ -2,7 +2,11 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ProfileForm } from "@/components/ProfileForm";
 
-export default async function ProfilePage() {
+export default async function ProfilePage({
+  searchParams,
+}: PageProps<"/profile">) {
+  const { redirect: redirectToParam } = await searchParams;
+  const redirectTo = Array.isArray(redirectToParam) ? redirectToParam[0] : redirectToParam;
   const supabase = await createClient();
   const {
     data: { user },
@@ -31,6 +35,7 @@ export default async function ProfilePage() {
         defaultFullName={suggestedName}
         defaultPhone={profile?.phone ?? (user.phone ? `+${user.phone}` : "")}
         defaultAvatarUrl={profile?.avatar_url ?? null}
+        redirectTo={redirectTo || "/"}
       />
     </main>
   );

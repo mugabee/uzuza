@@ -52,7 +52,7 @@ export default function VerifyPage() {
 
     setLoading(true);
     const supabase = createClient();
-    const { error: verifyError } =
+    const { data: verifyData, error: verifyError } =
       method === "phone"
         ? await supabase.auth.verifyOtp({
             phone: identifier,
@@ -64,18 +64,35 @@ export default function VerifyPage() {
             token: result.data,
             type: "email",
           });
-    setLoading(false);
 
     if (verifyError) {
+      setLoading(false);
       setError(verifyError.message);
       return;
     }
+
+    // A deep link (invite, pledge) could otherwise skip profile setup
+    // entirely, leaving full_name null forever — which is exactly what
+    // was showing group chat senders as a bare "Member" instead of their
+    // real name. Route through /profile first whenever it's still empty,
+    // then continue to the original destination once it's filled in.
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("full_name")
+      .eq("id", verifyData.user!.id)
+      .single();
+    setLoading(false);
+
+    const destination = redirectTo || "/";
+    const needsProfile = !profile?.full_name;
 
     sessionStorage.removeItem("uzuza_login_method");
     sessionStorage.removeItem("uzuza_login_identifier");
     sessionStorage.removeItem("uzuza_login_intent");
     sessionStorage.removeItem("uzuza_login_redirect");
-    router.push(redirectTo || "/profile");
+    router.push(
+      needsProfile ? `/profile?redirect=${encodeURIComponent(destination)}` : destination,
+    );
     // Soft navigations reuse the already-rendered root layout, which
     // read the (until now) signed-out session — refresh so it re-checks
     // auth and the nav shows up immediately, not after the next hard load.

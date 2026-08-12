@@ -18,11 +18,13 @@ export function ProfileForm({
   defaultFullName,
   defaultPhone,
   defaultAvatarUrl,
+  redirectTo = "/",
 }: {
   userId: string;
   defaultFullName: string;
   defaultPhone: string;
   defaultAvatarUrl: string | null;
+  redirectTo?: string;
 }) {
   const router = useRouter();
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -100,7 +102,7 @@ export function ProfileForm({
     }
 
     showToast("Profile saved");
-    router.push("/");
+    router.push(redirectTo);
     router.refresh();
   }
 

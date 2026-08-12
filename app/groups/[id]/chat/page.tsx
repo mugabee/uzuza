@@ -41,20 +41,27 @@ export default async function ChatPage({
 
   const senderIds = [...new Set((messages ?? []).map((m) => m.sender_id))];
   const { data: profiles } = senderIds.length
-    ? await supabase.from("profiles").select("id, full_name").in("id", senderIds)
+    ? await supabase.from("profiles").select("id, full_name, phone").in("id", senderIds)
     : { data: [] };
 
-  const messagesWithNames = (messages ?? []).map((m) => ({
-    ...m,
-    senderName: profiles?.find((p) => p.id === m.sender_id)?.full_name ?? "Member",
-  }));
+  const messagesWithNames = (messages ?? []).map((m) => {
+    const sender = profiles?.find((p) => p.id === m.sender_id);
+    return {
+      ...m,
+      // A member who joined via a deep link (invite/pledge) could
+      // previously skip profile setup entirely and never set a name —
+      // fall back to their phone's last 4 digits rather than a bare,
+      // indistinguishable "Member" for every such sender.
+      senderName: sender?.full_name || (sender?.phone ? `Member •${sender.phone.slice(-4)}` : "Member"),
+    };
+  });
 
   return (
-    <main className="flex flex-1 flex-col items-center px-6 py-16">
-      <div className="flex w-full max-w-md flex-col gap-4">
+    <main className="flex flex-1 flex-col items-center px-4 py-4">
+      <div className="flex h-[calc(100dvh-6.5rem)] w-full max-w-md flex-col gap-2">
         <Link
           href={`/groups/${id}`}
-          className="text-sm font-medium text-primary underline-offset-2 hover:underline"
+          className="shrink-0 text-sm font-medium text-primary underline-offset-2 hover:underline"
         >
           ← Back to group
         </Link>
