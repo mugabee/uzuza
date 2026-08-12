@@ -18,6 +18,7 @@ import { friendlyError } from "@/lib/friendly-error";
 import { compressImage } from "@/lib/compress-image";
 import { ScreenshotPreview } from "@/components/ScreenshotPreview";
 import { PaymentChannelPicker } from "@/components/PaymentChannelPicker";
+import { BottomSheet } from "@/components/BottomSheet";
 
 type Contribution = {
   id: string;
@@ -48,6 +49,7 @@ export function ContributeCard({
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [screenshotUrl, setScreenshotUrl] = useState<string | null>(null);
   const [loadingScreenshot, setLoadingScreenshot] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
   const { t } = useLanguage();
   const showToast = useToast();
 
@@ -112,6 +114,7 @@ export function ContributeCard({
     }
 
     showToast("Proof submitted");
+    setSheetOpen(false);
     onSubmitted();
   }
 
@@ -160,45 +163,57 @@ export function ContributeCard({
       )}
 
       {contribution.status === "pending" && (
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="mt-4 flex flex-col gap-3"
-        >
-          <PaymentChannelPicker
-            register={register}
-            watch={watch}
-            setValue={setValue}
-            rwfAmount={Number(contribution.amount)}
-          />
-          <Field
-            label={t("transactionIdLabel")}
-            placeholder="e.g. MP240613.1234.A56789"
-            error={errors.transactionId?.message}
-            {...register("transactionId")}
-          />
-          <label className="flex flex-col gap-1.5 text-sm">
-            <span className="font-medium text-foreground">
-              {t("screenshotLabel")}
-            </span>
-            <input
-              type="file"
-              accept="image/png,image/jpeg,image/webp"
-              className="text-sm"
-              {...register("screenshot")}
-            />
-            {errors.screenshot?.message && (
-              <span role="alert" className="text-xs text-red-500">
-                {errors.screenshot.message}
-              </span>
-            )}
-          </label>
-          <ScreenshotPreview files={watch("screenshot")} />
-          {submitError && <p role="alert" className="text-xs text-red-500">{submitError}</p>}
-          <Button type="submit" disabled={isSubmitting}
-            loading={isSubmitting}>
-            {isSubmitting ? t("submitting") : t("submitProof")}
+        <>
+          <Button className="mt-4 w-full" onClick={() => setSheetOpen(true)}>
+            {t("submitProof")}
           </Button>
-        </form>
+
+          <BottomSheet
+            open={sheetOpen}
+            onClose={() => setSheetOpen(false)}
+            title={t("submitProof")}
+          >
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="flex flex-col gap-3"
+            >
+              <PaymentChannelPicker
+                register={register}
+                watch={watch}
+                setValue={setValue}
+                rwfAmount={Number(contribution.amount)}
+              />
+              <Field
+                label={t("transactionIdLabel")}
+                placeholder="e.g. MP240613.1234.A56789"
+                error={errors.transactionId?.message}
+                {...register("transactionId")}
+              />
+              <label className="flex flex-col gap-1.5 text-sm">
+                <span className="font-medium text-foreground">
+                  {t("screenshotLabel")}
+                </span>
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  className="text-sm"
+                  {...register("screenshot")}
+                />
+                {errors.screenshot?.message && (
+                  <span role="alert" className="text-xs text-red-500">
+                    {errors.screenshot.message}
+                  </span>
+                )}
+              </label>
+              <ScreenshotPreview files={watch("screenshot")} />
+              {submitError && <p role="alert" className="text-xs text-red-500">{submitError}</p>}
+              <Button type="submit" disabled={isSubmitting}
+            loading={isSubmitting}>
+                {isSubmitting ? t("submitting") : t("submitProof")}
+              </Button>
+            </form>
+          </BottomSheet>
+        </>
       )}
 
       {contribution.status === "submitted" && (

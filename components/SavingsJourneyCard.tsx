@@ -1,4 +1,4 @@
-import { Card } from "@/components/Card";
+import { AnimatedNumber } from "@/components/AnimatedNumber";
 
 export function SavingsJourneyCard({
   totalSaved,
@@ -12,30 +12,47 @@ export function SavingsJourneyCard({
   groupsCount: number;
 }) {
   return (
-    <Card>
-      <h2 className="font-display text-lg font-semibold text-primary">
-        Your savings journey
-      </h2>
-      <p className="mt-3 text-2xl font-semibold text-foreground">
-        {totalSaved.toLocaleString()} RWF
-        <span className="ml-2 text-sm font-normal text-foreground/50">
-          saved lifetime
-        </span>
+    <div
+      className="rounded-3xl p-6 text-primary-foreground shadow-[0_1px_2px_rgba(26,95,74,0.15),0_12px_28px_-8px_rgba(26,95,74,0.35)]"
+      style={{
+        backgroundImage:
+          "linear-gradient(135deg, #1a5f4a 0%, #1a5f4a 55%, #14493a 100%)",
+      }}
+    >
+      <p className="text-xs font-medium uppercase tracking-wide text-white/60">
+        Total saved lifetime
       </p>
-      <dl className="mt-4 flex gap-6 text-sm">
+      <p className="mt-1 font-display text-4xl font-bold tracking-tight">
+        <AnimatedNumber value={totalSaved} />
+        <span className="ml-1.5 text-lg font-medium text-white/70">RWF</span>
+      </p>
+
+      <dl className="mt-5 grid grid-cols-3 gap-2 border-t border-white/15 pt-4">
         <div>
-          <dt className="text-foreground/50">Cycles completed</dt>
-          <dd className="font-medium text-foreground">{cyclesCompleted}</dd>
+          <dt className="text-[11px] font-medium uppercase tracking-wide text-white/50">
+            Cycles
+          </dt>
+          <dd className="mt-0.5 text-lg font-semibold">
+            <AnimatedNumber value={cyclesCompleted} />
+          </dd>
         </div>
         <div>
-          <dt className="text-foreground/50">Streak</dt>
-          <dd className="font-medium text-foreground">{currentStreak}</dd>
+          <dt className="text-[11px] font-medium uppercase tracking-wide text-white/50">
+            Streak
+          </dt>
+          <dd className="mt-0.5 text-lg font-semibold">
+            <AnimatedNumber value={currentStreak} />
+          </dd>
         </div>
         <div>
-          <dt className="text-foreground/50">Groups</dt>
-          <dd className="font-medium text-foreground">{groupsCount}</dd>
+          <dt className="text-[11px] font-medium uppercase tracking-wide text-white/50">
+            Groups
+          </dt>
+          <dd className="mt-0.5 text-lg font-semibold">
+            <AnimatedNumber value={groupsCount} />
+          </dd>
         </div>
       </dl>
-    </Card>
+    </div>
   );
 }

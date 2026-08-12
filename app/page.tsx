@@ -28,7 +28,7 @@ export default async function Home() {
       <main className="flex flex-1 flex-col items-center justify-center px-6 py-16">
         <div className="flex w-full max-w-sm flex-col gap-5">
           <IntroCard />
-          {journey && Number(journey.total_saved) > 0 && (
+          {journey && (
             <SavingsJourneyCard
               totalSaved={Number(journey.total_saved)}
               cyclesCompleted={journey.cycles_completed}
@@ -86,6 +86,16 @@ export default async function Home() {
       <HomePullToRefresh>
       <div className="flex w-full max-w-md flex-col gap-5">
         <IntroCard />
+
+        {journey && (
+          <SavingsJourneyCard
+            totalSaved={Number(journey.total_saved)}
+            cyclesCompleted={journey.cycles_completed}
+            currentStreak={journey.current_streak}
+            groupsCount={journey.groups_count}
+          />
+        )}
+
         <Card>
           <h1 className="font-display text-2xl font-semibold text-primary">
             Your groups
@@ -105,15 +115,6 @@ export default async function Home() {
             )}
           </div>
         </Card>
-
-        {journey && Number(journey.total_saved) > 0 && (
-          <SavingsJourneyCard
-            totalSaved={Number(journey.total_saved)}
-            cyclesCompleted={journey.cycles_completed}
-            currentStreak={journey.current_streak}
-            groupsCount={journey.groups_count}
-          />
-        )}
 
         {(groups ?? []).map((group) => {
           const activeCycle = activeCycles?.find((c) => c.group_id === group.id);

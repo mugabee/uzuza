@@ -335,32 +335,82 @@ export function GroupLedger({
 
       {activeCycle && (
         <Card>
-          <h2 className="font-display text-lg font-semibold text-primary">
-            Cycle {activeCycle.cycle_number} ledger
-          </h2>
-          <ul className="mt-3 flex flex-col gap-2">
-            {contributions.map((c) => (
-              <li
-                key={c.id}
-                className="flex items-center justify-between text-sm"
-              >
-                <span>
-                  {c.profile?.full_name ?? "Member"}
-                  {c.member_id === activeCycle.recipient_user_id && (
-                    <span className="ml-1 text-xs text-accent">(receiving)</span>
-                  )}
-                </span>
-                <div className="flex items-center gap-2">
-                  <StatusBadge status={c.status} />
-                  {isAdmin && c.status === "pending" && (
-                    <MissedPaymentButton
-                      contributionId={c.id}
-                      onReported={() => router.refresh()}
-                    />
-                  )}
-                </div>
-              </li>
-            ))}
+          <div className="flex items-center justify-between">
+            <h2 className="font-display text-lg font-semibold text-primary">
+              Cycle {activeCycle.cycle_number} ledger
+            </h2>
+            <span className="text-xs font-medium text-foreground/50">
+              {contributions.filter((c) => c.status === "confirmed" || c.status === "paid_late").length}/
+              {contributions.length} confirmed
+            </span>
+          </div>
+          <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-black/5">
+            <div
+              className="h-full rounded-full bg-primary transition-all duration-500"
+              style={{
+                width: `${
+                  contributions.length
+                    ? (contributions.filter((c) => c.status === "confirmed" || c.status === "paid_late").length /
+                        contributions.length) *
+                      100
+                    : 0
+                }%`,
+              }}
+            />
+          </div>
+
+          <ul className="mt-4 flex flex-col divide-y divide-black/[0.05]">
+            {contributions.map((c) => {
+              const name = c.profile?.full_name ?? "Member";
+              const initials = name
+                .split(" ")
+                .map((p) => p[0])
+                .filter(Boolean)
+                .slice(0, 2)
+                .join("")
+                .toUpperCase();
+              const isPositive = c.status === "confirmed" || c.status === "paid_late";
+              const isNegative = c.status === "rejected" || c.status === "missed";
+              return (
+                <li key={c.id} className="flex items-center gap-3 py-3 text-sm first:pt-0 last:pb-0">
+                  <span
+                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${
+                      isPositive
+                        ? "bg-primary/10 text-primary"
+                        : isNegative
+                          ? "bg-red-50 text-red-600"
+                          : "bg-accent/10 text-accent"
+                    }`}
+                  >
+                    {initials || "?"}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-medium text-foreground">
+                      {name}
+                      {c.member_id === activeCycle.recipient_user_id && (
+                        <span className="ml-1.5 text-xs font-normal text-accent">receiving</span>
+                      )}
+                    </p>
+                    <StatusBadge status={c.status} />
+                  </div>
+                  <div className="flex shrink-0 items-center gap-2">
+                    <span
+                      className={`font-semibold ${
+                        isPositive ? "text-primary" : isNegative ? "text-red-600" : "text-foreground/70"
+                      }`}
+                    >
+                      {Number(c.amount).toLocaleString()} RWF
+                    </span>
+                    {isAdmin && c.status === "pending" && (
+                      <MissedPaymentButton
+                        contributionId={c.id}
+                        onReported={() => router.refresh()}
+                      />
+                    )}
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         </Card>
       )}
