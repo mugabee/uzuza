@@ -38,7 +38,7 @@ export function MediationQueueClient({ cases }: { cases: MediationCase[] }) {
             <span
               className={`rounded-full px-2 py-0.5 text-xs font-semibold uppercase ${
                 c.stakes === "financial"
-                  ? "bg-red-100 text-red-600"
+                  ? "bg-danger/15 text-danger"
                   : "bg-surface-secondary text-foreground/60"
               }`}
             >

@@ -25,21 +25,21 @@ export function TrustScoreCard({
   const needleY = cy - r * 0.85 * Math.sin(angleRad);
 
   let riskLabel = "New member";
-  let riskColor = "#94a3b8";
+  let riskColor = "color-mix(in srgb, var(--foreground) 45%, transparent)";
   let riskBars = 1;
   if (totalActivity > 0) {
     const missRatio = missedCount / totalActivity;
     if (missRatio === 0) {
       riskLabel = "Low";
-      riskColor = "#22c55e";
+      riskColor = "var(--success)";
       riskBars = 5;
     } else if (missRatio <= 0.2) {
       riskLabel = "Medium";
-      riskColor = "#f59e0b";
+      riskColor = "var(--warning)";
       riskBars = 3;
     } else {
       riskLabel = "High";
-      riskColor = "#ef4444";
+      riskColor = "var(--danger)";
       riskBars = 1;
     }
   }
@@ -55,20 +55,20 @@ export function TrustScoreCard({
             <path
               d="M 28 95 A 72 72 0 0 1 91 24"
               fill="none"
-              stroke="#ef4444"
+              stroke="var(--danger)"
               strokeWidth="14"
               strokeLinecap="round"
             />
             <path
               d="M 91 24 A 72 72 0 0 1 109 24"
               fill="none"
-              stroke="#f59e0b"
+              stroke="var(--warning)"
               strokeWidth="14"
             />
             <path
               d="M 109 24 A 72 72 0 0 1 172 95"
               fill="none"
-              stroke="#22c55e"
+              stroke="var(--success)"
               strokeWidth="14"
               strokeLinecap="round"
             />

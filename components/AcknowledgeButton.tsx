@@ -27,7 +27,7 @@ export function AcknowledgeButton({ groupId }: { groupId: string }) {
 
   return (
     <div className="mt-3">
-      {error && <p role="alert" className="mb-2 text-xs text-red-500">{error}</p>}
+      {error && <p role="alert" className="mb-2 text-xs text-danger">{error}</p>}
       <Button onClick={handleAcknowledge} disabled={busy}
             loading={busy}>
         {busy ? "Saving..." : "I acknowledge"}

@@ -38,7 +38,7 @@ export default async function FindGroupsPage() {
           Groups closest to filling are shown first.
         </p>
 
-        {error && <p role="alert" className="text-sm text-red-500">{friendlyError(error.message)}</p>}
+        {error && <p role="alert" className="text-sm text-danger">{friendlyError(error.message)}</p>}
 
         {groups && groups.length === 0 && (
           <p className="text-sm text-foreground/60">

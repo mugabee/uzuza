@@ -161,7 +161,7 @@ export function ProfileForm({
           onChange={(e) => setInviteCode(e.target.value)}
         />
         {submitError && (
-          <p role="alert" className="text-xs text-red-500">{submitError}</p>
+          <p role="alert" className="text-xs text-danger">{submitError}</p>
         )}
         <Button type="submit" disabled={isSubmitting}
             loading={isSubmitting}>

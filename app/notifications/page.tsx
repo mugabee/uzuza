@@ -109,7 +109,7 @@ export default function NotificationsPage() {
           ) : notifications.length === 0 ? (
             <div className="flex flex-col items-center gap-3 py-12 text-center">
               <span className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M6 8a6 6 0 0 1 12 0c0 4 1.5 5.5 2 6.5H4c.5-1 2-2.5 2-6.5Z" />
                   <path d="M9.5 17a2.5 2.5 0 0 0 5 0" />
                 </svg>

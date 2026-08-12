@@ -39,7 +39,7 @@ export function OtherSettings() {
               className="flex items-center justify-between py-3 text-sm font-medium text-foreground/80 transition-colors duration-150 hover:text-primary"
             >
               {row.label}
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" className="text-foreground/30">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" className="text-foreground/30" aria-hidden="true">
                 <path d="M9 6l6 6-6 6" />
               </svg>
             </Link>
@@ -55,7 +55,7 @@ export function OtherSettings() {
               {checking && row.label === "Check for updates" ? (
                 <span className="text-xs text-foreground/40">Checking...</span>
               ) : (
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" className="text-foreground/30">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" className="text-foreground/30" aria-hidden="true">
                   <path d="M9 6l6 6-6 6" />
                 </svg>
               )}

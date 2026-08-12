@@ -263,7 +263,7 @@ export function AppNav({ signedIn }: { signedIn: boolean }) {
                 type="button"
                 role="menuitem"
                 onClick={handleSignOut}
-                className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-red-600 transition-colors duration-150 hover:bg-red-50"
+                className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-danger transition-colors duration-150 hover:bg-danger/10"
               >
                 <svg
                   width="16"

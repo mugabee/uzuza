@@ -136,7 +136,7 @@ function StatusBadge({ status }: { status: Reservation["status"] }) {
     submitted: "bg-accent/15 text-accent",
     confirmed: "bg-primary/15 text-primary",
     cancelled: "bg-surface-secondary text-foreground/40",
-    refunded: "bg-red-100 text-red-600",
+    refunded: "bg-danger/15 text-danger",
   };
   return (
     <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${styles[status]}`}>
@@ -211,7 +211,7 @@ function AdminReservationRow({ reservation }: { reservation: Reservation }) {
         />
       )}
 
-      {error && <p role="alert" className="mt-2 text-xs text-red-500">{error}</p>}
+      {error && <p role="alert" className="mt-2 text-xs text-danger">{error}</p>}
 
       <Button className="mt-4 w-full" onClick={handleConfirm} disabled={busy}
             loading={busy}>
@@ -254,7 +254,7 @@ function CancelReservationRow({ reservation }: { reservation: Reservation }) {
         Your deposit hasn't been confirmed yet, so cancelling now is free
         and immediate. It frees your spot for someone else.
       </p>
-      {error && <p role="alert" className="mt-2 text-xs text-red-500">{error}</p>}
+      {error && <p role="alert" className="mt-2 text-xs text-danger">{error}</p>}
       {confirming ? (
         <div className="mt-3 flex gap-2">
           <Button variant="secondary" className="flex-1" onClick={() => setConfirming(false)}>

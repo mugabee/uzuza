@@ -157,7 +157,7 @@ export function ContributeCard({
       )}
 
       {contribution.status === "pending" && contribution.rejected_reason && (
-        <p className="mt-3 rounded-lg bg-red-50 p-2 text-xs text-red-600">
+        <p className="mt-3 rounded-lg bg-danger/10 p-2 text-xs text-danger">
           {t("previousRejected")}: {contribution.rejected_reason}. {t("pleaseResubmit")}
         </p>
       )}
@@ -200,13 +200,13 @@ export function ContributeCard({
                   {...register("screenshot")}
                 />
                 {errors.screenshot?.message && (
-                  <span role="alert" className="text-xs text-red-500">
+                  <span role="alert" className="text-xs text-danger">
                     {errors.screenshot.message}
                   </span>
                 )}
               </label>
               <ScreenshotPreview files={watch("screenshot")} />
-              {submitError && <p role="alert" className="text-xs text-red-500">{submitError}</p>}
+              {submitError && <p role="alert" className="text-xs text-danger">{submitError}</p>}
               <Button type="submit" disabled={isSubmitting}
             loading={isSubmitting}>
                 {isSubmitting ? t("submitting") : t("submitProof")}
@@ -245,7 +245,7 @@ export function ContributeCard({
       )}
 
       {contribution.status === "missed" && (
-        <p className="mt-4 rounded-lg bg-red-50 p-2 text-sm text-red-600">
+        <p className="mt-4 rounded-lg bg-danger/10 p-2 text-sm text-danger">
           {t("markedMissed")}
           {contribution.missed_fine_amount != null &&
             ` — ${t("fineApplies")} ${Number(contribution.missed_fine_amount).toLocaleString()} ${t("rwfApplies")}`}

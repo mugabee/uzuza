@@ -132,7 +132,7 @@ export function LatePaymentCard({
           className="max-h-64 rounded-lg border border-border"
         />
       )}
-      {submitError && <p role="alert" className="mt-2 text-xs text-red-500">{submitError}</p>}
+      {submitError && <p role="alert" className="mt-2 text-xs text-danger">{submitError}</p>}
     </div>
   );
 
@@ -206,11 +206,11 @@ export function LatePaymentCard({
             {...register("screenshot")}
           />
           {errors.screenshot?.message && (
-            <span role="alert" className="text-xs text-red-500">{errors.screenshot.message}</span>
+            <span role="alert" className="text-xs text-danger">{errors.screenshot.message}</span>
           )}
         </label>
         <ScreenshotPreview files={watch("screenshot")} />
-        {submitError && <p role="alert" className="text-xs text-red-500">{submitError}</p>}
+        {submitError && <p role="alert" className="text-xs text-danger">{submitError}</p>}
         <Button type="submit" disabled={isSubmitting}
             loading={isSubmitting}>
           {isSubmitting ? "Submitting..." : "Submit proof"}

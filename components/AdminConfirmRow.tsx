@@ -161,7 +161,7 @@ export function AdminConfirmRow({
         />
       )}
 
-      {error && <p role="alert" className="mt-2 text-xs text-red-500">{error}</p>}
+      {error && <p role="alert" className="mt-2 text-xs text-danger">{error}</p>}
 
       {!rejecting ? (
         <div className="mt-4 flex gap-2">

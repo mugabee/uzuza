@@ -301,7 +301,7 @@ function GroupDetailsForm({
             </span>
           </label>
         )}
-        {submitError && <p role="alert" className="text-xs text-red-500">{submitError}</p>}
+        {submitError && <p role="alert" className="text-xs text-danger">{submitError}</p>}
         <Button type="submit" disabled={isSubmitting}
             loading={isSubmitting}>
           {isSubmitting ? "Creating..." : "Create group"}

@@ -141,7 +141,7 @@ export function PayoutPanel({
         <p className="mt-1 text-sm text-foreground/70">
           {readyMessage} Request the payout to {recipientName}.
         </p>
-        {error && <p role="alert" className="mt-2 text-xs text-red-500">{error}</p>}
+        {error && <p role="alert" className="mt-2 text-xs text-danger">{error}</p>}
         <Button className="mt-3 w-full" onClick={handleRequest} disabled={busy}
             loading={busy}>
           {busy ? "Requesting..." : "Request Payout"}
@@ -159,7 +159,7 @@ export function PayoutPanel({
         {Number(payoutRequest.amount).toLocaleString()} RWF
       </p>
 
-      {error && <p role="alert" className="mt-2 text-xs text-red-500">{error}</p>}
+      {error && <p role="alert" className="mt-2 text-xs text-danger">{error}</p>}
 
       {payoutRequest.status === "pending" && (
         <>
@@ -203,7 +203,7 @@ export function PayoutPanel({
               {...register("screenshot")}
             />
             {errors.screenshot?.message && (
-              <span role="alert" className="text-xs text-red-500">
+              <span role="alert" className="text-xs text-danger">
                 {errors.screenshot.message}
               </span>
             )}

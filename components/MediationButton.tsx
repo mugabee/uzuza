@@ -57,7 +57,7 @@ export function MediationButton({ groupId }: { groupId: string }) {
         className="rounded-lg border border-border px-3 py-2 text-sm outline-none focus:border-primary"
         rows={2}
       />
-      {error && <p role="alert" className="text-xs text-red-500">{error}</p>}
+      {error && <p role="alert" className="text-xs text-danger">{error}</p>}
       <div className="flex gap-2">
         <Button type="submit" disabled={isSubmitting}
             loading={isSubmitting}>

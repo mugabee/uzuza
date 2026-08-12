@@ -160,7 +160,7 @@ export function ReserveCard({ group }: { group: Group }) {
           being built.
         </div>
 
-        {error && <p role="alert" className="mt-3 text-xs text-red-500">{error}</p>}
+        {error && <p role="alert" className="mt-3 text-xs text-danger">{error}</p>}
         <Button className="mt-4 w-full" onClick={handleReserve} disabled={busy}
             loading={busy}>
           {busy ? "Reserving..." : "Reserve this spot"}
@@ -213,11 +213,11 @@ export function ReserveCard({ group }: { group: Group }) {
             {...register("screenshot")}
           />
           {errors.screenshot?.message && (
-            <span role="alert" className="text-xs text-red-500">{errors.screenshot.message}</span>
+            <span role="alert" className="text-xs text-danger">{errors.screenshot.message}</span>
           )}
         </label>
         <ScreenshotPreview files={watch("screenshot")} />
-        {error && <p role="alert" className="text-xs text-red-500">{error}</p>}
+        {error && <p role="alert" className="text-xs text-danger">{error}</p>}
         <Button type="submit" disabled={isSubmitting}
             loading={isSubmitting}>
           {isSubmitting ? "Submitting..." : "Submit proof"}

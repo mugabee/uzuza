@@ -169,7 +169,7 @@ export function PledgeCard({ group }: { group: Group }) {
               <option value="private">Private — nothing shown</option>
             </select>
           </label>
-          {pledgeError && <p role="alert" className="text-xs text-red-500">{pledgeError}</p>}
+          {pledgeError && <p role="alert" className="text-xs text-danger">{pledgeError}</p>}
           <Button type="submit" disabled={isSubmitting}
             loading={isSubmitting}>
             {isSubmitting ? "Pledging..." : "Pledge"}
@@ -221,11 +221,11 @@ export function PledgeCard({ group }: { group: Group }) {
             {...registerProof("screenshot")}
           />
           {proofErrors.screenshot?.message && (
-            <span role="alert" className="text-xs text-red-500">{proofErrors.screenshot.message}</span>
+            <span role="alert" className="text-xs text-danger">{proofErrors.screenshot.message}</span>
           )}
         </label>
         <ScreenshotPreview files={watchProof("screenshot")} />
-        {proofError && <p role="alert" className="text-xs text-red-500">{proofError}</p>}
+        {proofError && <p role="alert" className="text-xs text-danger">{proofError}</p>}
         <Button type="submit" disabled={proofSubmitting}
             loading={proofSubmitting}>
           {proofSubmitting ? "Submitting..." : "Submit proof"}
@@ -235,7 +235,7 @@ export function PledgeCard({ group }: { group: Group }) {
       <button
         type="button"
         onClick={handleCancel}
-        className="mt-4 text-xs text-foreground/40 hover:text-red-500"
+        className="mt-4 text-xs text-foreground/40 hover:text-danger"
       >
         Cancel this pledge
       </button>

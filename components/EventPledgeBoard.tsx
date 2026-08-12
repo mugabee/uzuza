@@ -173,7 +173,7 @@ function StatusBadge({ status }: { status: PledgeRow["status"] }) {
     pledged: "bg-surface-secondary text-foreground/60",
     submitted: "bg-accent/15 text-accent",
     confirmed: "bg-primary/15 text-primary",
-    cancelled: "bg-red-100 text-red-600",
+    cancelled: "bg-danger/15 text-danger",
   };
   const ticks: Record<PledgeRow["status"], string> = {
     pledged: "○",
@@ -241,7 +241,7 @@ function AdminPledgeQueue({ groupId }: { groupId: string }) {
       <h2 className="font-display text-lg font-semibold text-primary">
         Awaiting confirmation
       </h2>
-      {error && <p role="alert" className="mt-2 text-xs text-red-500">{error}</p>}
+      {error && <p role="alert" className="mt-2 text-xs text-danger">{error}</p>}
       <ul className="mt-3 flex flex-col gap-3">
         {rows.map((r) => (
           <li key={r.id} className="flex items-center justify-between text-sm">

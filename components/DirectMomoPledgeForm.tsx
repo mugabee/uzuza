@@ -123,7 +123,7 @@ export function DirectMomoPledgeForm({
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
       {stage === "failed" && (
-        <p role="alert" className="rounded-lg bg-red-50 p-2 text-xs text-red-600">
+        <p role="alert" className="rounded-lg bg-danger/10 p-2 text-xs text-danger">
           The payment wasn't completed — declined, timed out, or something went
           wrong. You can try again below.
         </p>
@@ -152,7 +152,7 @@ export function DirectMomoPledgeForm({
           <option value="private">Private — nothing shown</option>
         </select>
       </label>
-      {error && <p role="alert" className="text-xs text-red-500">{error}</p>}
+      {error && <p role="alert" className="text-xs text-danger">{error}</p>}
       <Button type="submit" disabled={isSubmitting} loading={isSubmitting}>
         {isSubmitting ? "Starting..." : "Pay with MTN MoMo"}
       </Button>

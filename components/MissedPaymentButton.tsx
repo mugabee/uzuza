@@ -42,7 +42,7 @@ export function MissedPaymentButton({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="text-xs text-red-500 underline-offset-2 hover:underline"
+        className="text-xs text-danger underline-offset-2 hover:underline"
       >
         Report missed
       </button>
@@ -62,7 +62,7 @@ export function MissedPaymentButton({
             loading={busy} className="px-2 py-1 text-xs">
         {busy ? "..." : "Confirm"}
       </Button>
-      {error && <span role="alert" className="text-xs text-red-500">{error}</span>}
+      {error && <span role="alert" className="text-xs text-danger">{error}</span>}
     </span>
   );
 }
