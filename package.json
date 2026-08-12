@@ -16,6 +16,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "check:migrations": "node scripts/check-function-overloads.mjs",
     "cap:sync": "cap sync",
     "cap:open:android": "cap open android",
     "cap:open:ios": "cap open ios"

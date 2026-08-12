@@ -65,7 +65,7 @@ export async function disburse(params: {
   return getTransferStatus(params.referenceId);
 }
 
-export async function getTransferStatus(referenceId: string) {
+async function getTransferStatus(referenceId: string) {
   const subKey = process.env.MOMO_DISBURSEMENTS_SUBSCRIPTION_KEY!;
   const token = await getToken();
 
