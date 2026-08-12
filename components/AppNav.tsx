@@ -15,6 +15,17 @@ const TABS = [
     ),
   },
   {
+    href: "/wallet",
+    label: "Wallet",
+    icon: (
+      <>
+        <rect x="3" y="6.5" width="18" height="13" rx="2.5" />
+        <path d="M3 10.5h18" />
+        <circle cx="16.5" cy="14.5" r="1" fill="currentColor" stroke="none" />
+      </>
+    ),
+  },
+  {
     href: "/find",
     label: "Find",
     icon: (

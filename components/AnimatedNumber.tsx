@@ -50,8 +50,19 @@ export function AnimatedNumber({
     }
 
     rafRef.current = requestAnimationFrame(step);
+    // Safety net: requestAnimationFrame is suspended whenever the page
+    // isn't actively compositing (backgrounded tab, some webview
+    // contexts) — without this, a money amount could get stuck showing
+    // a stale/zero value indefinitely instead of the real one. A plain
+    // timer isn't subject to the same throttling, so it guarantees the
+    // true value always lands even if the animation itself never ran.
+    const fallback = setTimeout(() => {
+      setDisplay(value);
+      fromRef.current = value;
+    }, duration + 150);
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      clearTimeout(fallback);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
