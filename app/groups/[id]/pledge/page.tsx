@@ -11,8 +11,6 @@ export default async function PledgePage({
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) redirect("/login");
-
   const { data: group } = await supabase
     .from("groups")
     .select("id, name, group_type, contribution_amount")
@@ -20,6 +18,10 @@ export default async function PledgePage({
     .single();
 
   if (!group || group.group_type !== "event") notFound();
+
+  if (!user) {
+    redirect(`/login?redirect=${encodeURIComponent(`/groups/${id}/pledge`)}`);
+  }
 
   return (
     <main className="flex flex-1 flex-col items-center justify-center px-6 py-16">

@@ -43,6 +43,7 @@ export function EventPledgeBoard({
   payoutApprovalCount,
   currentUserHasApprovedPayout,
   organizerName,
+  signedIn,
 }: {
   group: Group;
   isAdmin: boolean;
@@ -52,6 +53,7 @@ export function EventPledgeBoard({
   payoutApprovalCount: number;
   currentUserHasApprovedPayout: boolean;
   organizerName: string;
+  signedIn: boolean;
 }) {
   const [shareUrl, setShareUrl] = useState("");
   useEffect(() => {
@@ -90,9 +92,21 @@ export function EventPledgeBoard({
           ) : null}
         </div>
 
-        <Link href={`/groups/${group.id}/pledge`}>
+        <Link
+          href={
+            signedIn
+              ? `/groups/${group.id}/pledge`
+              : `/login?redirect=${encodeURIComponent(`/groups/${group.id}/pledge`)}`
+          }
+        >
           <Button className="mt-4 w-full">Pledge now</Button>
         </Link>
+        {!signedIn && (
+          <p className="mt-2 text-center text-xs text-foreground/50">
+            You'll sign in or create a free account first, then come right
+            back here to pledge.
+          </p>
+        )}
 
         {isAdmin && (
           <MomoNumberEditor

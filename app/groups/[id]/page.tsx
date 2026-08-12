@@ -13,8 +13,6 @@ export default async function GroupPage({
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) redirect("/login");
-
   const { data: group } = await supabase
     .from("groups")
     .select(
@@ -24,6 +22,12 @@ export default async function GroupPage({
     .single();
 
   if (!group) notFound();
+
+  // Event groups are meant to be publicly shareable via link/QR (Section
+  // 3.3) - an anonymous scanner can view and pledge without an account
+  // first. Every other group type still requires being signed in, same as
+  // before.
+  if (group.group_type !== "event" && !user) redirect("/login");
 
   const { data: members } = await supabase
     .from("group_members")
@@ -43,7 +47,7 @@ export default async function GroupPage({
     profile: profiles?.find((p) => p.id === m.user_id) ?? null,
   }));
 
-  const currentMembership = membersWithNames.find((m) => m.user_id === user.id);
+  const currentMembership = membersWithNames.find((m) => m.user_id === user?.id);
 
   if (group.group_type === "event") {
     const { data: pledges } = await supabase.rpc("get_pledge_board", {
@@ -78,13 +82,19 @@ export default async function GroupPage({
           payoutRequest={payoutRequest ?? null}
           payoutApprovalCount={payoutApprovals?.length ?? 0}
           currentUserHasApprovedPayout={
-            !!payoutApprovals?.some((a) => a.approved_by === user.id)
+            !!payoutApprovals?.some((a) => a.approved_by === user?.id)
           }
           organizerName={organizerProfile?.full_name ?? "the organizer"}
+          signedIn={!!user}
         />
       </main>
     );
   }
+
+  // Every non-event group already required a signed-in user above; this
+  // is redundant at runtime but lets TypeScript narrow `user` for the
+  // rest of the function instead of treating it as possibly null.
+  if (!user) redirect("/login");
 
   if (group.status === "forming") {
     if (!currentMembership) redirect(`/groups/${id}/reserve`);

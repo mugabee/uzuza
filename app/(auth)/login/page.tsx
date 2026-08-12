@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { phoneSchema, emailSchema } from "@/lib/validation";
 import { Button } from "@/components/Button";
@@ -13,6 +13,8 @@ type Intent = "signin" | "signup";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect");
   const [intent, setIntent] = useState<Intent | null>(null);
   const [method, setMethod] = useState<Method>("phone");
   const [identifier, setIdentifier] = useState("");
@@ -62,6 +64,9 @@ export default function LoginPage() {
     sessionStorage.setItem("uzuza_login_method", method);
     sessionStorage.setItem("uzuza_login_identifier", result.data);
     sessionStorage.setItem("uzuza_login_intent", intent);
+    if (redirectTo) {
+      sessionStorage.setItem("uzuza_login_redirect", redirectTo);
+    }
     router.push("/login/verify");
   }
 

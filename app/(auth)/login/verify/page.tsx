@@ -13,6 +13,7 @@ export default function VerifyPage() {
   const [method, setMethod] = useState<"phone" | "email" | null>(null);
   const [identifier, setIdentifier] = useState<string | null>(null);
   const [intent, setIntent] = useState<"signin" | "signup" | null>(null);
+  const [redirectTo, setRedirectTo] = useState<string | null>(null);
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -35,6 +36,7 @@ export default function VerifyPage() {
     setMethod(m);
     setIdentifier(id);
     setIntent(i ?? "signup");
+    setRedirectTo(sessionStorage.getItem("uzuza_login_redirect"));
   }, [router]);
 
   async function handleSubmit(e: FormEvent) {
@@ -72,7 +74,8 @@ export default function VerifyPage() {
     sessionStorage.removeItem("uzuza_login_method");
     sessionStorage.removeItem("uzuza_login_identifier");
     sessionStorage.removeItem("uzuza_login_intent");
-    router.push("/profile");
+    sessionStorage.removeItem("uzuza_login_redirect");
+    router.push(redirectTo || "/profile");
     // Soft navigations reuse the already-rendered root layout, which
     // read the (until now) signed-out session — refresh so it re-checks
     // auth and the nav shows up immediately, not after the next hard load.
@@ -105,7 +108,7 @@ export default function VerifyPage() {
     sessionStorage.removeItem("uzuza_login_method");
     sessionStorage.removeItem("uzuza_login_identifier");
     sessionStorage.removeItem("uzuza_login_intent");
-    router.push("/login");
+    router.push(redirectTo ? `/login?redirect=${encodeURIComponent(redirectTo)}` : "/login");
   };
 
   return (
