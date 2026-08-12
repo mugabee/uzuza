@@ -10,6 +10,17 @@ import { getRequestToPayStatus } from "@/lib/momo-collections";
  * for manual payments - so the pledge is auto-confirmed, no admin review
  * step needed.
  */
+
+// Two independent random UUIDs (pledgeId + its matching reference_id) are
+// already required to get anything back, so brute-force enumeration is
+// impractical - this only needs to stop rapid hammering of one already-known
+// pair, not defend against guessing. A per-instance in-memory map is good
+// enough for that; it resets on cold start, which is fine for a throttle
+// this lightweight (no DB table needed - rate_limit_events requires a real
+// auth.uid(), which this anonymous route never has).
+const lastCheckedAt = new Map<string, number>();
+const MIN_INTERVAL_MS = 1500;
+
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null);
   const pledgeId = body?.pledgeId as string | undefined;
@@ -17,6 +28,14 @@ export async function POST(request: NextRequest) {
   if (!pledgeId || !referenceId) {
     return NextResponse.json({ error: "pledgeId and referenceId are required" }, { status: 400 });
   }
+
+  const throttleKey = `${pledgeId}:${referenceId}`;
+  const now = Date.now();
+  const last = lastCheckedAt.get(throttleKey);
+  if (last && now - last < MIN_INTERVAL_MS) {
+    return NextResponse.json({ error: "Checking too frequently — please wait a moment" }, { status: 429 });
+  }
+  lastCheckedAt.set(throttleKey, now);
 
   const supabase = createAdminClient();
 
