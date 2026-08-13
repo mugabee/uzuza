@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Direct port of app/globals.css's tokens (the web app this mirrors) —
+   same names, same light/dark/high-contrast values. NativeWind v4 supports
+   real CSS variables, so this stays close to the web mental model instead
+   of hardcoding colors into tailwind.config.js. Theme switching toggles
+   the "dark" class via nativewind's colorScheme API (see lib/theme.ts),
+   the same shape as the web app's data-theme attribute toggle. */
+:root {
+  --paper: #f7f4ee;
+  --foreground: #1c1c1a;
+  --primary: #1a5f4a;
+  --primary-foreground: #f7f4ee;
+  --accent: #c9962c;
+  --surface: #ffffff;
+  --surface-secondary: rgba(28, 28, 26, 0.04);
+  --border: rgba(28, 28, 26, 0.08);
+  --chat-wallpaper: #e9ddc9;
+  --chat-bubble-mine: #d9fdd3;
+  --danger: #dc2626;
+  --success: #16a34a;
+  --warning: #d97706;
+}
+
+.dark:root {
+  --paper: #14161a;
+  --foreground: #edece8;
+  --primary: #34a17f;
+  --primary-foreground: #0b120f;
+  --accent: #e0ac3f;
+  --surface: #1e2126;
+  --surface-secondary: rgba(255, 255, 255, 0.06);
+  --border: rgba(255, 255, 255, 0.1);
+  --chat-wallpaper: #2a2f26;
+  --chat-bubble-mine: #1f4d38;
+  --danger: #f87171;
+  --success: #4ade80;
+  --warning: #fbbf24;
+}
+
+/* High contrast is a separate axis from dark mode, applied via its own
+   class (see lib/theme.ts) — matches html[data-contrast="high"] on web. */
+.high-contrast:root {
+  --paper: #ffffff;
+  --foreground: #000000;
+  --primary: #0a3f30;
+  --primary-foreground: #ffffff;
+  --accent: #7a5200;
+  --surface: #ffffff;
+  --border: rgb(0 0 0 / 0.3);
+  --danger: #b91c1c;
+  --success: #15803d;
+  --warning: #92400e;
+}

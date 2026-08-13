@@ -4,5 +4,6 @@
       "path": "/api/cron/sweep-out",
       "schedule": "0 3 * * *"
     }
-  ]
+  ],
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- . ':!mobile'"
 }
