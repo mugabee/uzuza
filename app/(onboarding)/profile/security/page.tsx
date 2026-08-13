@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { MfaEnrollment } from "@/components/MfaEnrollment";
+import { PasskeySetup } from "@/components/PasskeySetup";
 import { DisplaySettings } from "@/components/DisplaySettings";
 import { ReferralCard } from "@/components/ReferralCard";
 import { OtherSettings } from "@/components/OtherSettings";
@@ -68,6 +69,7 @@ export default async function ProfileSecurityPage() {
 
         <ReferralCard />
         <MfaEnrollment />
+        <PasskeySetup />
         <DisplaySettings />
         <OtherSettings />
       </div>

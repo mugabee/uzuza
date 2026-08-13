@@ -7,6 +7,7 @@ import { LanguageProvider } from "@/lib/i18n";
 import { ToastProvider } from "@/lib/toast";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { SplashScreenHider } from "@/components/SplashScreenHider";
+import { AppLockGate } from "@/components/AppLockGate";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -62,6 +63,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col bg-paper text-foreground font-sans">
         <SplashScreenHider />
         <OfflineBanner />
+        <AppLockGate signedIn={!!user} />
         <LanguageProvider>
           <ToastProvider>
             <NotificationBell signedIn={!!user} />
