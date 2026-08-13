@@ -18,6 +18,7 @@ import { friendlyError } from "@/lib/friendly-error";
 import { compressImage } from "@/lib/compress-image";
 import { ScreenshotPreview } from "@/components/ScreenshotPreview";
 import { PaymentChannelPicker } from "@/components/PaymentChannelPicker";
+import { PayContributionWithMomo } from "@/components/PayContributionWithMomo";
 import { BottomSheet } from "@/components/BottomSheet";
 
 type Contribution = {
@@ -40,10 +41,12 @@ type Contribution = {
 export function ContributeCard({
   contribution,
   groupMomoNumber,
+  myPhone,
   onSubmitted,
 }: {
   contribution: Contribution;
   groupMomoNumber: string | null;
+  myPhone?: string;
   onSubmitted: () => void;
 }) {
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -164,9 +167,23 @@ export function ContributeCard({
 
       {contribution.status === "pending" && (
         <>
-          <Button className="mt-4 w-full" onClick={() => setSheetOpen(true)}>
-            {t("submitProof")}
-          </Button>
+          <div className="mt-4">
+            <PayContributionWithMomo
+              contributionId={contribution.id}
+              amount={Number(contribution.amount)}
+              defaultPhone={myPhone ?? ""}
+              onConfirmed={onSubmitted}
+            />
+          </div>
+
+          <details className="mt-4">
+            <summary className="cursor-pointer text-sm font-medium text-foreground/60 hover:text-foreground/80">
+              Prefer to pay a different way?
+            </summary>
+            <Button variant="secondary" className="mt-3 w-full" onClick={() => setSheetOpen(true)}>
+              {t("submitProof")}
+            </Button>
+          </details>
 
           <BottomSheet
             open={sheetOpen}

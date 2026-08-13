@@ -45,6 +45,17 @@ const QUICK_ACTIONS = [
     icon: <path d="M12 5v14M5 12h14" />,
   },
   {
+    href: "/pay",
+    label: "Send or request money",
+    description: "Find someone by phone or email, no group needed",
+    icon: (
+      <>
+        <path d="M7 11l3 3 7-7" />
+        <path d="M20 12a8 8 0 1 1-3.5-6.6" />
+      </>
+    ),
+  },
+  {
     href: "/find",
     label: "Find a group to join",
     description: "Browse open groups you can request to join",

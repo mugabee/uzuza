@@ -205,6 +205,7 @@ export function GroupLedger({
   }
 
   const myContribution = contributions.find((c) => c.member_id === currentUserId);
+  const myPhone = members.find((m) => m.user_id === currentUserId)?.profile?.phone ?? "";
 
   return (
     <PullToRefresh
@@ -352,6 +353,7 @@ export function GroupLedger({
               ? (UZUZA_CUSTODY_NUMBER ?? "Uzuza custody number (being finalized)")
               : group.momo_number
           }
+          myPhone={myPhone}
           onSubmitted={() => router.refresh()}
         />
       )}

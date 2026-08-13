@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
@@ -212,6 +213,24 @@ export function WalletView({ transactions }: { transactions: Transaction[] }) {
               </div>
             )}
           </Card>
+
+          <Link href="/pay">
+            <Card className="flex items-center gap-3 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-soft-md)]">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M7 11l3 3 7-7" />
+                  <path d="M20 12a8 8 0 1 1-3.5-6.6" />
+                </svg>
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-foreground">Send or request money</p>
+                <p className="text-xs text-foreground/50">Find another Uzuza user by phone or email</p>
+              </div>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="shrink-0 text-foreground/30">
+                <path d="M9 6l6 6-6 6" />
+              </svg>
+            </Card>
+          </Link>
 
           <Card>
             <h2 className="font-display text-lg font-semibold text-primary">Activity</h2>
