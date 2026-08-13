@@ -34,6 +34,15 @@ One-time collections for weddings, funerals, school fees or community projects, 
 **Matching and trust**
 People without an existing group can browse open groups, bring a couple of people they already know, and fill the rest of the spots through matching. A refundable reservation deposit is held safely until the group fills, pre-activation chat lets forming members talk before committing further, and every group starts with a full first-cycle safety fund by default — the strongest available protection against someone leaving after they've already received their payout. Once a group activates, chat keeps working for the life of the group, not just while it's forming.
 
+**Personal wallet and peer payments**
+Every member also gets a personal Uzuza wallet — top up or withdraw via MTN MoMo, see a running transaction history with CSV export for record-keeping, and send or request money directly from another Uzuza user by phone number or email, with the same proof-of-transfer discipline used everywhere else in the app.
+
+**Passkey app lock**
+Members can enroll a device passkey (Face ID, fingerprint, Windows Hello) at Settings → Account security. Once enrolled, the app locks itself after being backgrounded for a while and requires that passkey to resume — a local re-authentication gate layered on top of the existing sign-in, not a replacement for it, so it works the same way for phone-only and email accounts alike.
+
+**Notifications**
+An in-app notification center covers every account and group event in real time. Members with an email on file can also opt into a daily email digest of what they missed, sent by a scheduled job so it works without anyone needing to keep the app open.
+
 **Send money from anywhere**
 Contributions, pledges, reservation deposits and late payments can all be paid from outside Rwanda — a diaspora family member sends in their own currency (USD, EUR, GBP, KES, UGX and more), sees a live exchange-rate estimate, and pays via bank/Wise transfer or an MTN Mobile Money remittance corridor with real transaction-status lookups. The group's own bookkeeping stays entirely RWF-native regardless of how the money came in.
 
@@ -59,7 +68,10 @@ The same app also ships as installable Android and iOS apps via Capacitor — a 
 - [Supabase](https://supabase.com/) for the database, authentication, realtime and file storage
 - [Africa's Talking](https://africastalking.com/) for SMS verification codes
 - MTN Mobile Money Collections, Disbursements and Remittances APIs
-- [Capacitor](https://capacitorjs.com/) for the Android and iOS app shells
+- [SimpleWebAuthn](https://simplewebauthn.dev/) for passkey/biometric app-lock (WebAuthn)
+- [Resend](https://resend.com/) for the daily email notification digest
+- [Capacitor](https://capacitorjs.com/) for the Android and iOS app shells (web app)
+- [Expo](https://expo.dev/) / React Native for the native mobile app in `mobile/` (early stage — see [Mobile apps](#mobile-apps))
 - Deployed on [Vercel](https://vercel.com/)
 
 ## Getting started
@@ -70,6 +82,7 @@ The same app also ships as installable Android and iOS apps via Capacitor — a 
 - A Supabase project
 - An Africa's Talking account for SMS delivery
 - MTN MoMo developer credentials if you want the mobile money integration working end to end
+- A Resend account (optional) if you want the email notification digest actually sending — the app runs fine without it
 
 ### Install
 
@@ -129,8 +142,9 @@ lib/            Supabase clients, validation schemas and integration code
 supabase/       Database migrations
 scripts/        Migration runner, integration checks and deployment utilities
 public/         Static assets
-android/        Native Android project (Capacitor)
-ios/            Native iOS project (Capacitor)
+android/        Native Android project (Capacitor, wraps the web app)
+ios/            Native iOS project (Capacitor, wraps the web app)
+mobile/         Separate Expo/React Native app (own package.json — see Mobile apps below)
 ```
 
 ## Deployment
@@ -139,12 +153,16 @@ The app deploys to Vercel with zero additional configuration beyond the environm
 
 ## Mobile apps
 
-Android and iOS projects are scaffolded in `android/` and `ios/` via Capacitor, wrapping the same live web app rather than a separate codebase. Building and signing real store binaries needs tooling this repo doesn't assume you have on hand:
+Two separate paths exist, deliberately not one:
+
+**Capacitor (`android/`, `ios/`)** wraps the live web app in a thin native shell — same codebase, same Supabase backend, no separate UI to maintain. This is the store-submission path. Building and signing real binaries needs tooling this repo doesn't assume you have on hand:
 
 - **Android** — Android Studio (bundles the JDK, SDK and Gradle), then `npm run cap:open:android`.
 - **iOS** — a Mac with Xcode; there's no way around this from Windows or Linux. Cloud Mac CI (Codemagic, GitHub Actions macOS runners, EAS Build) is the practical substitute if a physical Mac isn't available. Then `npm run cap:open:ios` and open `App.xcworkspace`.
 
-Neither app has been submitted to a store yet.
+**Expo (`mobile/`)** is a genuinely separate React Native app, scaffolded to support the scan-a-QR-code-and-preview-on-a-real-phone Expo Go workflow that a Capacitor-wrapped website can't offer. It reuses the same Supabase backend (schema, RPCs, RLS) but has its own `package.json` and is not a workspace member of the root — RN and Next.js dependency trees don't mix. Early stage: scaffold only, not yet at feature parity with the web app.
+
+Neither path has been submitted to a store yet.
 
 ## Roadmap / known gaps
 
@@ -153,7 +171,9 @@ Tracked openly rather than left implicit:
 - Legal review of Rwanda's BNR licensing threshold before real custody funds move at scale (currently sandbox-only)
 - A NIDA (Rwanda National ID) partnership for identity verification on matched groups — no public API exists yet
 - A dedicated Uzuza business MoMo account (the custody number is still a placeholder)
-- App Store / Play Store submission for the native apps above
+- A Resend API key to actually start sending the email notification digest (safely no-ops until then)
+- App Store / Play Store submission for either native app path above
+- Feature parity for the Expo/React Native app in `mobile/` (currently scaffold-only)
 
 ## Status
 
