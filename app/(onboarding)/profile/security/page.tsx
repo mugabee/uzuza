@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { MfaEnrollment } from "@/components/MfaEnrollment";
 import { PasskeySetup } from "@/components/PasskeySetup";
+import { EmailNotificationsToggle } from "@/components/EmailNotificationsToggle";
 import { DisplaySettings } from "@/components/DisplaySettings";
 import { ReferralCard } from "@/components/ReferralCard";
 import { OtherSettings } from "@/components/OtherSettings";
@@ -18,7 +19,7 @@ export default async function ProfileSecurityPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name, phone, avatar_url")
+    .select("full_name, phone, avatar_url, email_notifications_enabled")
     .eq("id", user.id)
     .single();
 
@@ -70,6 +71,10 @@ export default async function ProfileSecurityPage() {
         <ReferralCard />
         <MfaEnrollment />
         <PasskeySetup />
+        <EmailNotificationsToggle
+          initialEnabled={profile?.email_notifications_enabled ?? true}
+          hasEmail={!!user.email}
+        />
         <DisplaySettings />
         <OtherSettings />
       </div>
