@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Card } from "@/components/Card";
+import { Button } from "@/components/Button";
 import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { useBalanceHidden } from "@/lib/prefs";
 
@@ -13,6 +15,14 @@ type Transaction = {
   group_name: string;
   group_id: string;
   occurred_at: string | null;
+};
+
+type OpenContribution = {
+  contribution_id: string;
+  group_id: string;
+  group_name: string;
+  amount: number;
+  status: string;
 };
 
 const PERIODS = [
@@ -29,10 +39,18 @@ const KIND_ICON: Record<string, { bg: string; icon: string }> = {
 };
 
 export function WalletView({ transactions }: { transactions: Transaction[] }) {
+  const router = useRouter();
   const [tab, setTab] = useState<"overview" | "transactions">("overview");
   const [period, setPeriod] = useState<(typeof PERIODS)[number]["key"]>("7d");
-  const [summary, setSummary] = useState<{ money_received: number; money_sent: number } | null>(null);
+  const [summary, setSummary] = useState<{
+    money_received: number;
+    contributions_sent: number;
+    pledges_sent: number;
+    reservations_sent: number;
+  } | null>(null);
   const [hidden, toggleHidden] = useBalanceHidden();
+  const [openContributions, setOpenContributions] = useState<OpenContribution[] | null>(null);
+  const [selectedGroupId, setSelectedGroupId] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -41,7 +59,12 @@ export function WalletView({ transactions }: { transactions: Transaction[] }) {
       const { data } = await supabase.rpc("get_wallet_summary", { p_period: period });
       const row = data?.[0];
       if (!cancelled && row) {
-        setSummary({ money_received: Number(row.money_received), money_sent: Number(row.money_sent) });
+        setSummary({
+          money_received: Number(row.money_received),
+          contributions_sent: Number(row.contributions_sent),
+          pledges_sent: Number(row.pledges_sent),
+          reservations_sent: Number(row.reservations_sent),
+        });
       }
     }
     load();
@@ -50,7 +73,26 @@ export function WalletView({ transactions }: { transactions: Transaction[] }) {
     };
   }, [period]);
 
-  const net = summary ? summary.money_received - summary.money_sent : 0;
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      const supabase = createClient();
+      const { data } = await supabase.rpc("get_my_open_contributions");
+      if (!cancelled) {
+        setOpenContributions(data ?? []);
+        if (data?.[0]) setSelectedGroupId(data[0].group_id);
+      }
+    }
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const moneySent = summary
+    ? summary.contributions_sent + summary.pledges_sent + summary.reservations_sent
+    : 0;
+  const net = summary ? summary.money_received - moneySent : 0;
 
   return (
     <div className="flex flex-col gap-5">
@@ -132,6 +174,46 @@ export function WalletView({ transactions }: { transactions: Transaction[] }) {
           </div>
 
           <Card>
+            <h2 className="font-display text-lg font-semibold text-primary">Make a deposit</h2>
+            <p className="mt-1 text-sm text-foreground/60">
+              Jump straight to a group that's waiting on your contribution — deposits still go
+              through that group's own proof-of-transfer flow, nothing changes there.
+            </p>
+            {openContributions === null ? (
+              <p className="mt-3 text-sm text-foreground/50">Loading...</p>
+            ) : openContributions.length === 0 ? (
+              <p className="mt-3 text-sm text-foreground/50">
+                Nothing waiting on you right now — every group you're in is up to date.
+              </p>
+            ) : (
+              <div className="mt-3 flex flex-col gap-2">
+                <label className="flex flex-col gap-1.5 text-sm">
+                  <span className="font-medium text-foreground">Choose group</span>
+                  <select
+                    value={selectedGroupId}
+                    onChange={(e) => setSelectedGroupId(e.target.value)}
+                    className="rounded-lg border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-primary"
+                  >
+                    {openContributions.map((c) => (
+                      <option key={c.contribution_id} value={c.group_id}>
+                        {c.group_name} — {Number(c.amount).toLocaleString()} RWF
+                        {c.status === "missed" ? " (missed)" : ""}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <Button
+                  className="mt-1"
+                  onClick={() => router.push(`/groups/${selectedGroupId}`)}
+                  disabled={!selectedGroupId}
+                >
+                  Continue to deposit
+                </Button>
+              </div>
+            )}
+          </Card>
+
+          <Card>
             <h2 className="font-display text-lg font-semibold text-primary">Activity</h2>
             <div className="mt-3 flex flex-col divide-y divide-border">
               <div className="flex items-center gap-3 py-2.5">
@@ -147,9 +229,27 @@ export function WalletView({ transactions }: { transactions: Transaction[] }) {
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-red-500/15 text-red-600">
                   ↑
                 </span>
-                <span className="flex-1 text-sm font-medium text-foreground">Money sent</span>
+                <span className="flex-1 text-sm font-medium text-foreground">Contributions</span>
                 <span className="text-sm font-semibold text-foreground">
-                  {hidden ? "••••" : `${(summary?.money_sent ?? 0).toLocaleString()} RWF`}
+                  {hidden ? "••••" : `${(summary?.contributions_sent ?? 0).toLocaleString()} RWF`}
+                </span>
+              </div>
+              <div className="flex items-center gap-3 py-2.5">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-pink-500/15 text-pink-600">
+                  ↑
+                </span>
+                <span className="flex-1 text-sm font-medium text-foreground">Pledges</span>
+                <span className="text-sm font-semibold text-foreground">
+                  {hidden ? "••••" : `${(summary?.pledges_sent ?? 0).toLocaleString()} RWF`}
+                </span>
+              </div>
+              <div className="flex items-center gap-3 py-2.5">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-orange-500/15 text-orange-600">
+                  ↑
+                </span>
+                <span className="flex-1 text-sm font-medium text-foreground">Reservation fees</span>
+                <span className="text-sm font-semibold text-foreground">
+                  {hidden ? "••••" : `${(summary?.reservations_sent ?? 0).toLocaleString()} RWF`}
                 </span>
               </div>
             </div>
