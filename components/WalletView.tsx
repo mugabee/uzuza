@@ -7,6 +7,9 @@ import { createClient } from "@/lib/supabase/client";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
 import { AnimatedNumber } from "@/components/AnimatedNumber";
+import { BottomSheet } from "@/components/BottomSheet";
+import { TopUpWalletForm } from "@/components/TopUpWalletForm";
+import { WithdrawWalletForm } from "@/components/WithdrawWalletForm";
 import { useBalanceHidden } from "@/lib/prefs";
 
 type Transaction = {
@@ -39,7 +42,17 @@ const KIND_ICON: Record<string, { bg: string; icon: string }> = {
   "Reservation fee": { bg: "bg-orange-500/15 text-orange-600", icon: "↑" },
 };
 
-export function WalletView({ transactions }: { transactions: Transaction[] }) {
+export function WalletView({
+  transactions,
+  balance,
+  hasWalletConsent,
+  myPhone,
+}: {
+  transactions: Transaction[];
+  balance: number;
+  hasWalletConsent: boolean;
+  myPhone: string;
+}) {
   const router = useRouter();
   const [tab, setTab] = useState<"overview" | "transactions">("overview");
   const [period, setPeriod] = useState<(typeof PERIODS)[number]["key"]>("7d");
@@ -52,6 +65,18 @@ export function WalletView({ transactions }: { transactions: Transaction[] }) {
   const [hidden, toggleHidden] = useBalanceHidden();
   const [openContributions, setOpenContributions] = useState<OpenContribution[] | null>(null);
   const [selectedGroupId, setSelectedGroupId] = useState("");
+  const [walletBalance, setWalletBalance] = useState(balance);
+  const [consent, setConsent] = useState(hasWalletConsent);
+  const [topUpOpen, setTopUpOpen] = useState(false);
+  const [withdrawOpen, setWithdrawOpen] = useState(false);
+
+  async function refreshBalance() {
+    const supabase = createClient();
+    const { data } = await supabase.rpc("get_wallet_balance");
+    if (data != null) setWalletBalance(Number(data));
+    const { data: consentData } = await supabase.rpc("has_wallet_consent");
+    setConsent(!!consentData);
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -90,11 +115,6 @@ export function WalletView({ transactions }: { transactions: Transaction[] }) {
     };
   }, []);
 
-  const moneySent = summary
-    ? summary.contributions_sent + summary.pledges_sent + summary.reservations_sent
-    : 0;
-  const net = summary ? summary.money_received - moneySent : 0;
-
   return (
     <div className="flex flex-col gap-5">
       <div className="flex gap-1 rounded-full bg-surface-secondary p-1 text-sm font-medium">
@@ -126,13 +146,13 @@ export function WalletView({ transactions }: { transactions: Transaction[] }) {
             <div className="flex items-center justify-between rounded-2xl bg-white/10 px-4 py-3.5">
               <div>
                 <p className="text-xs font-medium uppercase tracking-wide text-white/60">
-                  Net this period
+                  Wallet balance
                 </p>
                 <p className="mt-1 font-display text-3xl font-bold tracking-tight">
                   {hidden ? (
                     <span aria-label="Balance hidden">••••••</span>
                   ) : (
-                    <AnimatedNumber value={net} />
+                    <AnimatedNumber value={walletBalance} />
                   )}
                   <span className="ml-1.5 text-base font-medium text-white/70">RWF</span>
                 </p>
@@ -158,21 +178,47 @@ export function WalletView({ transactions }: { transactions: Transaction[] }) {
               </button>
             </div>
 
-            <div className="mt-4 flex gap-1 rounded-full bg-white/10 p-1 text-xs font-medium">
-              {PERIODS.map((p) => (
-                <button
-                  key={p.key}
-                  type="button"
-                  onClick={() => setPeriod(p.key)}
-                  className={`flex-1 rounded-full py-1.5 transition-all duration-200 ${
-                    period === p.key ? "bg-white/25 text-white" : "text-white/60 hover:text-white/80"
-                  }`}
-                >
-                  {p.label}
-                </button>
-              ))}
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setTopUpOpen(true)}
+                className="rounded-full bg-white/15 py-2.5 text-sm font-semibold text-white transition-colors duration-150 hover:bg-white/25"
+              >
+                Top up
+              </button>
+              <button
+                type="button"
+                onClick={() => setWithdrawOpen(true)}
+                className="rounded-full bg-white/10 py-2.5 text-sm font-semibold text-white/90 transition-colors duration-150 hover:bg-white/20"
+              >
+                Withdraw
+              </button>
             </div>
+            <p className="mt-2 text-center text-[11px] text-white/50">
+              Sandbox only — no real funds move yet.
+            </p>
           </div>
+
+          <BottomSheet open={topUpOpen} onClose={() => setTopUpOpen(false)} title="Top up wallet">
+            <TopUpWalletForm
+              hasConsent={consent}
+              defaultPhone={myPhone}
+              onConfirmed={() => {
+                refreshBalance();
+                setTimeout(() => setTopUpOpen(false), 1500);
+              }}
+            />
+          </BottomSheet>
+          <BottomSheet open={withdrawOpen} onClose={() => setWithdrawOpen(false)} title="Withdraw from wallet">
+            <WithdrawWalletForm
+              balance={walletBalance}
+              defaultPhone={myPhone}
+              onWithdrawn={() => {
+                refreshBalance();
+                setTimeout(() => setWithdrawOpen(false), 1500);
+              }}
+            />
+          </BottomSheet>
 
           <Card>
             <h2 className="font-display text-lg font-semibold text-primary">Make a deposit</h2>
@@ -233,7 +279,25 @@ export function WalletView({ transactions }: { transactions: Transaction[] }) {
           </Link>
 
           <Card>
-            <h2 className="font-display text-lg font-semibold text-primary">Activity</h2>
+            <div className="flex items-center justify-between">
+              <h2 className="font-display text-lg font-semibold text-primary">Group activity</h2>
+              <div className="flex gap-1 rounded-full bg-surface-secondary p-1 text-xs font-medium">
+                {PERIODS.map((p) => (
+                  <button
+                    key={p.key}
+                    type="button"
+                    onClick={() => setPeriod(p.key)}
+                    className={`rounded-full px-2.5 py-1 transition-all duration-200 ${
+                      period === p.key
+                        ? "bg-surface text-primary shadow-[var(--shadow-soft)]"
+                        : "text-foreground/60 hover:text-foreground/80"
+                    }`}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+            </div>
             <div className="mt-3 flex flex-col divide-y divide-border">
               <div className="flex items-center gap-3 py-2.5">
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-500/15 text-blue-600">
