@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
+import { PullToRefresh } from "@/components/PullToRefresh";
 import { useToast } from "@/lib/toast";
 import { friendlyError } from "@/lib/friendly-error";
 
@@ -117,6 +118,7 @@ export function PayView({ initialRequests }: { initialRequests: P2PRequest[] }) 
   }
 
   return (
+    <PullToRefresh onRefresh={refreshRequests}>
     <div className="flex flex-col gap-5">
       <Card>
         <h2 className="font-display text-lg font-semibold text-primary">Find someone</h2>
@@ -285,5 +287,6 @@ export function PayView({ initialRequests }: { initialRequests: P2PRequest[] }) 
         )}
       </Card>
     </div>
+    </PullToRefresh>
   );
 }

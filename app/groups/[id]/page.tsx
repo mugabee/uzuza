@@ -132,7 +132,7 @@ export default async function GroupPage({
 
   const { data: latestCycle } = await supabase
     .from("cycles")
-    .select("id, cycle_number, status, recipient_user_id, started_at")
+    .select("id, cycle_number, status, recipient_user_id, started_at, due_date")
     .eq("group_id", id)
     .order("cycle_number", { ascending: false })
     .limit(1)

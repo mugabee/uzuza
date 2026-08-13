@@ -10,6 +10,7 @@ import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { BottomSheet } from "@/components/BottomSheet";
 import { TopUpWalletForm } from "@/components/TopUpWalletForm";
 import { WithdrawWalletForm } from "@/components/WithdrawWalletForm";
+import { PullToRefresh } from "@/components/PullToRefresh";
 import { useBalanceHidden } from "@/lib/prefs";
 
 type Transaction = {
@@ -69,6 +70,7 @@ export function WalletView({
   const [consent, setConsent] = useState(hasWalletConsent);
   const [topUpOpen, setTopUpOpen] = useState(false);
   const [withdrawOpen, setWithdrawOpen] = useState(false);
+  const [txList, setTxList] = useState(transactions);
 
   async function refreshBalance() {
     const supabase = createClient();
@@ -78,44 +80,70 @@ export function WalletView({
     setConsent(!!consentData);
   }
 
-  useEffect(() => {
-    let cancelled = false;
-    async function load() {
-      const supabase = createClient();
-      const { data } = await supabase.rpc("get_wallet_summary", { p_period: period });
-      const row = data?.[0];
-      if (!cancelled && row) {
-        setSummary({
-          money_received: Number(row.money_received),
-          contributions_sent: Number(row.contributions_sent),
-          pledges_sent: Number(row.pledges_sent),
-          reservations_sent: Number(row.reservations_sent),
-        });
-      }
+  async function loadSummary() {
+    const supabase = createClient();
+    const { data } = await supabase.rpc("get_wallet_summary", { p_period: period });
+    const row = data?.[0];
+    if (row) {
+      setSummary({
+        money_received: Number(row.money_received),
+        contributions_sent: Number(row.contributions_sent),
+        pledges_sent: Number(row.pledges_sent),
+        reservations_sent: Number(row.reservations_sent),
+      });
     }
-    load();
-    return () => {
-      cancelled = true;
-    };
+  }
+
+  async function loadOpenContributions() {
+    const supabase = createClient();
+    const { data } = await supabase.rpc("get_my_open_contributions");
+    setOpenContributions(data ?? []);
+    if (data?.[0]) setSelectedGroupId(data[0].group_id);
+  }
+
+  async function loadTransactions() {
+    const supabase = createClient();
+    const { data } = await supabase.rpc("get_wallet_transactions");
+    if (data) setTxList(data);
+  }
+
+  function exportCsv() {
+    const header = ["Date", "Type", "Group", "Direction", "Amount (RWF)"];
+    const rows = txList.map((t) => [
+      t.occurred_at ? new Date(t.occurred_at).toISOString().slice(0, 10) : "",
+      t.kind,
+      t.group_name,
+      t.direction === "in" ? "In" : "Out",
+      String(Number(t.amount)),
+    ]);
+    const csv = [header, ...rows]
+      .map((row) => row.map((cell) => `"${cell.replace(/"/g, '""')}"`).join(","))
+      .join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `uzuza-wallet-statement-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  useEffect(() => {
+    loadSummary();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [period]);
 
   useEffect(() => {
-    let cancelled = false;
-    async function load() {
-      const supabase = createClient();
-      const { data } = await supabase.rpc("get_my_open_contributions");
-      if (!cancelled) {
-        setOpenContributions(data ?? []);
-        if (data?.[0]) setSelectedGroupId(data[0].group_id);
-      }
-    }
-    load();
-    return () => {
-      cancelled = true;
-    };
+    loadOpenContributions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  async function handlePullRefresh() {
+    await Promise.all([refreshBalance(), loadSummary(), loadOpenContributions(), loadTransactions()]);
+  }
+
   return (
+    <PullToRefresh onRefresh={handlePullRefresh}>
     <div className="flex flex-col gap-5">
       <div className="flex gap-1 rounded-full bg-surface-secondary p-1 text-sm font-medium">
         {(["overview", "transactions"] as const).map((key) => (
@@ -340,13 +368,24 @@ export function WalletView({
         </>
       ) : (
         <Card className="p-2">
-          {transactions.length === 0 ? (
+          {txList.length > 0 && (
+            <div className="flex justify-end px-2 pt-1">
+              <button
+                type="button"
+                onClick={exportCsv}
+                className="text-xs font-medium text-primary/70 transition-colors duration-150 hover:text-primary"
+              >
+                Export CSV
+              </button>
+            </div>
+          )}
+          {txList.length === 0 ? (
             <p className="py-10 text-center text-sm text-foreground/50">
               You don't have any transactions yet :)
             </p>
           ) : (
             <ul className="flex flex-col divide-y divide-border">
-              {transactions.map((t, i) => {
+              {txList.map((t, i) => {
                 const style = KIND_ICON[t.kind] ?? { bg: "bg-foreground/10 text-foreground/60", icon: "•" };
                 return (
                   <li key={i} className="flex items-center gap-3 px-2 py-3">
@@ -371,5 +410,6 @@ export function WalletView({
         </Card>
       )}
     </div>
+    </PullToRefresh>
   );
 }

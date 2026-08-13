@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Card } from "@/components/Card";
+import { PullToRefresh } from "@/components/PullToRefresh";
 
 type Notification = {
   id: string;
@@ -33,16 +34,24 @@ export default function NotificationsPage() {
   const [notifications, setNotifications] = useState<Notification[] | null>(null);
   const [loading, setLoading] = useState(false);
 
+  async function load() {
+    const supabase = createClient();
+    const { data } = await supabase.rpc("list_notifications", {
+      p_unread_only: tab === "unread",
+    });
+    setNotifications(data ?? []);
+  }
+
   useEffect(() => {
     let cancelled = false;
-    async function load() {
+    async function run() {
       const supabase = createClient();
       const { data } = await supabase.rpc("list_notifications", {
         p_unread_only: tab === "unread",
       });
       if (!cancelled) setNotifications(data ?? []);
     }
-    load();
+    run();
     return () => {
       cancelled = true;
     };
@@ -69,6 +78,7 @@ export default function NotificationsPage() {
 
   return (
     <main className="flex flex-1 flex-col items-center px-6 py-16">
+      <PullToRefresh onRefresh={load}>
       <div className="flex w-full max-w-md flex-col gap-5">
         <div className="flex items-center justify-between">
           <h1 className="font-display text-2xl font-semibold text-primary">
@@ -150,6 +160,7 @@ export default function NotificationsPage() {
           Back to home
         </Link>
       </div>
+      </PullToRefresh>
     </main>
   );
 }

@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
 import { SavingsJourneyCard } from "@/components/SavingsJourneyCard";
+import { StreakBadge } from "@/components/StreakBadge";
 import { TrustScoreCard } from "@/components/TrustScoreCard";
 import { SavingsInsightsChart } from "@/components/SavingsInsightsChart";
 import { IntroCard } from "@/components/IntroCard";
@@ -39,6 +40,7 @@ export default async function Home() {
                 currentStreak={journey.current_streak}
                 groupsCount={journey.groups_count}
               />
+              <StreakBadge streak={journey.current_streak} />
               <TrustScoreCard
                 cyclesCompleted={journey.cycles_completed}
                 missedCount={journey.missed_count}

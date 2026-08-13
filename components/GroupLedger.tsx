@@ -17,6 +17,7 @@ import { CycleCelebration } from "@/components/CycleCelebration";
 import { LatePaymentCard } from "@/components/LatePaymentCard";
 import { AdminLatePaymentRow } from "@/components/AdminLatePaymentRow";
 import { PullToRefresh } from "@/components/PullToRefresh";
+import { CycleDueDateEditor } from "@/components/CycleDueDateEditor";
 import { useLanguage } from "@/lib/i18n";
 import { usePoll } from "@/lib/use-poll";
 
@@ -67,6 +68,7 @@ type Cycle = {
   status: "active" | "completed";
   recipient_user_id: string;
   started_at: string;
+  due_date: string | null;
 } | null;
 
 type PayoutRequest = {
@@ -303,6 +305,12 @@ export function GroupLedger({
           </button>
         ))}
       </div>
+
+      {activeCycle && (
+        <div className="-mt-2">
+          <CycleDueDateEditor cycleId={activeCycle.id} dueDate={activeCycle.due_date} isAdmin={isAdmin} />
+        </div>
+      )}
 
       {tab === "overview" && (
         <>
