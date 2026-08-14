@@ -15,6 +15,17 @@ const nextConfig: NextConfig = {
   ...(process.env.CPANEL_BUILD
     ? {
         output: "standalone" as const,
+        // TypeScript's project-wide type-check is the single most
+        // memory-hungry phase of a Next.js build, and this host's
+        // CloudLinux LVE per-account memory cap (invisible to `ulimit -a`,
+        // separate from and much stricter than the physical host's total
+        // RAM) OOM-killed the build partway through it - confirmed via
+        // the shell's own "Killed" message, not assumed. The code is
+        // already fully type-checked on Vercel before it's ever pulled
+        // here, so skipping it again on this memory-constrained box
+        // trades redundant safety for actually being able to build.
+        typescript: { ignoreBuildErrors: true },
+        eslint: { ignoreDuringBuilds: true },
         // Shared-hosting CPU/memory limits appear to cause the webpack
         // build's worker-thread module resolution to intermittently
         // report a handful of real, existing files as unresolvable
