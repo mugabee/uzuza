@@ -1,5 +1,5 @@
-import { createAdminClient } from "@/lib/supabase/admin";
-import { sendEmail, notificationDigestHtml } from "@/lib/email";
+import { createAdminClient } from "../../../../lib/supabase/admin";
+import { sendEmail, notificationDigestHtml } from "../../../../lib/email";
 
 /**
  * Daily scheduled job — same once-a-day Vercel Hobby cron cap as

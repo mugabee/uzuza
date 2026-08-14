@@ -1,5 +1,5 @@
 import { Webhook } from "standardwebhooks";
-import { sendOtpSms } from "@/lib/africas-talking";
+import { sendOtpSms } from "../../../../lib/africas-talking";
 
 interface SendSmsHookPayload {
   user: { phone: string };

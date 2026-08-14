@@ -1,4 +1,4 @@
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient } from "../../../../lib/supabase/admin";
 
 /**
  * Daily scheduled job — the first proactive (not reactive-to-another-user)
