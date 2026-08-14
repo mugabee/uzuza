@@ -23,6 +23,16 @@ const nextConfig: NextConfig = {
         // that parallelism as a variable. Not needed on Vercel, which
         // has no such resource ceiling.
         experimental: { cpus: 1, workerThreads: false },
+        // experimental.cpus only limits Next's worker *processes* - the
+        // failure pattern (a fixed-size batch of real, valid @/ imports
+        // reported unresolvable, which SHIFTS to a different batch once
+        // the first one is worked around) points at webpack's own
+        // internal module-building concurrency instead. config.parallelism
+        // targets that directly.
+        webpack: (config: { parallelism?: number }) => {
+          config.parallelism = 1;
+          return config;
+        },
       }
     : {}),
   async headers() {
