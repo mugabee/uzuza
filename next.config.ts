@@ -6,10 +6,12 @@ const supabaseOrigin = process.env.NEXT_PUBLIC_SUPABASE_URL
   : "";
 
 const nextConfig: NextConfig = {
-  // Required for cPanel/Passenger hosting, which needs a self-contained
-  // build with its own server.js — Vercel ignores/adapts this fine, so
-  // it's safe to leave on even while still deployed there.
-  output: "standalone",
+  // Required for cPanel/Passenger hosting (a self-contained build with
+  // its own server.js), but actively breaks Vercel's own build tracing
+  // (ENOENT on next-server.js.nft.json) — confirmed by a real failed
+  // deploy, not assumed. Only set this when CPANEL_BUILD=1 is passed,
+  // i.e. only for the actual cPanel build, never for Vercel.
+  ...(process.env.CPANEL_BUILD ? { output: "standalone" as const } : {}),
   async headers() {
     return [
       {
