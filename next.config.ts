@@ -29,8 +29,15 @@ const nextConfig: NextConfig = {
         // the first one is worked around) points at webpack's own
         // internal module-building concurrency instead. config.parallelism
         // targets that directly.
-        webpack: (config: { parallelism?: number }) => {
+        webpack: (config: { parallelism?: number; cache?: boolean | Record<string, unknown> }) => {
           config.parallelism = 1;
+          // A persistent, always-exactly-5-errors "Module not found" for
+          // real files whose set SHIFTS once the previous batch is
+          // patched, unaffected by worker/thread-pool concurrency
+          // settings, points at a corrupted/bugged persistent build
+          // cache rather than true resolution failure. Disabling it
+          // entirely removes that as a variable.
+          config.cache = false;
           return config;
         },
       }
