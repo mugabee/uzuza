@@ -14,7 +14,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:cpanel": "next build --webpack",
+    "build:cpanel": "next build --webpack && node scripts/copy-standalone-assets.mjs",
     "start": "next start",
     "lint": "eslint",
     "check:migrations": "node scripts/check-function-overloads.mjs",
