@@ -28,6 +28,7 @@
     "@capacitor/ios": "^8.5.0",
     "@capacitor/splash-screen": "^8.0.2",
     "@hookform/resolvers": "^5.7.1",
+    "@sentry/nextjs": "^10.70.0",
     "@simplewebauthn/browser": "^13.3.0",
     "@simplewebauthn/server": "^13.3.2",
     "@supabase/ssr": "^0.12.4",
