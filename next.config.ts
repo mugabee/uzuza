@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import { withSentryConfig } from "@sentry/nextjs";
+import path from "path";
 
 const supabaseOrigin = process.env.NEXT_PUBLIC_SUPABASE_URL
   ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).origin
@@ -29,15 +30,27 @@ const nextConfig: NextConfig = {
         // the first one is worked around) points at webpack's own
         // internal module-building concurrency instead. config.parallelism
         // targets that directly.
-        webpack: (config: { parallelism?: number; cache?: boolean | Record<string, unknown> }) => {
+        webpack: (config: {
+          parallelism?: number;
+          cache?: boolean | Record<string, unknown>;
+          resolve?: { alias?: Record<string, string> };
+        }) => {
           config.parallelism = 1;
-          // A persistent, always-exactly-5-errors "Module not found" for
-          // real files whose set SHIFTS once the previous batch is
-          // patched, unaffected by worker/thread-pool concurrency
-          // settings, points at a corrupted/bugged persistent build
-          // cache rather than true resolution failure. Disabling it
-          // entirely removes that as a variable.
           config.cache = false;
+          // The real bug: every @/-prefixed import (not just @/lib/*, as
+          // first suspected — @/components/* fails identically once the
+          // @/lib/* imports are converted away) intermittently fails to
+          // resolve on this host, with only a small batch surfacing per
+          // build before the compiler gives up — immune to every
+          // concurrency/cache lever tried. That means Next's automatic
+          // tsconfig-paths-to-webpack-alias integration is what's broken
+          // here, not any individual file. Registering the alias directly
+          // with webpack bypasses that integration entirely.
+          config.resolve = config.resolve ?? {};
+          config.resolve.alias = {
+            ...config.resolve.alias,
+            "@": path.resolve(process.cwd()),
+          };
           return config;
         },
       }
