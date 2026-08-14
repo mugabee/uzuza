@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { createAdminClient } from "@/lib/supabase/admin";
-import { getRequestToPayStatus } from "@/lib/momo-collections";
+import { createAdminClient } from "../../../../../lib/supabase/admin";
+import { getRequestToPayStatus } from "../../../../../lib/momo-collections";
 
 /**
  * Polled by the public pledge-and-pay page while waiting for the payer to

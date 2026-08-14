@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "../lib/supabase/client";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
-import { useToast } from "@/lib/toast";
+import { useToast } from "../lib/toast";
 
 export function EmailNotificationsToggle({
   initialEnabled,

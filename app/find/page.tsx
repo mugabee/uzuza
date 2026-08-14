@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { friendlyError } from "@/lib/friendly-error";
+import { createClient } from "../../lib/supabase/server";
+import { friendlyError } from "../../lib/friendly-error";
 import { FindGroupsClient } from "@/components/FindGroupsClient";
 
 type FindGroupResult = {

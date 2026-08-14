@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { verifyAuthenticationResponse } from "@simplewebauthn/server";
-import { createClient } from "@/lib/supabase/server";
-import { rpIdFromRequest, WEBAUTHN_CHALLENGE_COOKIE } from "@/lib/webauthn";
+import { createClient } from "../../../../lib/supabase/server";
+import { rpIdFromRequest, WEBAUTHN_CHALLENGE_COOKIE } from "../../../../lib/webauthn";
 
 export async function POST(request: NextRequest) {
   const supabase = await createClient();

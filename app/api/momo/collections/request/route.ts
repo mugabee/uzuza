@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { createAdminClient } from "@/lib/supabase/admin";
-import { requestToPay } from "@/lib/momo-collections";
-import { phoneSchema } from "@/lib/validation";
+import { createAdminClient } from "../../../../../lib/supabase/admin";
+import { requestToPay } from "../../../../../lib/momo-collections";
+import { phoneSchema } from "../../../../../lib/validation";
 
 /**
  * Public, no-account-required entry point for an event contribution paid

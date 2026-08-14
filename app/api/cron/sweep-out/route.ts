@@ -1,5 +1,5 @@
 import { createAdminClient } from "../../../../lib/supabase/admin";
-import { disburse } from "@/lib/momo-disbursements";
+import { disburse } from "../../../../lib/momo-disbursements";
 
 /**
  * Automated sweep-out job — CLAUDE.md Section 3.5's "not human-triggered"

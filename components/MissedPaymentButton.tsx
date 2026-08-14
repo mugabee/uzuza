@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "../lib/supabase/client";
 import { Button } from "@/components/Button";
-import { useToast } from "@/lib/toast";
-import { friendlyError } from "@/lib/friendly-error";
+import { useToast } from "../lib/toast";
+import { friendlyError } from "../lib/friendly-error";
 
 export function MissedPaymentButton({
   contributionId,

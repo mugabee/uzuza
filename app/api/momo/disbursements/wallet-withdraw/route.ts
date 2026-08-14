@@ -1,8 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
-import { disburse } from "@/lib/momo-disbursements";
-import { phoneSchema } from "@/lib/validation";
+import { createClient } from "../../../../../lib/supabase/server";
+import { createAdminClient } from "../../../../../lib/supabase/admin";
+import { disburse } from "../../../../../lib/momo-disbursements";
+import { phoneSchema } from "../../../../../lib/validation";
 
 /**
  * Withdraws from the signed-in user's personal Uzuza wallet via a real

@@ -1,8 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
-import { requestToPay } from "@/lib/momo-collections";
-import { phoneSchema } from "@/lib/validation";
+import { createClient } from "../../../../../lib/supabase/server";
+import { createAdminClient } from "../../../../../lib/supabase/admin";
+import { requestToPay } from "../../../../../lib/momo-collections";
+import { phoneSchema } from "../../../../../lib/validation";
 
 /**
  * Starts a real MTN MoMo Collections Request to Pay for an existing,

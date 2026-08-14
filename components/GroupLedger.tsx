@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
-import { useToast } from "@/lib/toast";
-import { friendlyError } from "@/lib/friendly-error";
+import { createClient } from "../lib/supabase/client";
+import { useToast } from "../lib/toast";
+import { friendlyError } from "../lib/friendly-error";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { ContributeCard } from "@/components/ContributeCard";
@@ -18,8 +18,8 @@ import { LatePaymentCard } from "@/components/LatePaymentCard";
 import { AdminLatePaymentRow } from "@/components/AdminLatePaymentRow";
 import { PullToRefresh } from "@/components/PullToRefresh";
 import { CycleDueDateEditor } from "@/components/CycleDueDateEditor";
-import { useLanguage } from "@/lib/i18n";
-import { usePoll } from "@/lib/use-poll";
+import { useLanguage } from "../lib/i18n";
+import { usePoll } from "../lib/use-poll";
 
 type Profile = { id: string; full_name: string | null; phone: string | null } | null;
 

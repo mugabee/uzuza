@@ -2,8 +2,8 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
-import { phoneSchema, emailSchema } from "@/lib/validation";
+import { createClient } from "../../../lib/supabase/client";
+import { phoneSchema, emailSchema } from "../../../lib/validation";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
 import { Card } from "@/components/Card";

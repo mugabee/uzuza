@@ -1,5 +1,5 @@
 import { notFound, redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "../../../../lib/supabase/server";
 import { ReserveCard } from "@/components/ReserveCard";
 
 export default async function ReservePage({

@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { createClient } from "@/lib/supabase/server";
-import { getRemittanceTransactionStatus } from "@/lib/momo-remittances";
+import { createClient } from "../../../../lib/supabase/server";
+import { getRemittanceTransactionStatus } from "../../../../lib/momo-remittances";
 
 export async function POST(request: NextRequest) {
   const supabase = await createClient();

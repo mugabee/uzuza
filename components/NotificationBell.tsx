@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
-import { usePoll } from "@/lib/use-poll";
+import { createClient } from "../lib/supabase/client";
+import { usePoll } from "../lib/use-poll";
 
 export function NotificationBell({ signedIn }: { signedIn: boolean }) {
   const pathname = usePathname();

@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import type { UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form";
-import { SUPPORTED_CURRENCIES } from "@/lib/currencies";
-import type { InternationalProofFormInput } from "@/lib/validation";
+import { SUPPORTED_CURRENCIES } from "../lib/currencies";
+import type { InternationalProofFormInput } from "../lib/validation";
 
 const CHANNELS = [
   {

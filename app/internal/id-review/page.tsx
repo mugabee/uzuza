@@ -1,4 +1,4 @@
-import { requireStaff } from "@/lib/staff-check";
+import { requireStaff } from "../../../lib/staff-check";
 import { IdReviewClient } from "@/components/internal/IdReviewClient";
 
 export default async function InternalIdReviewPage() {

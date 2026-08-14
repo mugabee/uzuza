@@ -2,8 +2,8 @@
 
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
-import { useLanguage } from "@/lib/i18n";
-import { useTheme, useLargeText, useHighContrast, useLowDataMode } from "@/lib/prefs";
+import { useLanguage } from "../lib/i18n";
+import { useTheme, useLargeText, useHighContrast, useLowDataMode } from "../lib/prefs";
 
 export function DisplaySettings() {
   const [largeText, toggleLargeText] = useLargeText();

@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createClient } from "@/lib/supabase/client";
-import { reasonSchema, type ReasonInput } from "@/lib/validation";
+import { createClient } from "../lib/supabase/client";
+import { reasonSchema, type ReasonInput } from "../lib/validation";
 import { Button } from "@/components/Button";
-import { friendlyError } from "@/lib/friendly-error";
+import { friendlyError } from "../lib/friendly-error";
 
 export function MediationButton({ groupId }: { groupId: string }) {
   const [open, setOpen] = useState(false);

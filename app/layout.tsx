@@ -1,10 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { Manrope, Inter } from "next/font/google";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "../lib/supabase/server";
 import { AppNav } from "@/components/AppNav";
 import { NotificationBell } from "@/components/NotificationBell";
-import { LanguageProvider } from "@/lib/i18n";
-import { ToastProvider } from "@/lib/toast";
+import { LanguageProvider } from "../lib/i18n";
+import { ToastProvider } from "../lib/toast";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { SplashScreenHider } from "@/components/SplashScreenHider";
 import { AppLockGate } from "@/components/AppLockGate";

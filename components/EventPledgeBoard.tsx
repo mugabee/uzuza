@@ -3,13 +3,13 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "../lib/supabase/client";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
 import { PayoutPanel } from "@/components/PayoutPanel";
 import { MomoNumberEditor } from "@/components/MomoNumberEditor";
-import { useToast } from "@/lib/toast";
-import { friendlyError } from "@/lib/friendly-error";
+import { useToast } from "../lib/toast";
+import { friendlyError } from "../lib/friendly-error";
 
 type Group = {
   id: string;

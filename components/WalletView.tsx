@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "../lib/supabase/client";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
 import { AnimatedNumber } from "@/components/AnimatedNumber";
@@ -11,7 +11,7 @@ import { BottomSheet } from "@/components/BottomSheet";
 import { TopUpWalletForm } from "@/components/TopUpWalletForm";
 import { WithdrawWalletForm } from "@/components/WithdrawWalletForm";
 import { PullToRefresh } from "@/components/PullToRefresh";
-import { useBalanceHidden } from "@/lib/prefs";
+import { useBalanceHidden } from "../lib/prefs";
 
 type Transaction = {
   kind: string;

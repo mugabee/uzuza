@@ -1,4 +1,4 @@
-import { requireStaff } from "@/lib/staff-check";
+import { requireStaff } from "../../../lib/staff-check";
 import { MediationQueueClient } from "@/components/internal/MediationQueueClient";
 
 export default async function InternalMediationPage() {

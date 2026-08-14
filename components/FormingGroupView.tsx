@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "../lib/supabase/client";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
-import { useToast } from "@/lib/toast";
-import { friendlyError } from "@/lib/friendly-error";
+import { useToast } from "../lib/toast";
+import { friendlyError } from "../lib/friendly-error";
 
 type Profile = { id: string; full_name: string | null } | null;
 

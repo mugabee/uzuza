@@ -5,13 +5,13 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
-import { profileSchema, type ProfileInput } from "@/lib/validation";
+import { createClient } from "../lib/supabase/client";
+import { profileSchema, type ProfileInput } from "../lib/validation";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
 import { Card } from "@/components/Card";
-import { useToast } from "@/lib/toast";
-import { friendlyError } from "@/lib/friendly-error";
+import { useToast } from "../lib/toast";
+import { friendlyError } from "../lib/friendly-error";
 
 export function ProfileForm({
   userId,

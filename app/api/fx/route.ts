@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { getRwfPerUnit } from "@/lib/fx";
-import { SUPPORTED_CURRENCIES } from "@/lib/currencies";
+import { getRwfPerUnit } from "../../../lib/fx";
+import { SUPPORTED_CURRENCIES } from "../../../lib/currencies";
 
 export async function GET(request: NextRequest) {
   const currency = request.nextUrl.searchParams.get("currency")?.toUpperCase() ?? "";

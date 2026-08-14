@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
-import { useLowDataMode } from "@/lib/prefs";
+import { useLowDataMode } from "../lib/prefs";
 
 export function InviteCard({ groupId }: { groupId: string }) {
   const [copied, setCopied] = useState(false);

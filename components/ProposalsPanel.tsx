@@ -4,16 +4,16 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "../lib/supabase/client";
 import {
   proposeSettingsChangeSchema,
   type ProposeSettingsChangeInput,
-} from "@/lib/validation";
+} from "../lib/validation";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
 import { Card } from "@/components/Card";
-import { useToast } from "@/lib/toast";
-import { friendlyError } from "@/lib/friendly-error";
+import { useToast } from "../lib/toast";
+import { friendlyError } from "../lib/friendly-error";
 
 type Proposal = {
   id: string;

@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "../../../lib/supabase/server";
 
 // Lands here when someone clicks the email magic link (PKCE `?code=`).
 // Phone login never hits this route — it uses the manual code-entry

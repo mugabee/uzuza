@@ -1,5 +1,5 @@
 import { notFound, redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "../../../lib/supabase/server";
 import { GroupLedger } from "@/components/GroupLedger";
 import { FormingGroupView } from "@/components/FormingGroupView";
 import { EventPledgeBoard } from "@/components/EventPledgeBoard";

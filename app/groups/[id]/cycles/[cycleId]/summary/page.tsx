@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "../../../../../../lib/supabase/server";
 import { PrintButton } from "@/components/PrintButton";
 
 export default async function CycleSummaryPage({

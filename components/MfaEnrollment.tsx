@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "../lib/supabase/client";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
-import { useToast } from "@/lib/toast";
+import { useToast } from "../lib/toast";
 
 type Factor = { id: string; status: "verified" | "unverified"; friendly_name: string | null };
 

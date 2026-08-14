@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { startAuthentication } from "@simplewebauthn/browser";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "../lib/supabase/client";
 
 const LOCK_KEY = "uzuza_app_locked";
 const HIDDEN_AT_KEY = "uzuza_hidden_at";

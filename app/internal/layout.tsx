@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { requireStaff } from "@/lib/staff-check";
+import { requireStaff } from "../../lib/staff-check";
 
 export default async function InternalLayout({
   children,

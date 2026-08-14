@@ -1,4 +1,4 @@
-import { requireStaff } from "@/lib/staff-check";
+import { requireStaff } from "../../../lib/staff-check";
 import { UnmatchedPaymentsClient } from "@/components/internal/UnmatchedPaymentsClient";
 
 export default async function InternalUnmatchedPaymentsPage() {

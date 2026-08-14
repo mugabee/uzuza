@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "../../../../lib/supabase/server";
 import { PledgeCard } from "@/components/PledgeCard";
 import { DirectMomoPledgeForm } from "@/components/DirectMomoPledgeForm";
 import { Card } from "@/components/Card";

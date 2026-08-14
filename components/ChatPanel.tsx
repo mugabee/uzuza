@@ -2,9 +2,9 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
-import { friendlyError } from "@/lib/friendly-error";
-import { usePoll } from "@/lib/use-poll";
+import { createClient } from "../lib/supabase/client";
+import { friendlyError } from "../lib/friendly-error";
+import { usePoll } from "../lib/use-poll";
 
 type Message = {
   id: string;

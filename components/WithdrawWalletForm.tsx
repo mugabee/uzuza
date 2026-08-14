@@ -4,10 +4,10 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { phoneSchema } from "@/lib/validation";
+import { phoneSchema } from "../lib/validation";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
-import { friendlyError } from "@/lib/friendly-error";
+import { friendlyError } from "../lib/friendly-error";
 
 const withdrawSchema = z.object({
   amount: z.coerce.number().positive("Enter an amount greater than 0"),

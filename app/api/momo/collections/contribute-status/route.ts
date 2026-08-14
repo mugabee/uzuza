@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
-import { getRequestToPayStatus } from "@/lib/momo-collections";
+import { createClient } from "../../../../../lib/supabase/server";
+import { createAdminClient } from "../../../../../lib/supabase/admin";
+import { getRequestToPayStatus } from "../../../../../lib/momo-collections";
 
 /**
  * Polled by the contribute page while waiting for the member to approve

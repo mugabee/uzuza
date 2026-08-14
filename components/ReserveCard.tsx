@@ -4,17 +4,17 @@ import { useState } from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "../lib/supabase/client";
 import {
   reservationProofSchema,
   type ReservationProofFormInput,
   type ReservationProofInput,
-} from "@/lib/validation";
+} from "../lib/validation";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
 import { Card } from "@/components/Card";
-import { friendlyError } from "@/lib/friendly-error";
-import { compressImage } from "@/lib/compress-image";
+import { friendlyError } from "../lib/friendly-error";
+import { compressImage } from "../lib/compress-image";
 import { ScreenshotPreview } from "@/components/ScreenshotPreview";
 import { PaymentChannelPicker } from "@/components/PaymentChannelPicker";
 

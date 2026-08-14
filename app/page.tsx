@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "../lib/supabase/server";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
 import { SavingsJourneyCard } from "@/components/SavingsJourneyCard";

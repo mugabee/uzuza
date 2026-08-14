@@ -1,4 +1,4 @@
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient } from "../../../lib/supabase/admin";
 
 /**
  * Unauthenticated liveness/readiness check for external uptime

@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatedNumber } from "@/components/AnimatedNumber";
-import { useBalanceHidden } from "@/lib/prefs";
+import { useBalanceHidden } from "../lib/prefs";
 
 export function SavingsJourneyCard({
   totalSaved,

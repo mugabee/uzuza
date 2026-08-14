@@ -4,10 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { phoneSchema } from "@/lib/validation";
+import { phoneSchema } from "../lib/validation";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
-import { friendlyError } from "@/lib/friendly-error";
+import { friendlyError } from "../lib/friendly-error";
 
 const payContributionSchema = z.object({ phone: phoneSchema });
 type PayContributionInput = z.infer<typeof payContributionSchema>;

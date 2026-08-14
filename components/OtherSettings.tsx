@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Card } from "@/components/Card";
-import { useToast } from "@/lib/toast";
+import { useToast } from "../lib/toast";
 
 const APP_VERSION = "0.1.0";
 

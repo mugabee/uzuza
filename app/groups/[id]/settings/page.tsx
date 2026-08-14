@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "../../../../lib/supabase/server";
 import { Card } from "@/components/Card";
 import { InviteCard } from "@/components/InviteCard";
 import { MemberManagement } from "@/components/MemberManagement";

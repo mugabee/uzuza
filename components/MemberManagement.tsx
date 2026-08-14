@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "../lib/supabase/client";
 import { Card } from "@/components/Card";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
-import { useLowDataMode } from "@/lib/prefs";
-import { useToast } from "@/lib/toast";
-import { friendlyError } from "@/lib/friendly-error";
+import { useLowDataMode } from "../lib/prefs";
+import { useToast } from "../lib/toast";
+import { friendlyError } from "../lib/friendly-error";
 
 type Profile = { id: string; full_name: string | null; phone: string | null; avatar_url?: string | null } | null;
 type Member = { user_id: string; role: string; profile: Profile };

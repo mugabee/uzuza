@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
-import { rejectContributionSchema } from "@/lib/validation";
+import { createClient } from "../lib/supabase/client";
+import { rejectContributionSchema } from "../lib/validation";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
-import { useLanguage } from "@/lib/i18n";
-import { useToast } from "@/lib/toast";
-import { friendlyError } from "@/lib/friendly-error";
+import { useLanguage } from "../lib/i18n";
+import { useToast } from "../lib/toast";
+import { friendlyError } from "../lib/friendly-error";
 
 type Contribution = {
   id: string;

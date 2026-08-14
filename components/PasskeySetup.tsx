@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { startRegistration } from "@simplewebauthn/browser";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "../lib/supabase/client";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
-import { useToast } from "@/lib/toast";
+import { useToast } from "../lib/toast";
 
 type Passkey = { id: string; device_label: string | null; created_at: string };
 

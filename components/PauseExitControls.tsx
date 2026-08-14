@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "../lib/supabase/client";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
-import { friendlyError } from "@/lib/friendly-error";
+import { friendlyError } from "../lib/friendly-error";
 
 export function PauseExitControls({ groupId }: { groupId: string }) {
   const router = useRouter();

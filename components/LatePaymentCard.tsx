@@ -3,18 +3,18 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "../lib/supabase/client";
 import {
   contributionProofSchema,
   type ContributionProofFormInput,
   type ContributionProofInput,
-} from "@/lib/validation";
+} from "../lib/validation";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
 import { Card } from "@/components/Card";
-import { useToast } from "@/lib/toast";
-import { friendlyError } from "@/lib/friendly-error";
-import { compressImage } from "@/lib/compress-image";
+import { useToast } from "../lib/toast";
+import { friendlyError } from "../lib/friendly-error";
+import { compressImage } from "../lib/compress-image";
 import { ScreenshotPreview } from "@/components/ScreenshotPreview";
 import { PaymentChannelPicker } from "@/components/PaymentChannelPicker";
 

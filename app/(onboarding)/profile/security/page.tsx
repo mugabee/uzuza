@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "../../../../lib/supabase/server";
 import { MfaEnrollment } from "@/components/MfaEnrollment";
 import { PasskeySetup } from "@/components/PasskeySetup";
 import { EmailNotificationsToggle } from "@/components/EmailNotificationsToggle";

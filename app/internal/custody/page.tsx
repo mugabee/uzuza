@@ -1,4 +1,4 @@
-import { requireStaff } from "@/lib/staff-check";
+import { requireStaff } from "../../../lib/staff-check";
 import { Card } from "@/components/Card";
 
 type SweepEntry = {
