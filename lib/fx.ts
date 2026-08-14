@@ -1,5 +1,3 @@
-import "server-only";
-
 // Free, keyless exchange-rate feed used only to show senders a live
 // estimate of what a given RWF amount costs in their currency - it's a
 // convenience number, not an authoritative rate, so a failed/slow lookup

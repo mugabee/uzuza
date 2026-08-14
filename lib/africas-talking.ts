@@ -1,5 +1,3 @@
-import "server-only";
-
 export async function sendOtpSms(phone: string, otp: string) {
   const apiKey = process.env.AFRICAS_TALKING_API_KEY!;
   const username = process.env.AFRICAS_TALKING_USERNAME!;

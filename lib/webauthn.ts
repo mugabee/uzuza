@@ -1,5 +1,3 @@
-import "server-only";
-
 /**
  * rpID must be the exact hostname (no port, no protocol) and must match
  * whatever origin the browser is actually on — derived from the request

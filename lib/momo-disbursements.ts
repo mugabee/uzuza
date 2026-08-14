@@ -1,5 +1,3 @@
-import "server-only";
-
 const BASE = "https://sandbox.momodeveloper.mtn.com";
 
 async function getToken() {
