@@ -11,7 +11,20 @@ const nextConfig: NextConfig = {
   // (ENOENT on next-server.js.nft.json) — confirmed by a real failed
   // deploy, not assumed. Only set this when CPANEL_BUILD=1 is passed,
   // i.e. only for the actual cPanel build, never for Vercel.
-  ...(process.env.CPANEL_BUILD ? { output: "standalone" as const } : {}),
+  ...(process.env.CPANEL_BUILD
+    ? {
+        output: "standalone" as const,
+        // Shared-hosting CPU/memory limits appear to cause the webpack
+        // build's worker-thread module resolution to intermittently
+        // report a handful of real, existing files as unresolvable
+        // (confirmed not a missing-file/syntax/config issue - same
+        // files, byte-identical content, reproduced across multiple
+        // clean rebuilds). Forcing single-worker compilation removes
+        // that parallelism as a variable. Not needed on Vercel, which
+        // has no such resource ceiling.
+        experimental: { cpus: 1, workerThreads: false },
+      }
+    : {}),
   async headers() {
     return [
       {
