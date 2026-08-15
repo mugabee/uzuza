@@ -39,8 +39,20 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: rpcError.message }, { status: 400 });
   }
 
-  const { id: transactionId, reference } = withdrawal as { id: string; reference: string };
+  const { id: transactionId, reference, is_new: isNew } = withdrawal as {
+    id: string;
+    reference: string;
+    is_new: boolean;
+  };
   const admin = createAdminClient();
+
+  // Not a new attempt — an existing pending withdrawal was reused
+  // instead (double-click / retry), so don't fire a second real MTN
+  // Disbursement for it. That would be an actual double debit, not just
+  // a duplicate row.
+  if (!isNew) {
+    return NextResponse.json({ transactionId, status: "pending" });
+  }
 
   try {
     const transfer = await disburse({

@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
 
   const referenceId = crypto.randomUUID();
 
-  const { data: transactionId, error: initError } = await supabase.rpc("initiate_wallet_topup", {
+  const { data: initRows, error: initError } = await supabase.rpc("initiate_wallet_topup", {
     p_amount: amount,
     p_phone: normalizedPhone,
     p_reference_id: referenceId,
@@ -44,9 +44,21 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: initError.message }, { status: 400 });
   }
 
+  const init = initRows?.[0] as { id: string; reference_id: string; is_new: boolean } | undefined;
+  if (!init) {
+    return NextResponse.json({ error: "Could not start the payment request" }, { status: 500 });
+  }
+
+  // Not a new attempt — an existing pending top-up was reused instead
+  // (double-click / retry), so don't fire a second real Request to Pay
+  // for it. The client resumes polling the existing transaction.
+  if (!init.is_new) {
+    return NextResponse.json({ transactionId: init.id, referenceId: init.reference_id });
+  }
+
   try {
     await requestToPay({
-      referenceId,
+      referenceId: init.reference_id,
       amount,
       payerMsisdn: normalizedPhone.replace(/^\+/, ""),
       payerMessage: "Uzuza wallet top-up",
@@ -57,12 +69,12 @@ export async function POST(request: NextRequest) {
     await admin
       .from("wallet_transactions")
       .update({ status: "failed", failure_reason: "Could not start the payment request" })
-      .eq("id", transactionId);
+      .eq("id", init.id);
     return NextResponse.json(
       { error: err instanceof Error ? err.message : "Could not start the payment request" },
       { status: 502 },
     );
   }
 
-  return NextResponse.json({ transactionId, referenceId });
+  return NextResponse.json({ transactionId: init.id, referenceId: init.reference_id });
 }

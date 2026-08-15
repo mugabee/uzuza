@@ -50,7 +50,13 @@ export async function POST(request: NextRequest) {
   const referenceId = crypto.randomUUID();
   const admin = createAdminClient();
 
-  const { error: updateError } = await admin
+  // .select() here isn't just for the return value — without it there's
+  // no way to tell a real update (1 row) apart from a no-op (0 rows,
+  // because someone else's concurrent request already flipped this
+  // contribution out of "pending" first). Without that check, a
+  // double-click could lose this race silently and still go on to
+  // fire a second real MTN charge prompt for the same contribution.
+  const { data: updated, error: updateError } = await admin
     .from("contributions")
     .update({
       status: "submitted",
@@ -63,10 +69,14 @@ export async function POST(request: NextRequest) {
       transaction_id: referenceId,
     })
     .eq("id", contributionId)
-    .eq("status", "pending");
+    .eq("status", "pending")
+    .select("id");
 
   if (updateError) {
     return NextResponse.json({ error: updateError.message }, { status: 500 });
+  }
+  if (!updated || updated.length === 0) {
+    return NextResponse.json({ error: "This contribution isn't awaiting payment" }, { status: 409 });
   }
 
   try {

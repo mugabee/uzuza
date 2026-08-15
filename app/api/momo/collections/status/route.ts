@@ -65,16 +65,26 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // .eq("status", "submitted") guards the write itself, matching every
+  // other confirm path in this app — the earlier "already resolved"
+  // check above only guards against re-checking MTN, not against two
+  // concurrent polls (duplicate tab, or overlapping poll ticks) both
+  // reaching this far and both unconditionally writing.
   if (momoStatus === "SUCCESSFUL") {
     await supabase
       .from("event_pledges")
       .update({ status: "confirmed", confirmed_at: new Date().toISOString() })
-      .eq("id", pledgeId);
+      .eq("id", pledgeId)
+      .eq("status", "submitted");
     return NextResponse.json({ status: "confirmed" });
   }
 
   if (momoStatus === "FAILED") {
-    await supabase.from("event_pledges").update({ status: "cancelled" }).eq("id", pledgeId);
+    await supabase
+      .from("event_pledges")
+      .update({ status: "cancelled" })
+      .eq("id", pledgeId)
+      .eq("status", "submitted");
     return NextResponse.json({ status: "cancelled" });
   }
 

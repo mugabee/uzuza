@@ -79,6 +79,28 @@ export async function POST(request: NextRequest) {
     await supabase.from("profiles").update({ phone: normalizedPhone }).eq("id", pledgerId);
   }
 
+  // Idempotency: this is a public, unauthenticated endpoint, so a
+  // network timeout or double-tap of "Pay" is a real risk — without this
+  // check, a retry would insert a second pledge row and fire a second
+  // real MTN Request to Pay to the same phone before the first one's
+  // outcome is even known. Reuse any still-open attempt for the same
+  // pledger/event/amount from the last few minutes instead of creating
+  // a new one.
+  const dedupeSince = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+  const { data: existingPledge } = await supabase
+    .from("event_pledges")
+    .select("id, transaction_id")
+    .eq("group_id", groupId)
+    .eq("pledger_id", pledgerId)
+    .eq("amount", amount)
+    .eq("status", "submitted")
+    .gte("pledged_at", dedupeSince)
+    .maybeSingle();
+
+  if (existingPledge) {
+    return NextResponse.json({ pledgeId: existingPledge.id, referenceId: existingPledge.transaction_id });
+  }
+
   const referenceId = crypto.randomUUID();
 
   const { data: pledge, error: pledgeError } = await supabase
