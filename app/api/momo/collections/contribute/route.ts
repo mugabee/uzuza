@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "../../../../../lib/supabase/server";
 import { createAdminClient } from "../../../../../lib/supabase/admin";
 import { requestToPay } from "../../../../../lib/momo-collections";
+import { buildMomoCallbackUrl } from "../../../../../lib/momo-callback-url";
 import { phoneSchema } from "../../../../../lib/validation";
 
 /**
@@ -86,6 +87,7 @@ export async function POST(request: NextRequest) {
       payerMsisdn: normalizedPhone.replace(/^\+/, ""),
       payerMessage: "Uzuza contribution",
       payeeNote: "Uzuza contribution",
+      callbackUrl: buildMomoCallbackUrl("collections", "contribution", referenceId),
     });
   } catch (err) {
     await admin

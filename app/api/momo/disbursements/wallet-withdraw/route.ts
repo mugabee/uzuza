@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "../../../../../lib/supabase/server";
 import { createAdminClient } from "../../../../../lib/supabase/admin";
 import { disburse } from "../../../../../lib/momo-disbursements";
+import { buildMomoCallbackUrl } from "../../../../../lib/momo-callback-url";
 import { phoneSchema } from "../../../../../lib/validation";
 
 /**
@@ -61,20 +62,36 @@ export async function POST(request: NextRequest) {
       recipientMsisdn: normalizedPhone.replace(/^\+/, ""),
       payerMessage: "Uzuza wallet withdrawal",
       payeeNote: "Uzuza wallet withdrawal",
+      callbackUrl: buildMomoCallbackUrl("disbursements", "withdrawal", reference),
     });
 
-    if (transfer.status !== "SUCCESSFUL") {
+    if (transfer.status === "FAILED") {
       await admin
         .from("wallet_transactions")
-        .update({ status: "failed", failure_reason: `Disbursement status: ${transfer.status}` })
-        .eq("id", transactionId);
-      return NextResponse.json({ error: `Withdrawal was not completed (${transfer.status})` }, { status: 502 });
+        .update({ status: "failed", failure_reason: "Disbursement status: FAILED" })
+        .eq("id", transactionId)
+        .eq("status", "pending");
+      return NextResponse.json({ error: "Withdrawal was not completed (FAILED)" }, { status: 502 });
+    }
+
+    if (transfer.status !== "SUCCESSFUL") {
+      // Genuinely still PENDING — MTN Disbursements are asynchronous,
+      // so a single synchronous check right after the call isn't
+      // authoritative. Marking this "failed" here would be wrong if it
+      // later actually succeeds (a real phantom-debit risk — the
+      // user's balance would show the money as still theirs to
+      // withdraw again while it had already gone out). Leave it
+      // pending; the webhook callback above and the nightly
+      // reconciliation cron will both resolve it correctly whichever
+      // way it actually goes.
+      return NextResponse.json({ transactionId, status: "pending" });
     }
 
     await admin
       .from("wallet_transactions")
       .update({ status: "completed", completed_at: new Date().toISOString() })
-      .eq("id", transactionId);
+      .eq("id", transactionId)
+      .eq("status", "pending");
     await admin.rpc("log_audit_event", {
       p_action: "wallet_withdrawal_completed",
       p_entity_type: "wallet_transaction",
@@ -84,10 +101,25 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ transactionId, status: "completed" });
   } catch (err) {
-    await admin
-      .from("wallet_transactions")
-      .update({ status: "failed", failure_reason: err instanceof Error ? err.message : "Disbursement failed" })
-      .eq("id", transactionId);
+    const message = err instanceof Error ? err.message : "Disbursement failed";
+    // Only mark "failed" when the transfer request itself was rejected
+    // (disburse() throws this specific message when MTN's initial POST
+    // doesn't return 202 — i.e. nothing was ever accepted for
+    // processing). Any other error here — most likely the *status
+    // check* disburse() does right after — leaves real ambiguity about
+    // whether MTN actually accepted and is processing the transfer.
+    // Marking "failed" in that case risks the same phantom-debit class
+    // of bug: if it later turns out to have succeeded, the user's
+    // balance would still show that money as theirs to withdraw again.
+    // Leaving it "pending" here means the webhook and the nightly
+    // reconciliation cron resolve it correctly either way.
+    if (message.startsWith("Disbursement request failed")) {
+      await admin
+        .from("wallet_transactions")
+        .update({ status: "failed", failure_reason: message })
+        .eq("id", transactionId)
+        .eq("status", "pending");
+    }
     return NextResponse.json(
       { error: err instanceof Error ? err.message : "Could not complete the withdrawal" },
       { status: 502 },

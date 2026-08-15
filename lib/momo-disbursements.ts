@@ -33,6 +33,7 @@ export async function disburse(params: {
   recipientMsisdn: string;
   payerMessage: string;
   payeeNote: string;
+  callbackUrl?: string;
 }) {
   const subKey = process.env.MOMO_DISBURSEMENTS_SUBSCRIPTION_KEY!;
   const token = await getToken();
@@ -45,6 +46,9 @@ export async function disburse(params: {
       "X-Target-Environment": "sandbox",
       "Ocp-Apim-Subscription-Key": subKey,
       "Content-Type": "application/json",
+      // Same optional push-notification mechanism as Collections —
+      // omitted entirely when no callback URL was built.
+      ...(params.callbackUrl ? { "X-Callback-Url": params.callbackUrl } : {}),
     },
     body: JSON.stringify({
       amount: String(params.amount),

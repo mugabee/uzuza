@@ -1,6 +1,5 @@
 import { createAdminClient } from "../../../../lib/supabase/admin";
-import { getRequestToPayStatus } from "../../../../lib/momo-collections";
-import { getTransferStatus } from "../../../../lib/momo-disbursements";
+import { reconcileContribution, reconcileWalletTopup, reconcileWalletWithdrawal } from "../../../../lib/momo-reconcile";
 
 // Only recent activity is checked each run — real reconciliation risk is
 // concentrated in payments that never got a terminal status recorded,
@@ -16,6 +15,13 @@ const STUCK_PENDING_HOURS = 1;
  * 3.7 and the unmatched-payments internal page both name this a
  * post-launch item; this is that. Sandbox-only, same status as every
  * other MoMo integration in this app.
+ *
+ * This is the batch-scan safety net that runs regardless of whether
+ * the real-time webhooks (app/api/momo/webhook/**) actually fire —
+ * sandbox callback delivery isn't guaranteed, and even in production a
+ * webhook can be lost. The actual per-transaction logic lives in
+ * lib/momo-reconcile.ts, shared with the webhook receivers, so both
+ * paths apply identical rules.
  */
 export async function GET(req: Request) {
   const auth = req.headers.get("authorization");
@@ -29,28 +35,30 @@ export async function GET(req: Request) {
 
   const summary = { checked: 0, autoResolved: 0, flagged: 0, errors: 0 };
 
-  async function flag(
+  function record(result: { autoResolved: boolean; flagged: boolean }) {
+    summary.checked += 1;
+    if (result.autoResolved) summary.autoResolved += 1;
+    if (result.flagged) summary.flagged += 1;
+  }
+
+  async function flagStuck(
     source: "contribution" | "wallet_topup" | "wallet_withdrawal",
     sourceId: string,
     referenceId: string,
-    type: "missing_confirmation" | "false_confirmation" | "phantom_debit" | "stuck_pending",
     internalStatus: string,
-    momoStatus: string,
     amount: number,
-    autoResolved: boolean,
   ) {
     await supabase.rpc("record_reconciliation_discrepancy", {
       p_source: source,
       p_source_id: sourceId,
       p_reference_id: referenceId,
-      p_discrepancy_type: type,
+      p_discrepancy_type: "stuck_pending",
       p_internal_status: internalStatus,
-      p_momo_status: momoStatus,
+      p_momo_status: "PENDING",
       p_amount: amount,
-      p_auto_resolved: autoResolved,
+      p_auto_resolved: false,
     });
-    if (autoResolved) summary.autoResolved += 1;
-    else summary.flagged += 1;
+    summary.flagged += 1;
   }
 
   // --- MoMo Collections contributions ---
@@ -63,19 +71,16 @@ export async function GET(req: Request) {
     .gte("created_at", since);
 
   for (const c of contributions ?? []) {
-    summary.checked += 1;
     try {
-      const momo = await getRequestToPayStatus(c.collection_reference_id!);
-      if (c.status === "submitted" && momo.status === "SUCCESSFUL") {
-        const { error } = await supabase.rpc("momo_confirm_contribution", {
-          p_contribution_id: c.id,
-          p_reference_id: c.collection_reference_id,
-        });
-        await flag("contribution", c.id, c.collection_reference_id!, "missing_confirmation", c.status, momo.status, Number(c.amount), !error);
-      } else if (c.status === "confirmed" && momo.status === "FAILED") {
-        await flag("contribution", c.id, c.collection_reference_id!, "false_confirmation", c.status, momo.status, Number(c.amount), false);
-      } else if (c.status === "submitted" && momo.status === "PENDING" && c.created_at < stuckCutoff) {
-        await flag("contribution", c.id, c.collection_reference_id!, "stuck_pending", c.status, momo.status, Number(c.amount), false);
+      const result = await reconcileContribution(supabase, {
+        id: c.id,
+        amount: c.amount,
+        status: c.status,
+        collection_reference_id: c.collection_reference_id!,
+      });
+      record(result);
+      if (!result.autoResolved && !result.flagged && c.status === "submitted" && c.created_at < stuckCutoff) {
+        await flagStuck("contribution", c.id, c.collection_reference_id!, c.status, Number(c.amount));
       }
     } catch (err) {
       summary.errors += 1;
@@ -93,19 +98,16 @@ export async function GET(req: Request) {
     .gte("created_at", since);
 
   for (const t of topups ?? []) {
-    summary.checked += 1;
     try {
-      const momo = await getRequestToPayStatus(t.collection_reference_id!);
-      if (t.status === "pending" && momo.status === "SUCCESSFUL") {
-        const { error } = await supabase.rpc("momo_confirm_wallet_topup", {
-          p_transaction_id: t.id,
-          p_reference_id: t.collection_reference_id,
-        });
-        await flag("wallet_topup", t.id, t.collection_reference_id!, "missing_confirmation", t.status, momo.status, Number(t.amount), !error);
-      } else if (t.status === "completed" && momo.status === "FAILED") {
-        await flag("wallet_topup", t.id, t.collection_reference_id!, "false_confirmation", t.status, momo.status, Number(t.amount), false);
-      } else if (t.status === "pending" && momo.status === "PENDING" && t.created_at < stuckCutoff) {
-        await flag("wallet_topup", t.id, t.collection_reference_id!, "stuck_pending", t.status, momo.status, Number(t.amount), false);
+      const result = await reconcileWalletTopup(supabase, {
+        id: t.id,
+        amount: t.amount,
+        status: t.status,
+        collection_reference_id: t.collection_reference_id!,
+      });
+      record(result);
+      if (!result.autoResolved && !result.flagged && t.status === "pending" && t.created_at < stuckCutoff) {
+        await flagStuck("wallet_topup", t.id, t.collection_reference_id!, t.status, Number(t.amount));
       }
     } catch (err) {
       summary.errors += 1;
@@ -116,35 +118,23 @@ export async function GET(req: Request) {
   // --- Wallet withdrawals ---
   const { data: withdrawals } = await supabase
     .from("wallet_transactions")
-    .select("id, amount, status, disbursement_reference_id, failure_reason, created_at")
+    .select("id, amount, status, disbursement_reference_id, created_at")
     .eq("type", "withdrawal")
     .not("disbursement_reference_id", "is", null)
     .in("status", ["pending", "completed", "failed"])
     .gte("created_at", since);
 
   for (const w of withdrawals ?? []) {
-    summary.checked += 1;
     try {
-      const momo = await getTransferStatus(w.disbursement_reference_id!);
-
-      if (w.status === "pending" && momo.status === "SUCCESSFUL") {
-        await supabase.from("wallet_transactions").update({ status: "completed", completed_at: new Date().toISOString() }).eq("id", w.id);
-        await flag("wallet_withdrawal", w.id, w.disbursement_reference_id!, "missing_confirmation", w.status, momo.status, Number(w.amount), true);
-      } else if (w.status === "pending" && momo.status === "FAILED") {
-        await supabase.from("wallet_transactions").update({ status: "failed", failure_reason: "Reconciliation: MoMo reported this disbursement failed" }).eq("id", w.id);
-        await flag("wallet_withdrawal", w.id, w.disbursement_reference_id!, "missing_confirmation", w.status, momo.status, Number(w.amount), true);
-      } else if (w.status === "failed" && momo.status === "SUCCESSFUL") {
-        // Money actually left Uzuza even though we told the user it
-        // failed — their displayed balance no longer reflects this
-        // withdrawal, so they could withdraw the same funds again.
-        // Never auto-corrected; needs a human to reconcile the balance.
-        await flag("wallet_withdrawal", w.id, w.disbursement_reference_id!, "phantom_debit", w.status, momo.status, Number(w.amount), false);
-      } else if (w.status === "completed" && momo.status === "FAILED") {
-        // We debited the user's balance and told them it succeeded, but
-        // the money never actually left — they're owed it back.
-        await flag("wallet_withdrawal", w.id, w.disbursement_reference_id!, "false_confirmation", w.status, momo.status, Number(w.amount), false);
-      } else if (w.status === "pending" && momo.status === "PENDING" && w.created_at < stuckCutoff) {
-        await flag("wallet_withdrawal", w.id, w.disbursement_reference_id!, "stuck_pending", w.status, momo.status, Number(w.amount), false);
+      const result = await reconcileWalletWithdrawal(supabase, {
+        id: w.id,
+        amount: w.amount,
+        status: w.status,
+        disbursement_reference_id: w.disbursement_reference_id!,
+      });
+      record(result);
+      if (!result.autoResolved && !result.flagged && w.status === "pending" && w.created_at < stuckCutoff) {
+        await flagStuck("wallet_withdrawal", w.id, w.disbursement_reference_id!, w.status, Number(w.amount));
       }
     } catch (err) {
       summary.errors += 1;

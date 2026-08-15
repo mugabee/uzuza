@@ -35,6 +35,7 @@ export async function requestToPay(params: {
   payerMsisdn: string;
   payerMessage: string;
   payeeNote: string;
+  callbackUrl?: string;
 }) {
   const subKey = process.env.MOMO_COLLECTIONS_SUBSCRIPTION_KEY!;
   const token = await getToken();
@@ -47,6 +48,12 @@ export async function requestToPay(params: {
       "X-Target-Environment": "sandbox",
       "Ocp-Apim-Subscription-Key": subKey,
       "Content-Type": "application/json",
+      // Asks MTN to push a status update here as soon as the payer
+      // resolves the prompt, instead of relying solely on polling.
+      // Optional — omitted entirely when no callback URL was built
+      // (e.g. MOMO_CALLBACK_SECRET isn't configured yet), in which case
+      // this behaves exactly as before.
+      ...(params.callbackUrl ? { "X-Callback-Url": params.callbackUrl } : {}),
     },
     body: JSON.stringify({
       amount: String(params.amount),

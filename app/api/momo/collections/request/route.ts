@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createAdminClient } from "../../../../../lib/supabase/admin";
 import { requestToPay } from "../../../../../lib/momo-collections";
+import { buildMomoCallbackUrl } from "../../../../../lib/momo-callback-url";
 import { phoneSchema } from "../../../../../lib/validation";
 
 /**
@@ -136,6 +137,7 @@ export async function POST(request: NextRequest) {
       payerMsisdn: normalizedPhone.replace(/^\+/, ""),
       payerMessage: `Uzuza event contribution`,
       payeeNote: `Uzuza event contribution`,
+      callbackUrl: buildMomoCallbackUrl("collections", "pledge", referenceId),
     });
   } catch (err) {
     await supabase.from("event_pledges").update({ status: "cancelled" }).eq("id", pledge.id);
