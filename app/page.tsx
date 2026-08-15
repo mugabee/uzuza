@@ -26,6 +26,7 @@ export default async function Home() {
   const { data: journeyRows } = await supabase.rpc("get_lifetime_savings_summary");
   const journey = journeyRows?.[0];
   const { data: insights } = await supabase.rpc("get_savings_insights");
+  const { data: walletBalance } = await supabase.rpc("get_wallet_balance");
 
   if (!memberships || memberships.length === 0) {
     return (
@@ -39,6 +40,7 @@ export default async function Home() {
                 cyclesCompleted={journey.cycles_completed}
                 currentStreak={journey.current_streak}
                 groupsCount={journey.groups_count}
+                walletBalance={Number(walletBalance ?? 0)}
               />
               <StreakBadge streak={journey.current_streak} />
               <TrustScoreCard
@@ -106,6 +108,7 @@ export default async function Home() {
               cyclesCompleted={journey.cycles_completed}
               currentStreak={journey.current_streak}
               groupsCount={journey.groups_count}
+              walletBalance={Number(walletBalance ?? 0)}
             />
             <TrustScoreCard
               cyclesCompleted={journey.cycles_completed}

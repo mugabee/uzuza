@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { useBalanceHidden } from "../lib/prefs";
 
@@ -8,11 +9,13 @@ export function SavingsJourneyCard({
   cyclesCompleted,
   currentStreak,
   groupsCount,
+  walletBalance,
 }: {
   totalSaved: number;
   cyclesCompleted: number;
   currentStreak: number;
   groupsCount: number;
+  walletBalance: number;
 }) {
   const [hidden, toggleHidden] = useBalanceHidden();
 
@@ -24,39 +27,65 @@ export function SavingsJourneyCard({
           "linear-gradient(135deg, var(--primary) 0%, var(--primary) 55%, color-mix(in srgb, var(--primary) 80%, black) 100%)",
       }}
     >
-      <div className="flex items-center justify-between rounded-2xl bg-white/10 px-4 py-3.5">
-        <div>
-          <p className="text-xs font-medium uppercase tracking-wide text-white/60">
-            Total saved lifetime
-          </p>
-          <p className="mt-1 font-display text-3xl font-bold tracking-tight">
+      <div className="rounded-2xl bg-white/10 px-4 py-3.5">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wide text-white/60">
+              Total saved lifetime
+            </p>
+            <p className="mt-1 font-display text-3xl font-bold tracking-tight">
+              {hidden ? (
+                <span aria-label="Balance hidden">••••••</span>
+              ) : (
+                <AnimatedNumber value={totalSaved} />
+              )}
+              <span className="ml-1.5 text-base font-medium text-white/70">RWF</span>
+            </p>
+            <p className="mt-0.5 text-[11px] text-white/40">
+              Everything you've ever contributed, all-time
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={toggleHidden}
+            aria-label={hidden ? "Show balance" : "Hide balance"}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-white/70 transition-colors duration-150 hover:bg-white/10 hover:text-white"
+          >
             {hidden ? (
-              <span aria-label="Balance hidden">••••••</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 3l18 18" />
+                <path d="M10.58 10.58a2 2 0 1 0 2.83 2.83" />
+                <path d="M9.88 4.24A9.5 9.5 0 0 1 12 4c5.5 0 9.5 5 9.5 8-.32.9-.85 1.86-1.56 2.78M6.6 6.6C4.2 8.1 2.5 10.4 2.5 12c0 3 4 8 9.5 8 1.4 0 2.7-.32 3.85-.87" />
+              </svg>
             ) : (
-              <AnimatedNumber value={totalSaved} />
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M2.5 12S6.5 4 12 4s9.5 8 9.5 8-4 8-9.5 8-9.5-8-9.5-8Z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
             )}
-            <span className="ml-1.5 text-base font-medium text-white/70">RWF</span>
-          </p>
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={toggleHidden}
-          aria-label={hidden ? "Show balance" : "Hide balance"}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-white/70 transition-colors duration-150 hover:bg-white/10 hover:text-white"
+
+        <Link
+          href="/wallet"
+          className="mt-3 flex items-center justify-between rounded-xl border-t border-white/15 pt-3 transition-opacity duration-150 hover:opacity-80"
         >
-          {hidden ? (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 3l18 18" />
-              <path d="M10.58 10.58a2 2 0 1 0 2.83 2.83" />
-              <path d="M9.88 4.24A9.5 9.5 0 0 1 12 4c5.5 0 9.5 5 9.5 8-.32.9-.85 1.86-1.56 2.78M6.6 6.6C4.2 8.1 2.5 10.4 2.5 12c0 3 4 8 9.5 8 1.4 0 2.7-.32 3.85-.87" />
-            </svg>
-          ) : (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round">
-              <path d="M2.5 12S6.5 4 12 4s9.5 8 9.5 8-4 8-9.5 8-9.5-8-9.5-8Z" />
-              <circle cx="12" cy="12" r="3" />
-            </svg>
-          )}
-        </button>
+          <div>
+            <p className="text-[11px] font-medium uppercase tracking-wide text-white/50">
+              Wallet balance
+            </p>
+            <p className="mt-0.5 text-lg font-semibold">
+              {hidden ? (
+                <span aria-label="Balance hidden">••••</span>
+              ) : (
+                <AnimatedNumber value={walletBalance} />
+              )}
+              <span className="ml-1 text-xs font-medium text-white/60">RWF</span>
+            </p>
+            <p className="text-[11px] text-white/40">Spendable now — top up, withdraw, or send</p>
+          </div>
+          <span className="shrink-0 text-xs font-semibold text-white/70">Manage →</span>
+        </Link>
       </div>
 
       <dl className="mt-4 grid grid-cols-3 gap-2 border-t border-white/15 pt-4">
