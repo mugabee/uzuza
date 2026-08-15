@@ -1,5 +1,4 @@
 import { createAdminClient } from "../../../../lib/supabase/admin";
-import { disburse } from "../../../../lib/momo-disbursements";
 
 /**
  * Automated sweep-out job — CLAUDE.md Section 3.5's "not human-triggered"
@@ -7,6 +6,13 @@ import { disburse } from "../../../../lib/momo-disbursements";
  * a button anyone clicks. Sandbox-only: see the migration header comment
  * in 20260806210000_phase7_custody.sql — this must not carry real money
  * until the legal review in CLAUDE.md's Phase 7 status note is done.
+ *
+ * Credits the recipient's personal Uzuza wallet rather than disbursing
+ * straight to their phone — the money is still fully re-attributed out
+ * of the group's custody position (same as before), it just now shows up
+ * as spendable wallet balance the user can see and withdraw on their own
+ * terms, instead of a payout that "completed" with nothing to show for
+ * it inside the app. See 20260814140000_uzuza_held_payouts_credit_wallet.sql.
  */
 export async function GET(req: Request) {
   const auth = req.headers.get("authorization");
@@ -25,7 +31,6 @@ export async function GET(req: Request) {
       "id, group_id, recipient_user_id, amount, groups!payout_requests_group_id_fkey!inner(account_type)",
     )
     .eq("status", "approved")
-    .is("swept_at", null)
     .eq("groups.account_type", "uzuza_held");
 
   if (error) {
@@ -36,52 +41,16 @@ export async function GET(req: Request) {
 
   for (const payout of payouts ?? []) {
     try {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("phone")
-        .eq("id", payout.recipient_user_id)
-        .single();
-
-      if (!profile?.phone) {
-        results[payout.id] = "skipped: recipient has no phone on file";
-        continue;
-      }
-
-      const msisdn = profile.phone.replace(/^\+/, "");
-      const referenceId = crypto.randomUUID();
-
-      const transfer = await disburse({
-        referenceId,
-        amount: Number(payout.amount),
-        recipientMsisdn: msisdn,
-        payerMessage: "Uzuza payout",
-        payeeNote: "Uzuza automated sweep-out",
+      const { error: sweepError } = await supabase.rpc("sweep_uzuza_held_payout_to_wallet", {
+        p_payout_request_id: payout.id,
       });
 
-      if (transfer.status !== "SUCCESSFUL") {
-        results[payout.id] = `failed: disbursement status ${transfer.status}`;
+      if (sweepError) {
+        results[payout.id] = `error: ${sweepError.message}`;
         continue;
       }
 
-      const now = new Date().toISOString();
-
-      await supabase
-        .from("payout_requests")
-        .update({
-          status: "completed",
-          transaction_id: transfer.financialTransactionId ?? referenceId,
-          completed_at: now,
-          swept_at: now,
-        })
-        .eq("id", payout.id);
-
-      await supabase
-        .from("custody_ledger")
-        .update({ swept_at: now, swept_reference: referenceId })
-        .eq("group_id", payout.group_id)
-        .is("swept_at", null);
-
-      results[payout.id] = "swept";
+      results[payout.id] = "credited to wallet";
     } catch (err) {
       results[payout.id] = `error: ${err instanceof Error ? err.message : String(err)}`;
     }

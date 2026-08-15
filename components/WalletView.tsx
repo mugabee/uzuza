@@ -17,8 +17,8 @@ type Transaction = {
   kind: string;
   direction: "in" | "out";
   amount: number;
-  group_name: string;
-  group_id: string;
+  group_name: string | null;
+  group_id: string | null;
   occurred_at: string | null;
 };
 
@@ -38,6 +38,8 @@ const PERIODS = [
 
 const KIND_ICON: Record<string, { bg: string; icon: string }> = {
   "Payout received": { bg: "bg-blue-500/15 text-blue-600", icon: "↓" },
+  "Wallet top-up": { bg: "bg-green-500/15 text-green-600", icon: "↓" },
+  "Wallet withdrawal": { bg: "bg-orange-500/15 text-orange-600", icon: "↑" },
   Contribution: { bg: "bg-red-500/15 text-red-600", icon: "↑" },
   "Event pledge": { bg: "bg-pink-500/15 text-pink-600", icon: "↑" },
   "Reservation fee": { bg: "bg-orange-500/15 text-orange-600", icon: "↑" },
@@ -112,7 +114,7 @@ export function WalletView({
     const rows = txList.map((t) => [
       t.occurred_at ? new Date(t.occurred_at).toISOString().slice(0, 10) : "",
       t.kind,
-      t.group_name,
+      t.group_name ?? "Uzuza wallet",
       t.direction === "in" ? "In" : "Out",
       String(Number(t.amount)),
     ]);
@@ -395,7 +397,7 @@ export function WalletView({
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium text-foreground">{t.kind}</p>
                       <p className="truncate text-xs text-foreground/50">
-                        {t.group_name}
+                        {t.group_name ?? "Uzuza wallet"}
                         {t.occurred_at ? ` · ${new Date(t.occurred_at).toLocaleDateString()}` : ""}
                       </p>
                     </div>
