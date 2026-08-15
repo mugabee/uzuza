@@ -181,8 +181,13 @@ async function main() {
     assert(custodyBalance === 21500 - 1500, `group_custody shadow balance is 20000 after the 1500 buffer skim (got ${custodyBalance})`);
     assert(safetyFundBalance === 1500, `group_safety_fund shadow balance is 1500 = 20000 * 0.075 (got ${safetyFundBalance})`);
 
+    // Post-Stage-D: for a uzuza_held group, the ledger is now sole
+    // authority and the legacy column intentionally freezes rather than
+    // being written twice — see 20260815150000_stage_d_demote_safety_fund_column.sql.
+    // get_group_safety_fund_balance() is the correct read path now, not
+    // the raw column.
     const { data: groupRow } = await admin.from("groups").select("safety_fund_balance").eq("id", groupId).single();
-    assert(Number(groupRow.safety_fund_balance) === 1500, "shadow ledger's safety fund balance matches the legacy groups.safety_fund_balance column exactly");
+    assert(Number(groupRow.safety_fund_balance) === 0, "legacy safety_fund_balance column stays frozen at 0 for a uzuza_held group post-Stage-D (intentional)");
 
     console.log("--- report_missed_payment draws from the safety fund (manufacturing a completed payout so recipient_paid=true) ---");
     const { data: cycleRow } = await admin.from("cycles").select("id").eq("group_id", groupId).single();

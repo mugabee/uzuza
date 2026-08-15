@@ -1,0 +1,19 @@
+-- Stage B needs a new account type for two disclosed-approximate
+-- categories: (1) the reservation -> first-contribution "gap" (Section
+-- 2 of the Stage A report — a reservation-linked first contribution is
+-- marked confirmed for its full amount even though only the reservation
+-- fee was ever actually collected), and (2) the safety fund's
+-- historical opening-balance backfill (individual buffer skims and
+-- missed-payment draws before this ledger existed have no recoverable
+-- per-event history, only the final column value).
+--
+-- Both represent value the shadow ledger credits WITHOUT a matching
+-- real external inflow — structurally identical to the external_*
+-- accounts (a boundary/clearing account), but tagged distinctly so it's
+-- always auditable which portion of a balance is real MoMo money vs.
+-- disclosed approximation/subsidy.
+--
+-- Postgres will not allow a new enum value to be used in the same
+-- transaction it was added in, so this has to be its own migration,
+-- applied before anything references 'platform_adjustment'.
+alter type public.ledger_account_type add value 'platform_adjustment';
