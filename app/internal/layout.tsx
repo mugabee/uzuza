@@ -26,6 +26,12 @@ export default async function InternalLayout({
         >
           Unmatched Payments
         </Link>
+        <Link
+          href="/internal/reconciliation"
+          className="text-foreground/70 hover:text-primary"
+        >
+          Reconciliation
+        </Link>
         <Link href="/internal/custody" className="text-foreground/70 hover:text-primary">
           Custody
         </Link>
