@@ -142,5 +142,21 @@ export async function GET(req: Request) {
     }
   }
 
-  return Response.json(summary);
+  // Ledger drift monitoring — the shadow ledger's own integrity report
+  // (get_shadow_ledger_integrity_report) was staff-triggered only, so a
+  // real drift could sit unnoticed indefinitely. Piggybacking on the
+  // existing daily cron rather than adding a new one gives it the same
+  // proven scheduling path; a real finding lands in fraud_flags for
+  // staff to see in the internal console, same review flow as every
+  // other flag type.
+  let ledgerDrift: { drift_found: boolean } | null = null;
+  try {
+    const { data } = await supabase.rpc("run_ledger_drift_check").single();
+    ledgerDrift = data as { drift_found: boolean } | null;
+  } catch (err) {
+    summary.errors += 1;
+    console.error("reconcile-momo: ledger drift check failed", err);
+  }
+
+  return Response.json({ ...summary, ledgerDrift });
 }

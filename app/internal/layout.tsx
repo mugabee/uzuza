@@ -35,6 +35,9 @@ export default async function InternalLayout({
         <Link href="/internal/custody" className="text-foreground/70 hover:text-primary">
           Custody
         </Link>
+        <Link href="/internal/fraud" className="text-foreground/70 hover:text-primary">
+          Fraud Flags
+        </Link>
         <Link href="/internal/id-review" className="text-foreground/70 hover:text-primary">
           ID Review
         </Link>
