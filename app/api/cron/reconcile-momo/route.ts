@@ -158,5 +158,20 @@ export async function GET(req: Request) {
     console.error("reconcile-momo: ledger drift check failed", err);
   }
 
-  return Response.json({ ...summary, ledgerDrift });
+  // Staleness watchdog — an approved payout that never gets completed,
+  // or a matching group stuck 'forming' with real reservation money
+  // already in Uzuza custody, both used to be invisible: the checks
+  // above only ever look at MoMo-Collections-channel rows, never
+  // payout_requests or group lifecycle staleness. Same flag-only
+  // pattern as the drift check above.
+  let staleness: { stale_payouts_flagged: number; stalled_groups_flagged: number } | null = null;
+  try {
+    const { data } = await supabase.rpc("run_staleness_check").single();
+    staleness = data as { stale_payouts_flagged: number; stalled_groups_flagged: number } | null;
+  } catch (err) {
+    summary.errors += 1;
+    console.error("reconcile-momo: staleness check failed", err);
+  }
+
+  return Response.json({ ...summary, ledgerDrift, staleness });
 }

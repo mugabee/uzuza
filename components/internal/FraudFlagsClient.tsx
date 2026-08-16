@@ -9,7 +9,12 @@ import { Field } from "@/components/Field";
 
 type FraudFlag = {
   id: string;
-  flag_type: "large_transaction" | "high_velocity" | "ledger_drift_detected";
+  flag_type:
+    | "large_transaction"
+    | "high_velocity"
+    | "ledger_drift_detected"
+    | "stale_approved_payout"
+    | "stalled_forming_group";
   user_id: string | null;
   entity_type: string;
   entity_id: string | null;
@@ -25,6 +30,8 @@ const LABELS: Record<FraudFlag["flag_type"], { label: string; style: string }> =
   large_transaction: { label: "Large transaction", style: "bg-accent/15 text-accent" },
   high_velocity: { label: "High velocity", style: "bg-accent/15 text-accent" },
   ledger_drift_detected: { label: "Critical — ledger drift", style: "bg-danger/15 text-danger" },
+  stale_approved_payout: { label: "Stale — payout approved, not completed", style: "bg-danger/15 text-danger" },
+  stalled_forming_group: { label: "Stalled forming group", style: "bg-accent/15 text-accent" },
 };
 
 function FlagRow({
