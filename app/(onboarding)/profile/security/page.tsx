@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "../../../../lib/supabase/server";
 import { MfaEnrollment } from "@/components/MfaEnrollment";
+import { IdVerificationCard } from "@/components/IdVerificationCard";
 import { PasskeySetup } from "@/components/PasskeySetup";
 import { EmailNotificationsToggle } from "@/components/EmailNotificationsToggle";
 import { DisplaySettings } from "@/components/DisplaySettings";
@@ -19,9 +20,17 @@ export default async function ProfileSecurityPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name, phone, avatar_url, email_notifications_enabled")
+    .select("full_name, phone, avatar_url, email_notifications_enabled, identity_verified")
     .eq("id", user.id)
     .single();
+
+  const { data: latestIdRequest } = await supabase
+    .from("id_verification_requests")
+    .select("status, match_result, requested_at")
+    .eq("user_id", user.id)
+    .order("requested_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
 
   return (
     <main className="flex flex-1 flex-col items-center px-6 py-16">
@@ -69,6 +78,10 @@ export default async function ProfileSecurityPage() {
         </Link>
 
         <ReferralCard />
+        <IdVerificationCard
+          identityVerified={profile?.identity_verified ?? false}
+          existingRequest={latestIdRequest ?? null}
+        />
         <MfaEnrollment />
         <PasskeySetup />
         <EmailNotificationsToggle
