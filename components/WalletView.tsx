@@ -36,13 +36,21 @@ const PERIODS = [
   { key: "30d", label: "Last 30 days" },
 ] as const;
 
+// Token-based, not raw Tailwind hues, so this reads correctly in dark
+// mode and high-contrast mode too. Semantic grouping rather than one
+// arbitrary color per kind: success = money arriving, accent (gold,
+// already the brand's "money held/reserved" color — see CLAUDE.md) =
+// money moving into a group's custody, neutral = money the member is
+// simply moving to their own pocket. The kind name is always shown as
+// text right next to the icon, so color is a secondary cue, never the
+// only signal.
 const KIND_ICON: Record<string, { bg: string; icon: string }> = {
-  "Payout received": { bg: "bg-blue-500/15 text-blue-600", icon: "↓" },
-  "Wallet top-up": { bg: "bg-green-500/15 text-green-600", icon: "↓" },
-  "Wallet withdrawal": { bg: "bg-orange-500/15 text-orange-600", icon: "↑" },
-  Contribution: { bg: "bg-red-500/15 text-red-600", icon: "↑" },
-  "Event pledge": { bg: "bg-pink-500/15 text-pink-600", icon: "↑" },
-  "Reservation fee": { bg: "bg-orange-500/15 text-orange-600", icon: "↑" },
+  "Payout received": { bg: "bg-success/15 text-success", icon: "↓" },
+  "Wallet top-up": { bg: "bg-success/15 text-success", icon: "↓" },
+  "Wallet withdrawal": { bg: "bg-surface-secondary text-foreground/60", icon: "↑" },
+  Contribution: { bg: "bg-accent/15 text-accent", icon: "↑" },
+  "Event pledge": { bg: "bg-accent/15 text-accent", icon: "↑" },
+  "Reservation fee": { bg: "bg-accent/15 text-accent", icon: "↑" },
 };
 
 export function WalletView({
@@ -330,7 +338,7 @@ export function WalletView({
             </div>
             <div className="mt-3 flex flex-col divide-y divide-border">
               <div className="flex items-center gap-3 py-2.5">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-500/15 text-blue-600">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-success/15 text-success">
                   ↓
                 </span>
                 <span className="flex-1 text-sm font-medium text-foreground">Money received</span>
@@ -339,7 +347,7 @@ export function WalletView({
                 </span>
               </div>
               <div className="flex items-center gap-3 py-2.5">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-red-500/15 text-red-600">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/15 text-accent">
                   ↑
                 </span>
                 <span className="flex-1 text-sm font-medium text-foreground">Contributions</span>
@@ -348,7 +356,7 @@ export function WalletView({
                 </span>
               </div>
               <div className="flex items-center gap-3 py-2.5">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-pink-500/15 text-pink-600">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/15 text-accent">
                   ↑
                 </span>
                 <span className="flex-1 text-sm font-medium text-foreground">Pledges</span>
@@ -357,7 +365,7 @@ export function WalletView({
                 </span>
               </div>
               <div className="flex items-center gap-3 py-2.5">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-orange-500/15 text-orange-600">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/15 text-accent">
                   ↑
                 </span>
                 <span className="flex-1 text-sm font-medium text-foreground">Reservation fees</span>
@@ -401,7 +409,7 @@ export function WalletView({
                         {t.occurred_at ? ` · ${new Date(t.occurred_at).toLocaleDateString()}` : ""}
                       </p>
                     </div>
-                    <span className={`shrink-0 text-sm font-semibold ${t.direction === "in" ? "text-blue-600" : "text-red-600"}`}>
+                    <span className={`shrink-0 text-sm font-semibold ${t.direction === "in" ? "text-success" : "text-foreground"}`}>
                       {hidden ? "••••" : `${t.direction === "in" ? "+" : "-"}${Number(t.amount).toLocaleString()}`}
                     </span>
                   </li>

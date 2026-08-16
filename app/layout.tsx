@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Manrope, Inter } from "next/font/google";
+import { Manrope, Public_Sans } from "next/font/google";
 import { createClient } from "../lib/supabase/server";
 import { AppNav } from "@/components/AppNav";
 import { NotificationBell } from "@/components/NotificationBell";
@@ -15,8 +15,13 @@ const manrope = Manrope({
   subsets: ["latin"],
 });
 
-const inter = Inter({
-  variable: "--font-inter",
+// Public Sans over the default Inter — built by USWDS specifically for
+// legibility of long-form text and numerals at small sizes, which
+// matters here since the whole app is dense with RWF amounts read on
+// low-end Android screens. Also just not the reflexive "safe AI" body
+// font choice Inter has become.
+const publicSans = Public_Sans({
+  variable: "--font-body",
   subsets: ["latin"],
 });
 
@@ -42,7 +47,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${manrope.variable} ${inter.variable} h-full antialiased`}
+      className={`${manrope.variable} ${publicSans.variable} h-full antialiased`}
     >
       <head>
         {/* Applies saved display preferences before paint, so there's no

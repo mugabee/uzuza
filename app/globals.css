@@ -49,7 +49,7 @@ html[data-theme="dark"] {
   --color-danger: var(--danger);
   --color-success: var(--success);
   --color-warning: var(--warning);
-  --font-sans: var(--font-inter);
+  --font-sans: var(--font-body);
   --font-display: var(--font-manrope);
 
   /* Soft, layered shadows instead of a single flat drop shadow — two
