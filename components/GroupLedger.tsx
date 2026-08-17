@@ -364,6 +364,7 @@ export function GroupLedger({
               : group.momo_number
           }
           myPhone={myPhone}
+          isUzuzaHeld={group.account_type === "uzuza_held"}
           onSubmitted={() => router.refresh()}
         />
       )}

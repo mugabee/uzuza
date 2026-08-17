@@ -4,7 +4,7 @@ import { Card } from "@/components/Card";
 type SweepEntry = {
   amount: number;
   swept_at: string;
-  payment_channel: "momo_manual" | "international_manual" | "momo_remittance" | "card_gateway" | null;
+  payment_channel: "momo_manual" | "international_manual" | "momo_remittance" | "card_gateway" | "wallet_balance" | null;
   payer_currency: string | null;
   payer_amount: number | null;
 };
@@ -154,7 +154,9 @@ export default async function InternalCustodyPage() {
                         ? "🌍 MTN Remittance"
                         : s.payment_channel === "card_gateway"
                           ? "💳 Card/Gateway"
-                          : "🌍 International"}
+                          : s.payment_channel === "wallet_balance"
+                            ? "👛 Wallet balance"
+                            : "🌍 International"}
                     </span>
                     {s.payer_amount != null && s.payer_currency && (
                       <span>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createClient } from "../lib/supabase/client";
@@ -42,19 +42,52 @@ export function ContributeCard({
   contribution,
   groupMomoNumber,
   myPhone,
+  isUzuzaHeld,
   onSubmitted,
 }: {
   contribution: Contribution;
   groupMomoNumber: string | null;
   myPhone?: string;
+  isUzuzaHeld?: boolean;
   onSubmitted: () => void;
 }) {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [screenshotUrl, setScreenshotUrl] = useState<string | null>(null);
   const [loadingScreenshot, setLoadingScreenshot] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [walletBalance, setWalletBalance] = useState<number | null>(null);
+  const [payingFromWallet, setPayingFromWallet] = useState(false);
+  const [walletError, setWalletError] = useState<string | null>(null);
   const { t } = useLanguage();
   const showToast = useToast();
+
+  useEffect(() => {
+    if (!isUzuzaHeld) return;
+    let cancelled = false;
+    const supabase = createClient();
+    supabase.rpc("get_wallet_balance").then(({ data }) => {
+      if (!cancelled) setWalletBalance(Number(data ?? 0));
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [isUzuzaHeld]);
+
+  async function handleContributeFromWallet() {
+    setWalletError(null);
+    setPayingFromWallet(true);
+    const supabase = createClient();
+    const { error } = await supabase.rpc("contribute_from_wallet", {
+      p_contribution_id: contribution.id,
+    });
+    setPayingFromWallet(false);
+    if (error) {
+      setWalletError(friendlyError(error.message));
+      return;
+    }
+    showToast("Paid from your available balance");
+    onSubmitted();
+  }
 
   async function handleViewScreenshot() {
     if (!contribution.screenshot_path) return;
@@ -175,6 +208,31 @@ export function ContributeCard({
               onConfirmed={onSubmitted}
             />
           </div>
+
+          {isUzuzaHeld && walletBalance != null && (
+            <div className="mt-4 rounded-xl border border-accent/20 bg-accent/5 p-3">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-foreground/70">Available balance</span>
+                <span className="font-medium">{walletBalance.toLocaleString()} RWF</span>
+              </div>
+              {walletError && (
+                <p role="alert" className="mt-1.5 text-xs text-danger">{walletError}</p>
+              )}
+              <Button
+                variant="secondary"
+                className="mt-2 w-full"
+                disabled={payingFromWallet || walletBalance < Number(contribution.amount)}
+                loading={payingFromWallet}
+                onClick={handleContributeFromWallet}
+              >
+                {payingFromWallet
+                  ? "Paying..."
+                  : walletBalance < Number(contribution.amount)
+                    ? "Insufficient available balance"
+                    : "Contribute from available balance"}
+              </Button>
+            </div>
+          )}
 
           <p className="mt-4 text-xs text-foreground/50">Prefer to pay a different way?</p>
           <Button variant="secondary" className="mt-1.5 w-full" onClick={() => setSheetOpen(true)}>
