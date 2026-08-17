@@ -184,7 +184,7 @@ export function WalletView({
             <div className="flex items-center justify-between rounded-2xl bg-white/10 px-4 py-3.5">
               <div>
                 <p className="text-xs font-medium uppercase tracking-wide text-white/60">
-                  Wallet balance
+                  Available balance
                 </p>
                 <p className="mt-1 font-display text-3xl font-bold tracking-tight">
                   {hidden ? (

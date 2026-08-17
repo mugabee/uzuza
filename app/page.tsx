@@ -122,20 +122,27 @@ export default async function Home() {
           <h1 className="font-display text-2xl font-semibold text-primary">
             Your groups
           </h1>
-          <div className="mt-3 flex gap-4 text-sm">
-            {weeklyTotal > 0 && (
-              <span>
-                <strong>{weeklyTotal.toLocaleString()} RWF</strong>{" "}
-                <span className="text-foreground/60">/ week</span>
-              </span>
-            )}
-            {monthlyTotal > 0 && (
-              <span>
-                <strong>{monthlyTotal.toLocaleString()} RWF</strong>{" "}
-                <span className="text-foreground/60">/ month</span>
-              </span>
-            )}
-          </div>
+          {(weeklyTotal > 0 || monthlyTotal > 0) && (
+            <>
+              <div className="mt-3 flex gap-4 text-sm">
+                {weeklyTotal > 0 && (
+                  <span>
+                    <strong>{weeklyTotal.toLocaleString()} RWF</strong>{" "}
+                    <span className="text-foreground/60">/ week</span>
+                  </span>
+                )}
+                {monthlyTotal > 0 && (
+                  <span>
+                    <strong>{monthlyTotal.toLocaleString()} RWF</strong>{" "}
+                    <span className="text-foreground/60">/ month</span>
+                  </span>
+                )}
+              </div>
+              <p className="mt-1 text-[11px] text-foreground/40">
+                Your recurring commitment across groups — not a balance
+              </p>
+            </>
+          )}
         </Card>
 
         {(groups ?? []).map((group) => {

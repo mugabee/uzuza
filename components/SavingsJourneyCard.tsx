@@ -27,27 +27,41 @@ export function SavingsJourneyCard({
           "linear-gradient(135deg, var(--primary) 0%, var(--primary) 55%, color-mix(in srgb, var(--primary) 80%, black) 100%)",
       }}
     >
-      <div className="rounded-2xl bg-white/10 px-4 py-3.5">
+      {/* Available balance is the primary figure on this card — the one
+          question most users open the app to answer ("how much can I
+          actually use right now") — with a clear "Spendable now" badge
+          rather than relying only on caption text to distinguish it
+          from the historical total below. */}
+      <Link
+        href="/wallet"
+        className="block rounded-2xl bg-white/10 px-4 py-3.5 transition-colors duration-150 hover:bg-white/15"
+      >
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-white/60">
-              Total saved lifetime
+            <div className="flex items-center gap-1.5">
+              <span className="rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
+                Spendable now
+              </span>
+            </div>
+            <p className="mt-1.5 text-xs font-medium uppercase tracking-wide text-white/60">
+              Available balance
             </p>
             <p className="mt-1 font-display text-3xl font-bold tracking-tight">
               {hidden ? (
                 <span aria-label="Balance hidden">••••••</span>
               ) : (
-                <AnimatedNumber value={totalSaved} />
+                <AnimatedNumber value={walletBalance} />
               )}
               <span className="ml-1.5 text-base font-medium text-white/70">RWF</span>
             </p>
-            <p className="mt-0.5 text-[11px] text-white/40">
-              Everything you've ever contributed, all-time
-            </p>
+            <p className="mt-0.5 text-[11px] text-white/40">Top up, withdraw, or send</p>
           </div>
           <button
             type="button"
-            onClick={toggleHidden}
+            onClick={(e) => {
+              e.preventDefault();
+              toggleHidden();
+            }}
             aria-label={hidden ? "Show balance" : "Hide balance"}
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-white/70 transition-colors duration-150 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
           >
@@ -65,27 +79,35 @@ export function SavingsJourneyCard({
             )}
           </button>
         </div>
+      </Link>
 
-        <Link
-          href="/wallet"
-          className="mt-3 flex items-center justify-between rounded-xl border-t border-white/15 pt-3 transition-opacity duration-150 hover:opacity-80"
-        >
-          <div>
-            <p className="text-[11px] font-medium uppercase tracking-wide text-white/50">
-              Wallet balance
-            </p>
-            <p className="mt-0.5 text-lg font-semibold">
-              {hidden ? (
-                <span aria-label="Balance hidden">••••</span>
-              ) : (
-                <AnimatedNumber value={walletBalance} />
-              )}
-              <span className="ml-1 text-xs font-medium text-white/60">RWF</span>
-            </p>
-            <p className="text-[11px] text-white/40">Spendable now — top up, withdraw, or send</p>
+      {/* Total saved lifetime is a clearly separate, historical figure —
+          smaller, muted, and explicitly badged "Lifetime" so it never
+          reads as more money the user could spend on top of the balance
+          above. Not a link: unlike the balance, there's no "manage"
+          action for a historical total. */}
+      <div className="mt-3 flex items-center justify-between border-t border-white/15 pt-3">
+        <div>
+          <div className="flex items-center gap-1.5">
+            <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white/50">
+              Lifetime
+            </span>
           </div>
-          <span className="shrink-0 text-xs font-semibold text-white/70">Manage →</span>
-        </Link>
+          <p className="mt-1.5 text-[11px] font-medium uppercase tracking-wide text-white/50">
+            Total saved
+          </p>
+          <p className="mt-0.5 text-lg font-semibold text-white/80">
+            {hidden ? (
+              <span aria-label="Balance hidden">••••</span>
+            ) : (
+              <AnimatedNumber value={totalSaved} />
+            )}
+            <span className="ml-1 text-xs font-medium text-white/50">RWF</span>
+          </p>
+          <p className="text-[11px] text-white/40">
+            Everything ever contributed, all-time — not money you can spend
+          </p>
+        </div>
       </div>
 
       <dl className="mt-4 grid grid-cols-3 gap-2 border-t border-white/15 pt-4">
