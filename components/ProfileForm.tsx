@@ -10,6 +10,7 @@ import { profileSchema, type ProfileInput } from "../lib/validation";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
 import { Card } from "@/components/Card";
+import { CountryPhoneInput } from "@/components/CountryPhoneInput";
 import { useToast } from "../lib/toast";
 import { friendlyError } from "../lib/friendly-error";
 
@@ -18,13 +19,17 @@ export function ProfileForm({
   defaultFullName,
   defaultPhone,
   defaultAvatarUrl,
+  defaultCountryCode,
   redirectTo = "/",
+  showSecurityLink = true,
 }: {
   userId: string;
   defaultFullName: string;
   defaultPhone: string;
   defaultAvatarUrl: string | null;
+  defaultCountryCode?: string | null;
   redirectTo?: string;
+  showSecurityLink?: boolean;
 }) {
   const router = useRouter();
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -32,9 +37,12 @@ export function ProfileForm({
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const showToast = useToast();
   const [inviteCode, setInviteCode] = useState("");
+  const [countryCode, setCountryCode] = useState(defaultCountryCode ?? "");
   const {
-    register,
     handleSubmit,
+    watch,
+    setValue,
+    register,
     formState: { errors, isSubmitting },
   } = useForm<ProfileInput>({
     resolver: zodResolver(profileSchema),
@@ -84,7 +92,11 @@ export function ProfileForm({
 
     const { error } = await supabase
       .from("profiles")
-      .update({ full_name: values.fullName, phone: values.phone })
+      .update({
+        full_name: values.fullName,
+        phone: values.phone,
+        ...(countryCode ? { country_code: countryCode } : {}),
+      })
       .eq("id", user.id);
 
     if (error) {
@@ -147,12 +159,11 @@ export function ProfileForm({
           error={errors.fullName?.message}
           {...register("fullName")}
         />
-        <Field
-          label="Phone number"
-          type="tel"
-          placeholder="+250788123456"
+        <CountryPhoneInput
+          value={watch("phone")}
+          onChange={(v) => setValue("phone", v, { shouldValidate: true })}
+          onCountryChange={setCountryCode}
           error={errors.phone?.message}
-          {...register("phone")}
         />
         <Field
           label="Invite code (optional)"
@@ -169,12 +180,14 @@ export function ProfileForm({
         </Button>
       </form>
 
-      <Link
-        href="/profile/security"
-        className="mt-4 block text-center text-xs text-foreground/50 hover:text-primary"
-      >
-        Account security
-      </Link>
+      {showSecurityLink && (
+        <Link
+          href="/profile/security"
+          className="mt-4 block text-center text-xs text-foreground/50 hover:text-primary"
+        >
+          Account security
+        </Link>
+      )}
     </Card>
   );
 }

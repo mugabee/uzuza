@@ -1,9 +1,18 @@
 import { z } from "zod";
+import { isValidPhoneNumber } from "libphonenumber-js";
 
 // East African mobile numbers, E.164 format (required by Supabase phone
 // auth regardless of SMS transport either way): Rwanda (+250, MTN/Airtel
 // prefixes 7/1) and Uganda (+256, mobile numbers all start with 7 after
 // the country code) — the app's two primary markets per CLAUDE.md.
+//
+// Deliberately kept narrow and unchanged: this schema backs every
+// MoMo-specific form (wallet top-up/withdraw, contribution/pledge
+// payment) where the number must actually be one MTN's Collections/
+// Disbursements sandbox can reach — widening it here would let someone
+// submit a number the payment backend can never process. The broader,
+// any-country schema for identity/login use is internationalPhoneSchema
+// below, kept as a separate schema on purpose.
 const eastAfricaPhoneRegex = /^\+(250[17]\d{8}|256[7]\d{8})$/;
 
 export const phoneSchema = z
@@ -13,6 +22,18 @@ export const phoneSchema = z
     eastAfricaPhoneRegex,
     "Enter a valid Rwanda (+250...) or Uganda (+256...) phone number, e.g. +250788123456",
   );
+
+// Any-country E.164 phone number, for identity purposes (login/signup,
+// profile) where the number is used for OTP delivery, not a MoMo
+// payment — validated via libphonenumber-js's real per-country
+// metadata rather than a hand-rolled regex, since "any country" can't
+// reasonably be hardcoded.
+export const internationalPhoneSchema = z
+  .string()
+  .trim()
+  .refine((value) => isValidPhoneNumber(value), {
+    message: "Enter a valid phone number, including the country code",
+  });
 
 export const emailSchema = z.string().trim().email("Enter a valid email address");
 
@@ -29,7 +50,7 @@ export type LoginInput = z.infer<typeof loginSchema>;
 
 export const profileSchema = z.object({
   fullName: z.string().trim().min(2, "Enter your full name").max(100),
-  phone: phoneSchema,
+  phone: internationalPhoneSchema,
 });
 export type ProfileInput = z.infer<typeof profileSchema>;
 
