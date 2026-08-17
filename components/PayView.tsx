@@ -6,10 +6,14 @@ import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
 import { PullToRefresh } from "@/components/PullToRefresh";
+import { BottomSheet } from "@/components/BottomSheet";
 import { useToast } from "../lib/toast";
 import { friendlyError } from "../lib/friendly-error";
+import { compressImage } from "../lib/compress-image";
 
 type FoundUser = { id: string; full_name: string | null; phone: string | null };
+
+type PaymentChannel = "momo_manual" | "wallet_balance" | "international_manual" | "momo_remittance" | "card_gateway";
 
 type P2PRequest = {
   id: string;
@@ -24,6 +28,9 @@ type P2PRequest = {
   am_initiator: boolean;
   counterparty_name: string;
   counterparty_phone: string | null;
+  payment_channel: PaymentChannel;
+  transaction_id: string | null;
+  screenshot_path: string | null;
 };
 
 const STATUS_LABEL: Record<P2PRequest["status"], string> = {
@@ -42,7 +49,13 @@ const STATUS_STYLE: Record<P2PRequest["status"], string> = {
   cancelled: "bg-foreground/10 text-foreground/50",
 };
 
-export function PayView({ initialRequests }: { initialRequests: P2PRequest[] }) {
+export function PayView({
+  initialRequests,
+  walletBalance,
+}: {
+  initialRequests: P2PRequest[];
+  walletBalance: number;
+}) {
   const [contact, setContact] = useState("");
   const [checking, setChecking] = useState(false);
   const [found, setFound] = useState<FoundUser | null | undefined>(undefined);
@@ -50,10 +63,21 @@ export function PayView({ initialRequests }: { initialRequests: P2PRequest[] }) 
   const [direction, setDirection] = useState<"request" | "send">("request");
   const [amount, setAmount] = useState("");
   const [note, setNote] = useState("");
+  const [method, setMethod] = useState<"wallet_balance" | "momo_manual">("momo_manual");
   const [creating, setCreating] = useState(false);
   const [requests, setRequests] = useState(initialRequests);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [proofSheetId, setProofSheetId] = useState<string | null>(null);
+  const [transactionId, setTransactionId] = useState("");
+  const [screenshot, setScreenshot] = useState<File | null>(null);
+  const [proofError, setProofError] = useState<string | null>(null);
+  const [submittingProof, setSubmittingProof] = useState(false);
+  const [viewingScreenshot, setViewingScreenshot] = useState<{ id: string; url: string } | null>(null);
   const showToast = useToast();
+
+  const amountNum = Number(amount);
+  const insufficientForWalletSend =
+    method === "wallet_balance" && direction === "send" && amountNum > 0 && amountNum > walletBalance;
 
   async function refreshRequests() {
     const supabase = createClient();
@@ -78,9 +102,12 @@ export function PayView({ initialRequests }: { initialRequests: P2PRequest[] }) 
 
   async function handleCreate() {
     if (!found) return;
-    const amountNum = Number(amount);
     if (!amountNum || amountNum <= 0) {
       setLookupError("Enter an amount greater than 0");
+      return;
+    }
+    if (insufficientForWalletSend) {
+      setLookupError("That's more than your available wallet balance");
       return;
     }
     setCreating(true);
@@ -91,13 +118,20 @@ export function PayView({ initialRequests }: { initialRequests: P2PRequest[] }) 
       p_direction: direction,
       p_amount: amountNum,
       p_note: note.trim() || null,
+      p_payment_channel: method,
     });
     setCreating(false);
     if (error) {
       setLookupError(friendlyError(error.message));
       return;
     }
-    showToast(direction === "request" ? "Request sent" : "Marked to send");
+    showToast(
+      method === "wallet_balance" && direction === "send"
+        ? "Sent from your wallet"
+        : direction === "request"
+          ? "Request sent"
+          : "Marked to send",
+    );
     setContact("");
     setFound(undefined);
     setAmount("");
@@ -117,14 +151,66 @@ export function PayView({ initialRequests }: { initialRequests: P2PRequest[] }) 
     await refreshRequests();
   }
 
+  function openProofSheet(id: string) {
+    setProofSheetId(id);
+    setTransactionId("");
+    setScreenshot(null);
+    setProofError(null);
+  }
+
+  async function handleSubmitProof() {
+    if (!proofSheetId || !screenshot || !transactionId.trim()) {
+      setProofError("Enter the transaction ID and attach a screenshot");
+      return;
+    }
+    setSubmittingProof(true);
+    setProofError(null);
+    const supabase = createClient();
+
+    const fileToUpload = await compressImage(screenshot);
+    const path = `${proofSheetId}/${Date.now()}-${screenshot.name}`;
+    const { error: uploadError } = await supabase.storage.from("p2p-proofs").upload(path, fileToUpload);
+    if (uploadError) {
+      setSubmittingProof(false);
+      setProofError(friendlyError(uploadError.message));
+      return;
+    }
+
+    const { error } = await supabase.rpc("mark_p2p_paid", {
+      p_id: proofSheetId,
+      p_transaction_id: transactionId.trim(),
+      p_screenshot_path: path,
+    });
+    setSubmittingProof(false);
+    if (error) {
+      setProofError(friendlyError(error.message));
+      return;
+    }
+    showToast("Proof submitted");
+    setProofSheetId(null);
+    await refreshRequests();
+  }
+
+  async function handleViewScreenshot(r: P2PRequest) {
+    if (!r.screenshot_path) return;
+    const supabase = createClient();
+    const { data, error } = await supabase.storage.from("p2p-proofs").createSignedUrl(r.screenshot_path, 60);
+    if (error) {
+      showToast(friendlyError(error.message), "error");
+      return;
+    }
+    setViewingScreenshot({ id: r.id, url: data.signedUrl });
+  }
+
   return (
     <PullToRefresh onRefresh={refreshRequests}>
     <div className="flex flex-col gap-5">
       <Card>
         <h2 className="font-display text-lg font-semibold text-primary">Find someone</h2>
         <p className="mt-1 text-sm text-foreground/60">
-          Search by their exact phone number or email — Uzuza never moves the money itself;
-          you'll pay or get paid directly via MoMo, with a shared record here to confirm it.
+          Search by their exact phone number or email, then choose how the money moves —
+          straight from your Uzuza wallet, or directly via MoMo outside the app with a shared
+          proof record here.
         </p>
         <div className="mt-3 flex gap-2">
           <input
@@ -170,11 +256,45 @@ export function PayView({ initialRequests }: { initialRequests: P2PRequest[] }) 
               ))}
             </div>
 
+            <div>
+              <span className="text-sm font-medium text-foreground">How should the money move?</span>
+              <div className="mt-1.5 flex gap-1 rounded-full bg-surface p-1 text-sm font-medium">
+                {(["wallet_balance", "momo_manual"] as const).map((m) => (
+                  <button
+                    key={m}
+                    type="button"
+                    onClick={() => setMethod(m)}
+                    className={`flex-1 rounded-full py-2 transition-all duration-200 ${
+                      method === m
+                        ? "bg-primary text-primary-foreground shadow-[var(--shadow-soft)]"
+                        : "text-foreground/60 hover:text-foreground/80"
+                    }`}
+                  >
+                    {m === "wallet_balance" ? "Uzuza wallet" : "Offline MoMo"}
+                  </button>
+                ))}
+              </div>
+              {method === "wallet_balance" ? (
+                <p className="mt-1.5 text-xs text-foreground/50">
+                  Available balance: {walletBalance.toLocaleString()} RWF.{" "}
+                  {direction === "send"
+                    ? "Sent immediately — no MoMo transfer needed."
+                    : "They'll pay from their own wallet once they approve."}
+                </p>
+              ) : (
+                <p className="mt-1.5 text-xs text-foreground/50">
+                  Pay or get paid directly via MoMo, outside the app — Uzuza wallet balances
+                  aren't affected either way.
+                </p>
+              )}
+            </div>
+
             <Field
               label="Amount (RWF)"
               type="number"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
+              error={insufficientForWalletSend ? "More than your available wallet balance" : undefined}
             />
             <Field
               label="Note (optional)"
@@ -183,8 +303,14 @@ export function PayView({ initialRequests }: { initialRequests: P2PRequest[] }) 
               onChange={(e) => setNote(e.target.value)}
             />
             {lookupError && <p role="alert" className="text-xs text-danger">{lookupError}</p>}
-            <Button onClick={handleCreate} disabled={creating} loading={creating}>
-              {creating ? "Sending..." : direction === "request" ? "Send request" : "Mark to send"}
+            <Button onClick={handleCreate} disabled={creating || insufficientForWalletSend} loading={creating}>
+              {creating
+                ? "Sending..."
+                : method === "wallet_balance" && direction === "send"
+                  ? "Send from wallet"
+                  : direction === "request"
+                    ? "Send request"
+                    : "Mark to send"}
             </Button>
           </div>
         )}
@@ -224,27 +350,59 @@ export function PayView({ initialRequests }: { initialRequests: P2PRequest[] }) 
                   </div>
                 </div>
 
-                {r.status === "pending" && r.am_payer && (
+                <span className="text-[10px] font-medium uppercase tracking-wide text-foreground/40">
+                  {r.payment_channel === "wallet_balance" ? "Uzuza wallet" : "Offline MoMo"}
+                </span>
+
+                {r.status === "pending" && r.am_payer && r.payment_channel === "momo_manual" && (
                   <p className="text-xs text-foreground/50">
                     Pay {r.counterparty_name}{r.counterparty_phone ? ` (${r.counterparty_phone})` : ""} directly via MoMo,
-                    then mark it below. Reference: <span className="font-mono">{r.reference}</span>
+                    then submit proof below. Reference: <span className="font-mono">{r.reference}</span>
+                  </p>
+                )}
+                {r.status === "pending" && r.am_payer && r.payment_channel === "wallet_balance" && (
+                  <p className="text-xs text-foreground/50">
+                    Pay {r.counterparty_name} instantly from your available balance
+                    ({walletBalance.toLocaleString()} RWF).
                   </p>
                 )}
                 {r.status === "paid" && !r.am_payer && (
-                  <p className="text-xs text-foreground/50">
-                    {r.counterparty_name} marked this as paid — confirm once you've received it.
-                  </p>
+                  <div className="flex items-center justify-between gap-2 text-xs text-foreground/50">
+                    <span>{r.counterparty_name} submitted proof of payment — confirm once you've received it.</span>
+                    {r.screenshot_path && (
+                      <button
+                        type="button"
+                        onClick={() => handleViewScreenshot(r)}
+                        className="shrink-0 font-medium text-primary underline-offset-2 hover:underline"
+                      >
+                        View proof
+                      </button>
+                    )}
+                  </div>
+                )}
+                {viewingScreenshot?.id === r.id && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={viewingScreenshot.url}
+                    alt="Submitted payment screenshot"
+                    className="max-h-64 rounded-lg border border-border"
+                  />
                 )}
 
                 <div className="flex gap-2">
-                  {r.status === "pending" && r.am_payer && (
+                  {r.status === "pending" && r.am_payer && r.payment_channel === "wallet_balance" && (
                     <Button
                       className="flex-1"
-                      onClick={() => handleAction(r.id, "mark_p2p_paid")}
-                      disabled={busyId === r.id}
+                      onClick={() => handleAction(r.id, "pay_p2p_from_wallet")}
+                      disabled={busyId === r.id || Number(r.amount) > walletBalance}
                       loading={busyId === r.id}
                     >
-                      Mark as paid
+                      {Number(r.amount) > walletBalance ? "Insufficient balance" : "Pay from wallet"}
+                    </Button>
+                  )}
+                  {r.status === "pending" && r.am_payer && r.payment_channel === "momo_manual" && (
+                    <Button className="flex-1" onClick={() => openProofSheet(r.id)}>
+                      Submit proof
                     </Button>
                   )}
                   {r.status === "pending" && r.am_payer && !r.am_initiator && (
@@ -286,6 +444,30 @@ export function PayView({ initialRequests }: { initialRequests: P2PRequest[] }) 
           </ul>
         )}
       </Card>
+
+      <BottomSheet open={proofSheetId !== null} onClose={() => setProofSheetId(null)} title="Submit payment proof">
+        <div className="flex flex-col gap-3">
+          <Field
+            label="Transaction ID"
+            placeholder="e.g. MP240613.1234.A56789"
+            value={transactionId}
+            onChange={(e) => setTransactionId(e.target.value)}
+          />
+          <label className="flex flex-col gap-1.5 text-sm">
+            <span className="font-medium text-foreground">Screenshot</span>
+            <input
+              type="file"
+              accept="image/png,image/jpeg,image/webp"
+              className="text-sm"
+              onChange={(e) => setScreenshot(e.target.files?.[0] ?? null)}
+            />
+          </label>
+          {proofError && <p role="alert" className="text-xs text-danger">{proofError}</p>}
+          <Button onClick={handleSubmitProof} disabled={submittingProof} loading={submittingProof}>
+            {submittingProof ? "Submitting..." : "Submit proof"}
+          </Button>
+        </div>
+      </BottomSheet>
     </div>
     </PullToRefresh>
   );

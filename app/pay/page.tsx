@@ -12,6 +12,7 @@ export default async function PayPage() {
   if (!user) redirect("/login");
 
   const { data: requests } = await supabase.rpc("list_my_p2p_requests");
+  const { data: walletBalance } = await supabase.rpc("get_wallet_balance");
 
   return (
     <main className="flex flex-1 flex-col items-center px-6 py-16">
@@ -19,7 +20,7 @@ export default async function PayPage() {
         <h1 className="font-display text-2xl font-semibold text-primary">
           Send or request money
         </h1>
-        <PayView initialRequests={requests ?? []} />
+        <PayView initialRequests={requests ?? []} walletBalance={Number(walletBalance ?? 0)} />
         <Link href="/wallet" className="text-center text-sm text-foreground/50 hover:text-primary">
           Back to wallet
         </Link>
