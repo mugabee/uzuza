@@ -44,6 +44,9 @@ export default async function InternalLayout({
         <Link href="/internal/audit" className="text-foreground/70 hover:text-primary">
           Audit Log
         </Link>
+        <Link href="/internal/withdrawal-controls" className="text-foreground/70 hover:text-primary">
+          Withdrawal Controls
+        </Link>
       </nav>
       <main className="flex-1 px-8 py-8">{children}</main>
     </div>
