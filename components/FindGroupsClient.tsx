@@ -46,7 +46,7 @@ export function FindGroupsClient({ groups }: { groups: FindGroupResult[] }) {
               key={t}
               type="button"
               onClick={() => setTypeFilter(t)}
-              className={`flex-1 rounded-full py-1.5 capitalize transition-all duration-200 ${
+              className={`flex-1 rounded-full py-1.5 capitalize transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${
                 typeFilter === t
                   ? "bg-surface text-primary shadow-[var(--shadow-soft)]"
                   : "text-foreground/60 hover:text-foreground/80"
@@ -68,7 +68,11 @@ export function FindGroupsClient({ groups }: { groups: FindGroupResult[] }) {
         {filtered.map((group) => {
           const filled = Math.min(group.member_count / group.target_size, 1);
           return (
-            <Link key={group.id} href={`/groups/${group.id}/reserve`}>
+            <Link
+              key={group.id}
+              href={`/groups/${group.id}/reserve`}
+              className="block rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
+            >
               <Card className="transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-soft-md)]">
                 <div className="flex items-center justify-between">
                   <h2 className="font-semibold text-foreground">{group.name}</h2>

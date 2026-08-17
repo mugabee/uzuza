@@ -152,4 +152,19 @@ body {
     animation: none;
     stroke-dashoffset: 0;
   }
+
+  .animate-fade-scale-in,
+  .animate-fade-slide-down,
+  .animate-fade-slide-up {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Skeleton loading states: stop the continuous pulse (this one loops
+     for as long as content is loading, unlike the one-shot entrance
+     animations above) but keep the placeholder visible and static. */
+  .animate-pulse {
+    animation: none;
+  }
 }

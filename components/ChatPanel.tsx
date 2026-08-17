@@ -112,7 +112,7 @@ export function ChatPanel({
                     type="button"
                     onClick={() => handleFlag(m.id)}
                     aria-label="Report message"
-                    className="shrink-0 text-[10px] text-foreground/25 hover:text-danger"
+                    className="-m-2.5 shrink-0 p-2.5 text-[10px] text-foreground/25 hover:text-danger focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger/30 focus-visible:rounded-full"
                   >
                     ⚑
                   </button>
@@ -143,7 +143,7 @@ export function ChatPanel({
             type="submit"
             disabled={busy}
             aria-label="Send"
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-white shadow-[var(--shadow-soft)] transition-transform duration-150 active:scale-95 disabled:opacity-50"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-white shadow-[var(--shadow-soft)] transition-transform duration-150 active:scale-95 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
           >
             <svg
               viewBox="0 0 24 24"

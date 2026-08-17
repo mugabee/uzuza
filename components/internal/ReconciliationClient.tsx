@@ -25,8 +25,8 @@ type Discrepancy = {
 const SEVERITY: Record<Discrepancy["discrepancy_type"], { label: string; style: string }> = {
   false_confirmation: { label: "Critical — confirmed but MoMo failed", style: "bg-danger/15 text-danger" },
   phantom_debit: { label: "Critical — money left, balance not debited", style: "bg-danger/15 text-danger" },
-  stuck_pending: { label: "Stuck pending", style: "bg-accent/15 text-accent" },
-  missing_confirmation: { label: "Missed confirmation", style: "bg-accent/15 text-accent" },
+  stuck_pending: { label: "Stuck pending", style: "bg-warning/15 text-warning" },
+  missing_confirmation: { label: "Missed confirmation", style: "bg-warning/15 text-warning" },
 };
 
 function DiscrepancyRow({
@@ -63,7 +63,9 @@ function DiscrepancyRow({
           </p>
         </div>
         {d.auto_resolved && (
-          <span className="shrink-0 text-[11px] font-medium text-primary">Self-healed</span>
+          <span className="shrink-0 rounded-full bg-success/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-success">
+            Self-healed
+          </span>
         )}
       </div>
 
@@ -81,10 +83,15 @@ function DiscrepancyRow({
         </div>
       )}
       {d.resolved_at && !d.auto_resolved && (
-        <p className="mt-2 text-xs text-foreground/50">
-          Resolved {new Date(d.resolved_at).toLocaleString()}
-          {d.resolution_note ? ` — ${d.resolution_note}` : ""}
-        </p>
+        <div className="mt-2 flex items-center gap-1.5">
+          <span className="rounded-full bg-success/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-success">
+            Resolved
+          </span>
+          <p className="text-xs text-foreground/50">
+            {new Date(d.resolved_at).toLocaleString()}
+            {d.resolution_note ? ` — ${d.resolution_note}` : ""}
+          </p>
+        </div>
       )}
     </Card>
   );

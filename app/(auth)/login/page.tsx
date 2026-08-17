@@ -91,7 +91,7 @@ export default function LoginPage() {
               setIntent("signin");
               setError(null);
             }}
-            className={`rounded-xl border px-3 py-3 text-center text-sm font-semibold transition-all duration-150 ${
+            className={`rounded-xl border px-3 py-3 text-center text-sm font-semibold transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${
               intent === "signin"
                 ? "border-primary bg-primary/5 text-primary shadow-[var(--shadow-soft)]"
                 : "border-border text-foreground/70 hover:border-black/20"
@@ -108,7 +108,7 @@ export default function LoginPage() {
               setIntent("signup");
               setError(null);
             }}
-            className={`rounded-xl border px-3 py-3 text-center text-sm font-semibold transition-all duration-150 ${
+            className={`rounded-xl border px-3 py-3 text-center text-sm font-semibold transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${
               intent === "signup"
                 ? "border-primary bg-primary/5 text-primary shadow-[var(--shadow-soft)]"
                 : "border-border text-foreground/70 hover:border-black/20"
@@ -133,7 +133,7 @@ export default function LoginPage() {
                     setIdentifier("");
                     setError(null);
                   }}
-                  className={`flex-1 rounded-full py-2 capitalize transition-all duration-200 ${
+                  className={`flex-1 rounded-full py-2 capitalize transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${
                     method === m
                       ? "bg-surface text-primary shadow-[var(--shadow-soft)]"
                       : "text-foreground/60 hover:text-foreground/80"

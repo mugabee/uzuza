@@ -36,10 +36,13 @@ export default async function ProfileSecurityPage() {
     <main className="flex flex-1 flex-col items-center px-6 py-16">
       <div className="flex w-full max-w-md flex-col gap-5">
         <h1 className="font-display text-2xl font-semibold text-primary">
-          Settings
+          Security & display
         </h1>
 
-        <Link href="/profile">
+        <Link
+          href="/profile"
+          className="block rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
+        >
           <Card className="flex items-center gap-3 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-soft-md)]">
             {profile?.avatar_url ? (
               // eslint-disable-next-line @next/next/no-img-element

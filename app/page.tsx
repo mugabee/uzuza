@@ -146,7 +146,11 @@ export default async function Home() {
           const isRecipient = activeCycle?.recipient_user_id === user.id;
 
           return (
-            <Link key={group.id} href={`/groups/${group.id}`}>
+            <Link
+              key={group.id}
+              href={`/groups/${group.id}`}
+              className="block rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
+            >
               <Card className="transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-soft-md)]">
                 <div className="flex items-center justify-between">
                   <h2 className="font-semibold text-foreground">{group.name}</h2>

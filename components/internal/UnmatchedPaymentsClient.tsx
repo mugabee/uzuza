@@ -74,7 +74,10 @@ export function UnmatchedPaymentsClient({ payments }: { payments: Payment[] }) {
       ) : (
         open.map((p) => (
           <Card key={p.id}>
-            <p className="text-sm text-foreground/80">{p.description}</p>
+            <span className="rounded-full bg-warning/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-warning">
+              Open
+            </span>
+            <p className="mt-1.5 text-sm text-foreground/80">{p.description}</p>
             {p.amount != null && (
               <p className="mt-1 text-sm font-medium">
                 {Number(p.amount).toLocaleString()} RWF

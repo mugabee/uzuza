@@ -87,7 +87,7 @@ export function PaymentChannelPicker({
                   setValue("payerCurrency", SUPPORTED_CURRENCIES[0].code);
                 }
               }}
-              className={`flex flex-col items-center gap-1 rounded-xl border px-2 py-3 text-center transition-all duration-150 ${
+              className={`flex flex-col items-center gap-1 rounded-xl border px-2 py-3 text-center transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${
                 channel === c.value
                   ? "border-primary bg-primary/5 shadow-[var(--shadow-soft)]"
                   : "border-border hover:border-black/20"

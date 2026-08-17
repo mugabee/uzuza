@@ -37,6 +37,10 @@ const TABS = [
   },
 ];
 
+// Only genuinely new destinations belong here — "Find a group" and
+// "My groups" used to duplicate the always-visible Find/Home tabs
+// directly below this sheet, which meant half of it just repeated the
+// tab bar the user could already see and tap.
 const QUICK_ACTIONS = [
   {
     href: "/groups/new",
@@ -53,25 +57,6 @@ const QUICK_ACTIONS = [
         <path d="M7 11l3 3 7-7" />
         <path d="M20 12a8 8 0 1 1-3.5-6.6" />
       </>
-    ),
-  },
-  {
-    href: "/find",
-    label: "Find a group to join",
-    description: "Browse open groups you can request to join",
-    icon: (
-      <>
-        <circle cx="10.5" cy="10.5" r="6.5" />
-        <path d="m20 20-4.35-4.35" />
-      </>
-    ),
-  },
-  {
-    href: "/",
-    label: "My groups",
-    description: "Jump back to your home dashboard",
-    icon: (
-      <path d="M3 11.5 12 4l9 7.5M5.5 10v9a1 1 0 0 0 1 1H10v-5.5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1V20h3.5a1 1 0 0 0 1-1v-9" />
     ),
   },
 ];
@@ -164,10 +149,10 @@ export function AppNav({ signedIn }: { signedIn: boolean }) {
             <Link
               key={tab.href}
               href={tab.href}
-              className="group flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] font-medium"
+              className="group flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] font-medium focus-visible:outline-none"
             >
               <span
-                className={`flex h-7 w-11 items-center justify-center rounded-full transition-colors duration-200 ${
+                className={`flex h-7 w-11 items-center justify-center rounded-full transition-colors duration-200 group-focus-visible:ring-2 group-focus-visible:ring-primary/30 ${
                   active ? "bg-primary/10" : "group-hover:bg-primary/5"
                 }`}
               >
@@ -204,7 +189,7 @@ export function AppNav({ signedIn }: { signedIn: boolean }) {
             onClick={() => setQuickActionsOpen(true)}
             aria-label="Quick actions"
             aria-haspopup="dialog"
-            className="-mt-6 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_4px_12px_-2px_rgba(26,95,74,0.4),0_8px_24px_-4px_rgba(26,95,74,0.3)] ring-4 ring-surface transition-transform duration-150 active:scale-95"
+            className="-mt-6 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_4px_12px_-2px_rgba(26,95,74,0.4),0_8px_24px_-4px_rgba(26,95,74,0.3)] ring-4 ring-surface transition-transform duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-primary/50"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 5v14M5 12h14" />
@@ -218,10 +203,10 @@ export function AppNav({ signedIn }: { signedIn: boolean }) {
             onClick={() => setMenuOpen((v) => !v)}
             aria-haspopup="menu"
             aria-expanded={menuOpen}
-            className="group flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] font-medium"
+            className="group flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] font-medium focus-visible:outline-none"
           >
             <span
-              className={`flex h-7 w-11 items-center justify-center rounded-full transition-colors duration-200 ${
+              className={`flex h-7 w-11 items-center justify-center rounded-full transition-colors duration-200 group-focus-visible:ring-2 group-focus-visible:ring-primary/30 ${
                 profileActive || menuOpen ? "bg-primary/10" : "group-hover:bg-primary/5"
               }`}
             >
@@ -258,14 +243,14 @@ export function AppNav({ signedIn }: { signedIn: boolean }) {
               <Link
                 role="menuitem"
                 href="/profile"
-                className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-foreground/80 transition-colors duration-150 hover:bg-primary/5 hover:text-primary"
+                className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-foreground/80 transition-colors duration-150 hover:bg-primary/5 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
               >
                 View profile
               </Link>
               <Link
                 role="menuitem"
                 href="/profile/security"
-                className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-foreground/80 transition-colors duration-150 hover:bg-primary/5 hover:text-primary"
+                className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-foreground/80 transition-colors duration-150 hover:bg-primary/5 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
               >
                 Security & display
               </Link>
@@ -274,7 +259,7 @@ export function AppNav({ signedIn }: { signedIn: boolean }) {
                 type="button"
                 role="menuitem"
                 onClick={handleSignOut}
-                className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-danger transition-colors duration-150 hover:bg-danger/10"
+                className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-danger transition-colors duration-150 hover:bg-danger/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger/30"
               >
                 <svg
                   width="16"
@@ -306,7 +291,7 @@ export function AppNav({ signedIn }: { signedIn: boolean }) {
               key={action.label}
               href={action.href}
               onClick={() => setQuickActionsOpen(false)}
-              className="flex items-center gap-3 rounded-xl px-2 py-3 transition-colors duration-150 hover:bg-primary/5"
+              className="flex items-center gap-3 rounded-xl px-2 py-3 transition-colors duration-150 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
             >
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round">

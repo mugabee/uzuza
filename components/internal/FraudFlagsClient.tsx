@@ -27,11 +27,11 @@ type FraudFlag = {
 };
 
 const LABELS: Record<FraudFlag["flag_type"], { label: string; style: string }> = {
-  large_transaction: { label: "Large transaction", style: "bg-accent/15 text-accent" },
-  high_velocity: { label: "High velocity", style: "bg-accent/15 text-accent" },
+  large_transaction: { label: "Large transaction", style: "bg-warning/15 text-warning" },
+  high_velocity: { label: "High velocity", style: "bg-warning/15 text-warning" },
   ledger_drift_detected: { label: "Critical — ledger drift", style: "bg-danger/15 text-danger" },
   stale_approved_payout: { label: "Stale — payout approved, not completed", style: "bg-danger/15 text-danger" },
-  stalled_forming_group: { label: "Stalled forming group", style: "bg-accent/15 text-accent" },
+  stalled_forming_group: { label: "Stalled forming group", style: "bg-warning/15 text-warning" },
 };
 
 function FlagRow({
@@ -50,9 +50,16 @@ function FlagRow({
   const meta = LABELS[f.flag_type];
   return (
     <Card>
-      <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${meta.style}`}>
-        {meta.label}
-      </span>
+      <div className="flex flex-wrap items-center gap-1.5">
+        <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${meta.style}`}>
+          {meta.label}
+        </span>
+        {f.resolved_at && (
+          <span className="rounded-full bg-success/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-success">
+            Resolved
+          </span>
+        )}
+      </div>
       <p className="mt-1.5 text-sm font-medium text-foreground">
         {f.entity_type}
         {f.amount != null && <> · {Number(f.amount).toLocaleString()} RWF</>}

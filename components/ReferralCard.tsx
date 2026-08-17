@@ -56,7 +56,7 @@ export function ReferralCard() {
           onClick={copyCode}
           disabled={!code}
           aria-label="Copy invite code"
-          className="flex h-10 w-10 items-center justify-center rounded-full text-foreground/50 transition-colors duration-150 hover:bg-primary/5 hover:text-primary disabled:opacity-40"
+          className="flex h-11 w-11 items-center justify-center rounded-full text-foreground/50 transition-colors duration-150 hover:bg-primary/5 hover:text-primary disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round">
             <rect x="9" y="9" width="12" height="12" rx="2" />

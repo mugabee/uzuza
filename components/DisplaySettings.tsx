@@ -48,7 +48,7 @@ export function DisplaySettings() {
                 key={mode}
                 type="button"
                 onClick={() => applyTheme(mode)}
-                className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 capitalize transition-all duration-200 ${
+                className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 capitalize transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${
                   theme === mode
                     ? "bg-surface text-primary shadow-[var(--shadow-soft)]"
                     : "text-foreground/60 hover:text-foreground/80"
@@ -75,21 +75,21 @@ export function DisplaySettings() {
             <button
               type="button"
               onClick={() => setLanguage("en")}
-              className={`rounded-full px-3 py-1.5 transition-all duration-200 ${language === "en" ? "bg-surface text-primary shadow-[var(--shadow-soft)]" : "text-foreground/60 hover:text-foreground/80"}`}
+              className={`rounded-full px-3 py-1.5 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${language === "en" ? "bg-surface text-primary shadow-[var(--shadow-soft)]" : "text-foreground/60 hover:text-foreground/80"}`}
             >
               English
             </button>
             <button
               type="button"
               onClick={() => setLanguage("rw")}
-              className={`rounded-full px-3 py-1.5 transition-all duration-200 ${language === "rw" ? "bg-surface text-primary shadow-[var(--shadow-soft)]" : "text-foreground/60 hover:text-foreground/80"}`}
+              className={`rounded-full px-3 py-1.5 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${language === "rw" ? "bg-surface text-primary shadow-[var(--shadow-soft)]" : "text-foreground/60 hover:text-foreground/80"}`}
             >
               Kinyarwanda
             </button>
             <button
               type="button"
               onClick={() => setLanguage("lg")}
-              className={`rounded-full px-3 py-1.5 transition-all duration-200 ${language === "lg" ? "bg-surface text-primary shadow-[var(--shadow-soft)]" : "text-foreground/60 hover:text-foreground/80"}`}
+              className={`rounded-full px-3 py-1.5 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${language === "lg" ? "bg-surface text-primary shadow-[var(--shadow-soft)]" : "text-foreground/60 hover:text-foreground/80"}`}
             >
               Luganda
             </button>

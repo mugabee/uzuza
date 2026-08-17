@@ -41,7 +41,7 @@ export function NotificationBell({ signedIn }: { signedIn: boolean }) {
     <Link
       href="/notifications"
       aria-label={count > 0 ? `Notifications, ${count} unread` : "Notifications"}
-      className="fixed right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-surface text-foreground/70 shadow-[var(--shadow-soft-md)] ring-1 ring-border transition-colors duration-150 hover:text-primary"
+      className="fixed right-4 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-surface text-foreground/70 shadow-[var(--shadow-soft-md)] ring-1 ring-border transition-colors duration-150 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
       style={{ top: "calc(env(safe-area-inset-top) + 0.75rem)" }}
     >
       <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round">

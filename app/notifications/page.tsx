@@ -102,7 +102,7 @@ export default function NotificationsPage() {
               key={key}
               type="button"
               onClick={() => setTab(key)}
-              className={`flex-1 rounded-full py-2 capitalize transition-all duration-200 ${
+              className={`flex-1 rounded-full py-2 capitalize transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${
                 tab === key
                   ? "bg-surface text-primary shadow-[var(--shadow-soft)]"
                   : "text-foreground/60 hover:text-foreground/80"

@@ -176,14 +176,10 @@ export function ContributeCard({
             />
           </div>
 
-          <details className="mt-4">
-            <summary className="cursor-pointer text-sm font-medium text-foreground/60 hover:text-foreground/80">
-              Prefer to pay a different way?
-            </summary>
-            <Button variant="secondary" className="mt-3 w-full" onClick={() => setSheetOpen(true)}>
-              {t("submitProof")}
-            </Button>
-          </details>
+          <p className="mt-4 text-xs text-foreground/50">Prefer to pay a different way?</p>
+          <Button variant="secondary" className="mt-1.5 w-full" onClick={() => setSheetOpen(true)}>
+            {t("submitProof")}
+          </Button>
 
           <BottomSheet
             open={sheetOpen}

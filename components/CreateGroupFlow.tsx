@@ -88,7 +88,7 @@ export function CreateGroupFlow() {
             <button
               key={t.value}
               onClick={() => setGroupType(t.value)}
-              className="rounded-xl border border-border p-4 text-left transition-colors hover:border-primary hover:bg-primary/5"
+              className="rounded-xl border border-border p-4 text-left transition-colors hover:border-primary hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
             >
               <div className="font-semibold text-foreground">{t.title}</div>
               <div className="mt-1 text-sm text-foreground/60">
@@ -204,7 +204,7 @@ function GroupDetailsForm({
                 setSafetyFundType(t.safetyFundType);
                 setAppliedTemplate(t.id);
               }}
-              className={`rounded-xl border p-3 text-left text-sm transition-colors ${
+              className={`rounded-xl border p-3 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${
                 appliedTemplate === t.id
                   ? "border-primary bg-primary/5"
                   : "border-border hover:border-primary"

@@ -249,13 +249,6 @@ export function GroupLedger({
           {updatedLabel}
         </p>
 
-        <Link
-          href={`/groups/${group.id}/settings`}
-          className="mt-2 inline-block text-sm font-medium text-primary underline-offset-2 hover:underline"
-        >
-          View group rules & settings
-        </Link>
-
         {error && <p role="alert" className="mt-3 text-xs text-danger">{error}</p>}
 
         {isAdmin && !activeCycle && (
@@ -295,7 +288,7 @@ export function GroupLedger({
             key={key}
             type="button"
             onClick={() => setTab(key)}
-            className={`flex-1 rounded-full py-2 transition-all duration-200 ${
+            className={`flex-1 rounded-full py-2 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${
               tab === key
                 ? "bg-surface text-primary shadow-[var(--shadow-soft)]"
                 : "text-foreground/60 hover:text-foreground/80"
@@ -314,6 +307,15 @@ export function GroupLedger({
 
       {tab === "overview" && (
         <>
+      {group.account_type === "uzuza_held" && (
+        <Link
+          href={`/groups/${group.id}/custody`}
+          className="flex items-center justify-between gap-2 rounded-xl border border-accent/20 bg-accent/5 px-4 py-3 text-sm font-medium text-foreground/80 transition-colors duration-150 hover:bg-accent/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
+        >
+          Where this group's money is held
+          <span className="text-primary underline-offset-2">View reconciliation</span>
+        </Link>
+      )}
       {completedCycle && payoutRequest?.status === "completed" && (
         <CycleCelebration
           groupId={group.id}

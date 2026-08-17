@@ -29,7 +29,7 @@ export function IntroCard() {
           type="button"
           onClick={dismiss}
           aria-label="Dismiss"
-          className="shrink-0 text-foreground/40 hover:text-foreground/70"
+          className="-m-2.5 shrink-0 rounded-full p-2.5 text-foreground/40 hover:text-foreground/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
         >
           ✕
         </button>

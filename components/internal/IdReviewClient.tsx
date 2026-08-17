@@ -24,10 +24,16 @@ type IdRequest = {
 };
 
 const MATCH_LABEL: Record<MatchResult, { label: string; style: string }> = {
-  match: { label: "AI: name matches", style: "bg-primary/10 text-primary" },
-  low_confidence: { label: "AI: possible match", style: "bg-accent/15 text-accent" },
+  match: { label: "AI: name matches", style: "bg-success/15 text-success" },
+  low_confidence: { label: "AI: possible match", style: "bg-warning/15 text-warning" },
   mismatch: { label: "AI: name mismatch", style: "bg-danger/15 text-danger" },
   unavailable: { label: "AI check unavailable", style: "bg-surface-secondary text-foreground/60" },
+};
+
+const STATUS_BADGE: Record<IdRequest["status"], { label: string; style: string }> = {
+  pending: { label: "Pending", style: "bg-warning/15 text-warning" },
+  approved: { label: "Approved", style: "bg-success/15 text-success" },
+  rejected: { label: "Rejected", style: "bg-danger/15 text-danger" },
 };
 
 function PhotoViewer({ label, path }: { label: string; path: string }) {
@@ -70,11 +76,16 @@ function RequestCard({
           <p className="text-sm font-medium text-foreground">{r.user_name ?? "Unnamed user"}</p>
           <p className="text-xs text-foreground/50">{r.user_id}</p>
         </div>
-        {match && (
-          <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${match.style}`}>
-            {match.label}
+        <div className="flex shrink-0 flex-col items-end gap-1">
+          <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${STATUS_BADGE[r.status].style}`}>
+            {STATUS_BADGE[r.status].label}
           </span>
-        )}
+          {match && (
+            <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${match.style}`}>
+              {match.label}
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="mt-2 text-xs text-foreground/60">
@@ -103,9 +114,7 @@ function RequestCard({
           </Button>
         </div>
       ) : (
-        <p className={`mt-3 text-xs font-medium ${r.status === "approved" ? "text-primary" : "text-danger"}`}>
-          {r.status === "approved" ? "Approved" : "Rejected"} by staff
-        </p>
+        <p className="mt-3 text-xs text-foreground/50">Decided by staff</p>
       )}
     </Card>
   );

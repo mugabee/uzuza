@@ -161,7 +161,7 @@ export function WalletView({
             key={key}
             type="button"
             onClick={() => setTab(key)}
-            className={`flex-1 rounded-full py-2 capitalize transition-all duration-200 ${
+            className={`flex-1 rounded-full py-2 capitalize transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${
               tab === key
                 ? "bg-surface text-primary shadow-[var(--shadow-soft)]"
                 : "text-foreground/60 hover:text-foreground/80"
@@ -199,7 +199,7 @@ export function WalletView({
                 type="button"
                 onClick={toggleHidden}
                 aria-label={hidden ? "Show balance" : "Hide balance"}
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-white/70 transition-colors duration-150 hover:bg-white/10 hover:text-white"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-white/70 transition-colors duration-150 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
               >
                 {hidden ? (
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round">
@@ -298,7 +298,10 @@ export function WalletView({
             )}
           </Card>
 
-          <Link href="/pay">
+          <Link
+            href="/pay"
+            className="block rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
+          >
             <Card className="flex items-center gap-3 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-soft-md)]">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -325,7 +328,7 @@ export function WalletView({
                     key={p.key}
                     type="button"
                     onClick={() => setPeriod(p.key)}
-                    className={`rounded-full px-2.5 py-1 transition-all duration-200 ${
+                    className={`rounded-full px-2.5 py-1 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${
                       period === p.key
                         ? "bg-surface text-primary shadow-[var(--shadow-soft)]"
                         : "text-foreground/60 hover:text-foreground/80"

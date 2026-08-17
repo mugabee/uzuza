@@ -15,6 +15,15 @@ type MediationCase = {
   created_at: string;
 };
 
+// Canonical badge style/token mapping used across the whole internal
+// console: danger = critical/rejected, warning = needs-review/pending,
+// success = resolved/good, accent = neutral informational tag,
+// surface-secondary = plain/no particular severity.
+const STAKES: Record<MediationCase["stakes"], { label: string; style: string }> = {
+  financial: { label: "Financial", style: "bg-danger/15 text-danger" },
+  general: { label: "General", style: "bg-surface-secondary text-foreground/60" },
+};
+
 export function MediationQueueClient({ cases }: { cases: MediationCase[] }) {
   const router = useRouter();
 
@@ -36,13 +45,9 @@ export function MediationQueueClient({ cases }: { cases: MediationCase[] }) {
         <Card key={c.id}>
           <div className="flex items-center justify-between">
             <span
-              className={`rounded-full px-2 py-0.5 text-xs font-semibold uppercase ${
-                c.stakes === "financial"
-                  ? "bg-danger/15 text-danger"
-                  : "bg-surface-secondary text-foreground/60"
-              }`}
+              className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${STAKES[c.stakes].style}`}
             >
-              {c.stakes}
+              {STAKES[c.stakes].label}
             </span>
             <span className="text-xs text-foreground/50">
               {new Date(c.created_at).toLocaleDateString()}
