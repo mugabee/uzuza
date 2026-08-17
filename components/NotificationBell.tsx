@@ -33,7 +33,12 @@ export function NotificationBell({ signedIn }: { signedIn: boolean }) {
 
   usePoll(refresh, 20000);
 
-  if (!signedIn || pathname.startsWith("/internal") || pathname.startsWith("/login")) {
+  if (
+    !signedIn ||
+    pathname.startsWith("/internal") ||
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/signup")
+  ) {
     return null;
   }
 

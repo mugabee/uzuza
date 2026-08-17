@@ -126,7 +126,8 @@ export function AppNav({ signedIn }: { signedIn: boolean }) {
   if (
     !signedIn ||
     pathname.startsWith("/internal") ||
-    pathname.startsWith("/login")
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/signup")
   ) {
     return null;
   }

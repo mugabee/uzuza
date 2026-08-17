@@ -125,7 +125,8 @@ export default function VerifyPage() {
     sessionStorage.removeItem("uzuza_login_method");
     sessionStorage.removeItem("uzuza_login_identifier");
     sessionStorage.removeItem("uzuza_login_intent");
-    router.push(redirectTo ? `/login?redirect=${encodeURIComponent(redirectTo)}` : "/login");
+    const base = intent === "signup" ? "/signup" : "/login";
+    router.push(redirectTo ? `${base}?redirect=${encodeURIComponent(redirectTo)}` : base);
   };
 
   return (
