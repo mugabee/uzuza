@@ -14,6 +14,17 @@
   --danger: #dc2626;
   --success: #16a34a;
   --warning: #d97706;
+
+  /* Rwanda flag accents — sparse highlights only (design brief §2), never
+     a base palette. sky = progress/info, sun = celebration/"your turn",
+     hill = a second, distinct-from-brand success/confirmation cue (the
+     brand green itself already carries most "confirmed" meaning via
+     --success, so hill is reserved for the savings-wheel/cycle-complete
+     moments where a second green reads as "this specific thing finished"
+     rather than generic status). */
+  --accent-sky: #00a3dd;
+  --accent-sun: #fad201;
+  --accent-hill: #20603d;
 }
 
 /* Real dark theme, not just an inverted contrast mode — toggled via
@@ -33,6 +44,9 @@ html[data-theme="dark"] {
   --danger: #f87171;
   --success: #4ade80;
   --warning: #fbbf24;
+  --accent-sky: #38bdf8;
+  --accent-sun: #fad201;
+  --accent-hill: #4ade80;
 }
 
 @theme inline {
@@ -49,6 +63,9 @@ html[data-theme="dark"] {
   --color-danger: var(--danger);
   --color-success: var(--success);
   --color-warning: var(--warning);
+  --color-accent-sky: var(--accent-sky);
+  --color-accent-sun: var(--accent-sun);
+  --color-accent-hill: var(--accent-hill);
   --font-sans: var(--font-body);
   --font-display: var(--font-manrope);
 
@@ -75,6 +92,9 @@ html[data-contrast="high"] {
   --danger: #b91c1c;
   --success: #15803d;
   --warning: #92400e;
+  --accent-sky: #0369a1;
+  --accent-sun: #a16207;
+  --accent-hill: #14532d;
 }
 
 /* Subtle depth behind the whole page instead of one flat color — barely

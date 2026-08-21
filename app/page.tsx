@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { createClient } from "../lib/supabase/server";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
@@ -9,6 +8,7 @@ import { TrustScoreCard } from "@/components/TrustScoreCard";
 import { SavingsInsightsChart } from "@/components/SavingsInsightsChart";
 import { IntroCard } from "@/components/IntroCard";
 import { HomePullToRefresh } from "@/components/HomePullToRefresh";
+import { LandingPage } from "@/components/LandingPage";
 
 export default async function Home() {
   const supabase = await createClient();
@@ -16,7 +16,10 @@ export default async function Home() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) redirect("/login");
+  // Previously redirected straight to /login — a logged-out visitor
+  // never saw anything explaining what Uzuza is before being asked to
+  // sign in. Design brief §5A.
+  if (!user) return <LandingPage />;
 
   const { data: memberships } = await supabase
     .from("group_members")

@@ -9,6 +9,7 @@ import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
 import { Card } from "@/components/Card";
 import { CountryPhoneInput } from "@/components/CountryPhoneInput";
+import { Logo } from "@/components/Logo";
 
 type Method = "phone" | "email";
 type Intent = "signin" | "signup";
@@ -80,6 +81,7 @@ export function AuthForm({ intent, redirectTo }: { intent: Intent; redirectTo: s
 
   return (
     <Card className="max-w-sm">
+      <Logo size={32} showTagline className="mb-5" />
       <h1 className="font-display text-2xl font-semibold text-primary">
         {intent === "signup" ? "Create your account" : "Welcome back"}
       </h1>
