@@ -49,6 +49,9 @@ const translations = {
     paymentDue: "Payment due",
     joinThisGroup: "Join this group",
     joining: "Joining...",
+    transactionActivity: "Transaction activity",
+    createPledgeList: "Create a pledge list",
+    createPledgeListDesc: "Collect money for a wedding, funeral, school fees, or other event",
   },
   rw: {
     yourContribution: "Umusanzu wawe",
@@ -84,6 +87,9 @@ const translations = {
     paymentDue: "Ubwishyu bukwiye",
     joinThisGroup: "Injira muri iri tsinda",
     joining: "Kwinjira...",
+    transactionActivity: "Ibikorwa by'amafaranga",
+    createPledgeList: "Tangira gukusanya amafaranga",
+    createPledgeListDesc: "Kusanya amafaranga y'ubukwe, gushyingura, amashuri, cyangwa ibindi birori",
   },
   lg: {
     yourContribution: "Ensimbi zo",
@@ -119,6 +125,9 @@ const translations = {
     paymentDue: "Okusasula okusuubirwa",
     joinThisGroup: "Yingira mu kibiina kino",
     joining: "Kuyingira...",
+    transactionActivity: "Ebikolwa by'ensimbi",
+    createPledgeList: "Tandika okukuŋŋaanya ssente",
+    createPledgeListDesc: "Kuŋŋaanya ssente ez'obugole, okuziika, essomero, oba ekivvulu ekirala",
   },
 } as const;
 

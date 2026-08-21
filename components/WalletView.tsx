@@ -12,6 +12,7 @@ import { TopUpWalletForm } from "@/components/TopUpWalletForm";
 import { WithdrawWalletForm } from "@/components/WithdrawWalletForm";
 import { PullToRefresh } from "@/components/PullToRefresh";
 import { useBalanceHidden } from "../lib/prefs";
+import { useLanguage } from "../lib/i18n";
 
 type Transaction = {
   kind: string;
@@ -65,6 +66,7 @@ export function WalletView({
   myPhone: string;
 }) {
   const router = useRouter();
+  const { t } = useLanguage();
   const [tab, setTab] = useState<"overview" | "transactions">("overview");
   const [period, setPeriod] = useState<(typeof PERIODS)[number]["key"]>("7d");
   const [summary, setSummary] = useState<{
@@ -319,9 +321,30 @@ export function WalletView({
             </Card>
           </Link>
 
+          <Link
+            href="/groups/new?type=event"
+            className="block rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
+          >
+            <Card className="flex items-center gap-3 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-soft-md)]">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M8 6h13M8 12h13M8 18h13" />
+                  <path d="M3 6h.01M3 12h.01M3 18h.01" />
+                </svg>
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-foreground">{t("createPledgeList")}</p>
+                <p className="text-xs text-foreground/50">{t("createPledgeListDesc")}</p>
+              </div>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="shrink-0 text-foreground/30">
+                <path d="M9 6l6 6-6 6" />
+              </svg>
+            </Card>
+          </Link>
+
           <Card>
             <div className="flex items-center justify-between">
-              <h2 className="font-display text-lg font-semibold text-primary">Group activity</h2>
+              <h2 className="font-display text-lg font-semibold text-primary">{t("transactionActivity")}</h2>
               <div className="flex gap-1 rounded-full bg-surface-secondary p-1 text-xs font-medium">
                 {PERIODS.map((p) => (
                   <button

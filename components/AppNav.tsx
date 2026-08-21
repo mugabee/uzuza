@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { BottomSheet } from "@/components/BottomSheet";
+import { useLanguage } from "../lib/i18n";
 
 const TABS = [
   {
@@ -50,7 +51,7 @@ const TABS = [
 // "My groups" used to duplicate the always-visible Find/Home tabs
 // directly below this sheet, which meant half of it just repeated the
 // tab bar the user could already see and tap.
-const QUICK_ACTIONS = [
+const STATIC_QUICK_ACTIONS = [
   {
     href: "/groups/new",
     label: "Create a group",
@@ -69,6 +70,20 @@ const QUICK_ACTIONS = [
     ),
   },
 ];
+
+// type=event routes straight into the existing event-group creation
+// flow (CreateGroupFlow.tsx reads this param), skipping the rotating-vs-
+// event picker entirely — this path never requires setting up an ibimina
+// rotating-savings group.
+const PLEDGE_LIST_ACTION = {
+  href: "/groups/new?type=event",
+  icon: (
+    <>
+      <path d="M8 6h13M8 12h13M8 18h13" />
+      <path d="M3 6h.01M3 12h.01M3 18h.01" />
+    </>
+  ),
+};
 
 type Tab = (typeof TABS)[number];
 
@@ -113,7 +128,16 @@ function NavTab({ tab, pathname }: { tab: Tab; pathname: string }) {
 
 export function AppNav({ signedIn }: { signedIn: boolean }) {
   const pathname = usePathname();
+  const { t } = useLanguage();
   const [quickActionsOpen, setQuickActionsOpen] = useState(false);
+  const QUICK_ACTIONS = [
+    ...STATIC_QUICK_ACTIONS,
+    {
+      ...PLEDGE_LIST_ACTION,
+      label: t("createPledgeList"),
+      description: t("createPledgeListDesc"),
+    },
+  ];
 
   // Closes automatically on navigation, so it never lingers open over a
   // new page.

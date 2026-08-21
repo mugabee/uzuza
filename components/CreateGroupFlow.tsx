@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "../lib/supabase/client";
 import {
   createGroupSchema,
@@ -70,8 +70,13 @@ const GROUP_TYPES = [
 ];
 
 export function CreateGroupFlow() {
+  // Arriving via "Create a pledge list" (Quick actions) links straight to
+  // /groups/new?type=event — skips the picker below entirely rather than
+  // making that path detour through the rotating-savings choice first.
+  const searchParams = useSearchParams();
+  const presetType = searchParams.get("type") === "event" ? "event" : null;
   const [groupType, setGroupType] = useState<"rotating" | "event" | null>(
-    null,
+    presetType,
   );
 
   if (!groupType) {
